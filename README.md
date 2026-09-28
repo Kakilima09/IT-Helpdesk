@@ -22,34 +22,7 @@ Aplikasi ini menggunakan framework Laravel + [nwidart/laravel-modules](https://g
 - Knowledge base, FAQ, pengumuman, departemen, dan halaman statis.
 - Autentikasi dengan OTP, Google reCAPTCHA, mews captcha, honeypot anti-spam, dan login sosial (Envato, Zoho).
 - Integrasi Envato untuk verifikasi lisensi produk.
-- Dukungan banyak bahasa (terjemahan di dalam modul).
-- Notifikasi email & **WhatsApp** pada alur persetujuan GA.
-
-## Modul GA Request
-
-Modul *General Affairs Request* (dibuat khusus untuk aplikasi ini di direktori `app/` dan `resources/views/.../ga/`):
-
-| Fitur | Keterangan |
-| --- | --- |
-| Form permintaan item | Barang (ATK/RTK) & Jasa dengan `Satuan x Harga Satuan = Subtotal` yang dihitung otomatis |
-| Kategori barang | Manajemen kategori `ga_categories` (ATK, RTK, dsb.) oleh admin |
-| Alur persetujuan | **L1** (Atasan / ga_staff) dan **L2** (GA Manager / `ga_manager`) |
-| Ambang batas | Jika harga barang melebihi `config('ga.threshold')` (default Rp 500.000), perlu persetujuan L2 |
-| Dokumen | Cetak **PDF** form GA request dan export **Excel** laporan |
-| Notifikasi | Email & WhatsApp ke pemohon dan approver, termasuk link persetujuan/penolakan ber-token |
-| Expired otomatis | Request pending otomatis *expired* setelah `ga.expire_hours` jam (command `ga:auto-expire`) |
-
-### Alur Persetujuan
-
-```
-Pemohon -> Pending L1 -> Atasan (L1) menyetujui
-             |                  |
-             | (perlu L2)       v
-             |            Pending L2 -> GA Manager (L2)
-             |                                |
-             v                                v
-         Approved / Rejected / Expired       Approved / Rejected
-```
+- Dukungan banyak bahasa (terjemahan di dalam modul)
 
 ## Teknologi & Library
 
@@ -134,43 +107,6 @@ Berikut langkah instalasi untuk lingkungan lokal (XAMPP) maupun server:
    # tambahkan baris berikut
    * * * * * cd /path/to/it-helpdesk && php artisan schedule:run >> /dev/null 2>&1
    ```
-
-## Konfigurasi GA Request
-
-Pengaturan modul GA tersedia di `config/ga.php`:
-
-| Key | Default | Keterangan |
-| --- | --- | --- |
-| `ga.threshold` | `500000` | Ambang harga barang untuk approval L2 |
-| `ga.expire_hours` | `24` | Jam sebelum request pending dianggap expired |
-| `ga.l1_role` | `ga_staff` | Role approver L1 default |
-| `ga.l2_role` | `ga_manager` | Role approver L2 (GA Manager) |
-
-Konfigurasi WhatsApp (jika dipakai) di `config/whatsapp.php`.
-
-## Struktur Direktori
-
-```
-├── app/
-│   ├── Console/Commands/        # Command terjadwal (ga:auto-expire, dll)
-│   ├── Exports/                 # Export Excel GA
-│   ├── Http/Controllers/
-│   │   ├── Admin/               # GaAdminController, GaCategoryController
-│   │   └── User/Ga/             # GaRequestController
-│   ├── Mail/Ga/                 # Email template notifikasi GA
-│   ├── Models/Ga/               # GaCategory, GaRequest, GaRequestItem
-│   └── Services/                # GaWorkflowService, GaPdfService, dsb.
-├── config/
-│   ├── ga.php
-│   └── whatsapp.php
-├── database/
-│   ├── migrations/              # create_ga_* tables
-│   └── seeders/                 # GaSetupSeeder
-├── Modules/Uhelpupdate/         # Modul tambahan (canned messages, integrasi Envato)
-└── resources/views/
-    ├── admin/ga/                # Dashboard, list, detail, kategori GA
-    └── user/ga/                 # Form, detail, approval result
-```
 
 ## Lisensi
 
