@@ -41,6 +41,22 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Card GA -->
+                <div class="col-md-15">
+                    <div class="card h-100 shadow-sm border-0 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-wrapper mb-3">
+                                <i class="fe fe-shopping-cart display-3 text-info"></i>
+                            </div>
+                            <h5 class="card-title fw-bold">General Affairs (GA)</h5>
+                            <p class="card-text text-muted">Ajukan permintaan GA (barang/jasa) beserta proses persetujuan berjenjang.</p>
+                            <a href="{{ route('ga.create') }}" class="btn btn-info btn-lg w-100">
+                                <i class="fe fe-file-text me-2"></i> Form GA
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="text-center mt-4">

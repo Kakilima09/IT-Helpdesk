@@ -79,6 +79,7 @@ class UserprofileController extends Controller
             'timezone'  => 'nullable|string|max:100',
             'languages' => 'nullable|array',
             'skills'    => 'nullable|array',
+            'notification_pref' => 'nullable|in:email,whatsapp,both',
             'image'     => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120', // 5MB
         ];
 
@@ -110,6 +111,7 @@ class UserprofileController extends Controller
         $user->timezone  = $request->input('timezone');
         $user->languagues = $request->filled('languages') ? implode(',', $request->languages) : null;
         $user->skills    = $request->filled('skills') ? implode(',', $request->skills) : null;
+        $user->notification_pref = $request->input('notification_pref', 'email');
 
         // Update password jika diisi
         if ($request->filled('password')) {

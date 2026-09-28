@@ -19,6 +19,9 @@ use App\Http\Controllers\Admin\AgentCreateController;
 use App\Http\Controllers\User\Papd\PapdController;
 use App\Http\Controllers\Admin\PapdAdminController;
 use App\Http\Controllers\User\AI\AIAssistantController;
+use App\Http\Controllers\User\Ga\GaRequestController;
+use App\Http\Controllers\Admin\GaAdminController;
+use App\Http\Controllers\Admin\GaCategoryController;
 
 
 
@@ -315,6 +318,24 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 					Route::post('/papd/{id}/close', [PapdAdminController::class, 'updateClosing'])->name('admin.papd.close');
 					Route::post('/papd/{id}/reopen', [PapdAdminController::class, 'reopen'])->name('admin.papd.reopen');
 
+					//Admin GA Request
+					Route::get('/ga', [GaAdminController::class, 'index'])->name('admin.ga.index');
+					Route::get('/ga/dashboard', [GaAdminController::class, 'dashboard'])->name('admin.ga.dashboard');
+					Route::get('/ga/export', [GaAdminController::class, 'export'])->name('admin.ga.export');
+					Route::get('/ga/detail/{id}', [GaAdminController::class, 'show'])->name('admin.ga.show');
+					Route::get('/ga/download-pdf/{id}', [GaAdminController::class, 'downloadPdf'])->name('admin.ga.downloadPdf');
+					Route::post('/ga/{id}/approve', [GaAdminController::class, 'approve'])->name('admin.ga.approve');
+					Route::post('/ga/{id}/reject', [GaAdminController::class, 'reject'])->name('admin.ga.reject');
+
+					Route::group(['prefix' => 'ga/categories'], function () {
+						Route::get('/', [GaCategoryController::class, 'index'])->name('admin.ga.categories.index');
+						Route::get('/create', [GaCategoryController::class, 'create'])->name('admin.ga.categories.create');
+						Route::post('/', [GaCategoryController::class, 'store'])->name('admin.ga.categories.store');
+						Route::get('/{id}/edit', [GaCategoryController::class, 'edit'])->name('admin.ga.categories.edit');
+						Route::put('/{id}', [GaCategoryController::class, 'update'])->name('admin.ga.categories.update');
+						Route::delete('/{id}', [GaCategoryController::class, 'destroy'])->name('admin.ga.categories.destroy');
+					});
+
 					Route::group(['prefix' => 'customnotification'], function(){
 
 						Route::get('/', 'MailboxController@index')->name('mail.index');
@@ -520,6 +541,16 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 					//download pdf untuk login
 					Route::get('/papd/{id}/download-pdf', [PapdController::class, 'downloadPdf'])->name('papd.downloadPdf');
 
+					//GA Request
+					Route::get('/ga/get-user-data', [GaRequestController::class, 'getUserData'])->name('ga.getUserData');
+					Route::get('/ga', [GaRequestController::class, 'index'])->name('ga.index');
+					Route::get('/ga/create', [GaRequestController::class, 'create'])->name('ga.create');
+					Route::post('/ga', [GaRequestController::class, 'store'])->name('ga.store');
+					Route::get('/ga/{id}', [GaRequestController::class, 'show'])->name('ga.show');
+					Route::post('/ga/{id}/cancel', [GaRequestController::class, 'cancel'])->name('ga.cancel');
+					Route::get('/ga/{id}/download-pdf', [GaRequestController::class, 'downloadPdf'])->name('ga.downloadPdf');
+				Route::post('/ga/pref', [GaRequestController::class, 'updatePref'])->name('ga.updatePref');
+
 					Route::get('notification/{id}', 'DashboardController@Notificationview')->name('customer.notiication.view');
 					Route::get('/mark-as-read', 'DashboardController@markNotification')->name('customer.markNotification');
 					Route::get('/', 'DashboardController@userTickets')->name('client.dashboard');
@@ -628,6 +659,15 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 		// Route approve/reject via token (bisa di luar auth jika token digunakan)
 		Route::get('/papd/approve/{token}', [PapdController::class, 'approve'])->name('papd.approve');
 		Route::get('/papd/reject/{token}', [PapdController::class, 'reject'])->name('papd.reject');
+
+		//GA Request token approval (di luar auth)
+		Route::get('/ga/approve/l1/{token}', [GaRequestController::class, 'approveL1'])->name('ga.approve.l1');
+		Route::get('/ga/reject/l1/{token}', [GaRequestController::class, 'rejectL1'])->name('ga.reject.l1');
+		Route::get('/ga/approve/l2/{token}', [GaRequestController::class, 'approveL2'])->name('ga.approve.l2');
+		Route::get('/ga/reject/l2/{token}', [GaRequestController::class, 'rejectL2'])->name('ga.reject.l2');
+		Route::get('/ga/download-pdf/{id}', [GaRequestController::class, 'downloadPdfSigned'])
+		->name('ga.downloadPdfSigned')
+		->middleware('signed');
 
 		//Route Download pdf
 		Route::get('/papd/download-pdf/{id}', [PapdController::class, 'downloadPdfSigned'])

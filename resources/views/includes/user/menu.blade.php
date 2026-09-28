@@ -216,6 +216,10 @@
 									<i class="ri-ticket-2-line me-3 fs-16 my-auto"></i>
 									<div class="mt-1">{{lang('Tickets', 'Menu')}}</div>
 								</a>
+								<a class="dropdown-item d-flex" href="{{route('user.ticket-selection')}}">
+									<i class="feather feather-layout me-3 fs-16 my-auto"></i>
+									<div class="mt-1">{{lang('Pilih Layanan', 'Menu')}}</div>
+								</a>
 								<form id="logout-form" action="{{route('client.logout')}}" method="POST">
 									@csrf
 

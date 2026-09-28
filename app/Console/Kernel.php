@@ -51,6 +51,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('Dataseed:updating')->everyMinute();
         $schedule->command('papd:auto-expire')->everyMinute();
+        $schedule->command('ga:auto-expire')->everyMinute();
 
     }
 

@@ -25,6 +25,7 @@ use Database\Seeders\Permissiongroupupdate;
 use Database\Seeders\TimezoneSeeder;
 use Database\Seeders\SettingUpdateSeeder;
 use Database\Seeders\NewUpdateSeederV3_1;
+use Database\Seeders\GaSetupSeeder;
 use Modules\Uhelpupdate\Database\Seeders\UhelpupdateDatabaseSeeder;
 
 
@@ -64,6 +65,9 @@ class DatabaseSeeder extends Seeder
 
             // Next Update V3.1
             NewUpdateSeederV3_1::class,
+
+            // GA Request Setup
+            GaSetupSeeder::class,
         ]);
     }
 }
