@@ -169,6 +169,7 @@
                         <!--- End Custom notification -->
 
                         <!-- ====== AI IT ASSISTANT CARD ====== -->
+                        @if(setting('ai_enabled') == 'on')
                         <div class="card mb-4 border-0 shadow-sm">
                             <div class="card-body">
                                 <div class="d-flex align-items-center flex-wrap">
@@ -180,17 +181,19 @@
                                     <div class="flex-grow-1">
                                         <h5 class="card-title mb-1">🤖 AI IT ASSISTANT</h5>
                                         <p class="card-text text-muted mb-0">
-                                            Tell us about your IT problem. Our AI assistant will try to diagnose and solve it before creating a ticket.
+                                            Ceritakan masalah IT Anda. AI akan mencoba mendiagnosa dan menyelesaikannya lebih dulu.
+                                            Bila tidak berhasil, tiket otomatis dibuatkan untuk tim IT.
                                         </p>
                                     </div>
                                     <div>
                                         <a href="{{ route('customer.ai-assistant') }}" class="btn btn-primary">
-                                            Ask IT Assistant <i class="fe fe-arrow-right ms-2"></i>
+                                            Tanya AI Assistant <i class="fe fe-arrow-right ms-2"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        @endif
                         <!-- ====== END AI IT ASSISTANT CARD ====== -->
 
                         <div class="row">

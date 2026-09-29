@@ -26,6 +26,7 @@ use Database\Seeders\TimezoneSeeder;
 use Database\Seeders\SettingUpdateSeeder;
 use Database\Seeders\NewUpdateSeederV3_1;
 use Database\Seeders\GaSetupSeeder;
+use Database\Seeders\AiAssistantSeeder;
 use Modules\Uhelpupdate\Database\Seeders\UhelpupdateDatabaseSeeder;
 
 
@@ -68,6 +69,9 @@ class DatabaseSeeder extends Seeder
 
             // GA Request Setup
             GaSetupSeeder::class,
+
+            // AI Assistant
+            AiAssistantSeeder::class,
         ]);
     }
 }

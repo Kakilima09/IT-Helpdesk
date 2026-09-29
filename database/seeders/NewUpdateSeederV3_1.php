@@ -40,12 +40,6 @@ class NewUpdateSeederV3_1 extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
-            [
-                'key' => 'openai_api',
-                'value' => '',
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
         ]);
 
         // Email to ticket file attachment failed

@@ -480,6 +480,68 @@ class AdminSettingController extends Controller
         return back()->with('success', lang('Updated successfully', 'alerts'));
     }
 
+    public function aiconfig(Request $request)
+    {
+        $request->validate([
+            'ai_enabled' => 'nullable|in:on,off',
+        ]);
+
+        $allowed = ['gemini', 'groq', 'openrouter', 'openai'];
+        $data = [];
+
+        $data['ai_enabled'] = $request->input('ai_enabled') === 'on' ? 'on' : 'off';
+
+        if (in_array($request->input('ai_provider'), $allowed, true)) {
+            $data['ai_provider'] = $request->input('ai_provider');
+        }
+
+        foreach ($allowed as $provider) {
+            $keyField = 'ai_' . $provider . '_key';
+            $modelField = 'ai_' . $provider . '_model';
+
+            if ($request->filled($keyField)) {
+                $data[$keyField] = trim($request->input($keyField));
+            }
+
+            if ($request->filled($modelField)) {
+                $data[$modelField] = trim($request->input($modelField));
+            }
+        }
+
+        $this->seedAiSettings($data);
+        $this->updateSettings($data);
+
+        return back()->with('success', lang('Updated successfully', 'alerts'));
+    }
+
+    /**
+     * Pastikan baris settings untuk AI Assistant ada, lalu perbarui nilainya.
+     */
+    private function seedAiSettings(array $data)
+    {
+        $defaults = [
+            'ai_enabled' => 'off',
+            'ai_provider' => 'gemini',
+            'ai_gemini_key' => '',
+            'ai_gemini_model' => 'gemini-2.0-flash',
+            'ai_groq_key' => '',
+            'ai_groq_model' => 'llama-3.3-70b-versatile',
+            'ai_openrouter_key' => '',
+            'ai_openrouter_model' => 'meta-llama/llama-3.3-70b-instruct:free',
+            'ai_openai_key' => '',
+            'ai_openai_model' => 'gpt-4o-mini',
+        ];
+
+        foreach (array_keys($data) as $key) {
+            if (! Setting::where('key', $key)->exists()) {
+                Setting::create([
+                    'key' => $key,
+                    'value' => $defaults[$key] ?? '',
+                ]);
+            }
+        }
+    }
+
     public function profileuser(Request $request)
     {
 

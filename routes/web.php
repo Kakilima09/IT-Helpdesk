@@ -218,6 +218,7 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 					Route::post('/timezoneupdate', 'AdminSettingController@timezoneupdate')->name('settings.timezone.store');
                     Route::post('/contactemail', 'AdminSettingController@contactemail')->name('settings.contactemail.store');
                     Route::post('/chatgptenable', 'AdminSettingController@enablechatgpt')->name('settings.chatgpt.store');
+                    Route::post('/aiassistant', 'AdminSettingController@aiconfig')->name('settings.aiassistant.store');
 					Route::get('/general/dark', 'ApptitleController@check');
 					Route::get('/customer', 'AdminprofileController@customers')->name('admin.customer');
                     Route::get('/customer/resendverification/{email}', 'AdminprofileController@resendverification');

@@ -553,6 +553,101 @@
 </div>
 <!-- End Contact us email -->
 
+<!-- AI Assistant -->
+<div class="col-xl-12 col-lg-12 col-md-12">
+    <div class="card ">
+        <div class="card-header border-0">
+            <h4 class="card-title">AI Assistant</h4>
+        </div>
+        <div class="switch_section my-0 ps-3">
+            <div class="switch-toggle d-flex d-md-max-block mt-4">
+                <a class="onoffswitch2">
+                    <input type="checkbox" name="ai_enabled" id="ai_enabled" class="toggle-class onoffswitch2-checkbox" value="on" @if(setting('ai_enabled') == 'on') checked="" @endif>
+                    <label for="ai_enabled" class="toggle-class onoffswitch2-label" ></label>
+                </a>
+                <label class="form-label ps-3 ps-md-max-0">Enable AI Assistant</label>
+                <small class="text-muted ps-2 ps-md-max-0"><i>(Bila dinonaktifkan, pelanggan diarahkan membuat tiket manual. Selalu ada fallback lokal tanpa API key.)</i></small>
+            </div>
+        </div>
+        <form action="{{ route('settings.aiassistant.store') }}" method="POST">
+            @csrf
+            <div class="card-body pt-2">
+
+                <div class="form-group">
+                    <label class="form-label">Provider utama</label>
+                    <select name="ai_provider" class="form-control">
+                        @foreach(['gemini' => 'Google Gemini (gratis, disarankan)', 'groq' => 'Groq (gratis, sangat cepat)', 'openrouter' => 'OpenRouter (model gratis)', 'openai' => 'OpenAI (berbayar)'] as $value => $label)
+                            <option value="{{ $value }}" @if(setting('ai_provider') == $value) selected @endif>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <small class="text-muted">Sistem otomatis pindah ke provider berikutnya bila provider utama gagal atau key kosong.</small>
+                </div>
+
+                <hr>
+
+                <div class="form-group">
+                    <label class="form-label">Google Gemini</label>
+                    <small class="text-muted">Ambil key gratis di <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com/app/apikey</a></small>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="ai_gemini_key" class="form-control" placeholder="API Key Gemini" value="{{ setting('ai_gemini_key') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="ai_gemini_model" class="form-control" placeholder="gemini-2.0-flash" value="{{ setting('ai_gemini_model') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Groq</label>
+                    <small class="text-muted">Ambil key gratis di <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a></small>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="ai_groq_key" class="form-control" placeholder="API Key Groq" value="{{ setting('ai_groq_key') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="ai_groq_model" class="form-control" placeholder="openai/gpt-oss-120b" value="{{ setting('ai_groq_model') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">OpenRouter</label>
+                    <small class="text-muted">Ambil key gratis di <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a></small>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="ai_openrouter_key" class="form-control" placeholder="API Key OpenRouter" value="{{ setting('ai_openrouter_key') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="ai_openrouter_model" class="form-control" placeholder="meta-llama/llama-3.3-70b-instruct:free" value="{{ setting('ai_openrouter_model') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">OpenAI</label>
+                    <small class="text-muted">Opsional, hanya bila Anda punya kredit API.</small>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" name="ai_openai_key" class="form-control" placeholder="API Key OpenAI" value="{{ setting('ai_openai_key') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="ai_openai_model" class="form-control" placeholder="gpt-4o-mini" value="{{ setting('ai_openai_model') }}">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-12 card-footer ">
+                <div class="form-group float-end ">
+                    <input type="submit" class="btn btn-secondary" value="{{lang('Save Changes')}}" onclick="this.disabled=true;this.form.submit();">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- End AI Assistant -->
+
 <!-- Chat GPT Open AI -->
 <div class="col-xl-12 col-lg-12 col-md-12">
     <div class="card ">
