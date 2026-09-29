@@ -103,10 +103,22 @@ class AIProviderManager
 
     /**
      * Urutan provider yang akan dicoba: primary lalu fallback order.
+     * Primary didahulukan dari setelan admin (settings table) bila terisi,
+     * lalu diikuti config/env, sehingga perubahan provider di halaman admin
+     * langsung berefek tanpa perlu menyentuh .env.
      */
     public function candidateOrder(): array
     {
-        $primary = config('ai.provider', 'gemini');
+        $primary = config('ai.provider', 'groq');
+
+        try {
+            if (!empty(setting('ai_provider')) && in_array(setting('ai_provider'), array_keys(config('ai.providers', [])), true)) {
+                $primary = setting('ai_provider');
+            }
+        } catch (\Throwable $e) {
+            // setting() belum tersedia (mis. proses tanpa DB); pakai config.
+        }
+
         $order = array_values(array_unique(array_merge([$primary], (array) config('ai.fallback_order', []))));
 
         return array_values(array_filter($order, function ($provider) {
@@ -166,7 +178,9 @@ class AIProviderManager
 
     protected function tryProvider(string $provider, array $messages): ?array
     {
-        if ($this->remoteAttempts >= 2) {
+        $maxRemote = (int) config('ai.max_remote_attempts', 2);
+
+        if ($this->remoteAttempts >= max(1, $maxRemote)) {
             return null;
         }
 

@@ -589,7 +589,8 @@
 															@endif
 
 															<p class="m-0">{{$note->ticketnotes}}</p>
-															<p class="text-end mb-0"><small><i><b>{{$note->users->name}}</b> @if(!empty($note->users->getRoleNames()[0])) ({{$note->users->getRoleNames()[0]}}) @endif</i></small></p>
+															@php $trashedNoteUser = $note->users; @endphp
+															<p class="text-end mb-0"><small><i><b>{{ $trashedNoteUser->name ?? 'AI Assistant' }}</b> @if(!empty(optional($trashedNoteUser)->getRoleNames()[0])) ({{$trashedNoteUser->getRoleNames()[0]}}) @endif</i></small></p>
 														</div>
 														@endforeach
 

@@ -52,6 +52,38 @@ class Handler extends ExceptionHandler
      */
     public function report(Throwable $exception)
     {
+        if (strpos($exception->getMessage(), "Access denied for user 'forge'") !== false) {
+            try {
+                $info = [
+                    'time'             => date('Y-m-d H:i:s'),
+                    'sapi'             => PHP_SAPI,
+                    'php'              => PHP_VERSION,
+                    'user_agent'       => $_SERVER['HTTP_USER_AGENT'] ?? null,
+                    'request_method'   => $_SERVER['REQUEST_METHOD'] ?? null,
+                    'request_uri'      => $_SERVER['REQUEST_URI'] ?? null,
+                    'argv'             => isset($_SERVER['argv']) ? json_encode($_SERVER['argv']) : null,
+                    'docroot'          => $_SERVER['DOCUMENT_ROOT'] ?? null,
+                    'app_base'         => base_path(),
+                    'env_db_user'      => env('DB_USERNAME'),
+                    'env_db_host'      => env('DB_HOST'),
+                    'getenv_db_user'   => getenv('DB_USERNAME'),
+                    'server_db_user'   => $_SERVER['DB_USERNAME'] ?? null,
+                    'server_app_env'   => $_SERVER['APP_ENV'] ?? null,
+                    'getenv_app_env'   => getenv('APP_ENV'),
+                    'config_db_user'   => config('database.connections.mysql.username'),
+                    'env_file_exists'  => file_exists(base_path('.env')) ? 'yes' : 'no',
+                    'env_file_size'    => file_exists(base_path('.env')) ? filesize(base_path('.env')) : -1,
+                    'session_id'       => session_id(),
+                ];
+                @file_put_contents(
+                    storage_path('logs/forge-debug.log'),
+                    json_encode($info).PHP_EOL,
+                    FILE_APPEND | LOCK_EX
+                );
+            } catch (\Throwable $ignored) {
+            }
+        }
+
         parent::report($exception);
     }
 

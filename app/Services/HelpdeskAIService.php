@@ -120,6 +120,10 @@ class HelpdeskAIService
             'category_id' => $category ? $category->id : null,
             'status' => 'New',
             'priority' => $draft['priority'] ?: ($category->priority ?? 'Medium'),
+            // Halaman detail tiket selalu memanggil decrypt() pada kolom ini
+            // tanpa cek null, jadi harus selalu terisi. String 'undefined'
+            // adalah konvensi app untuk tiket tanpa purchase code Envato.
+            'purchasecode' => encrypt('undefined'),
         ]);
 
         $ticket->ticket_id = setting('CUSTOMER_TICKETID', 'TKT') . '-' . $ticket->id;
@@ -650,11 +654,12 @@ Knowledge base internal (gunakan jika relevan, jangan mengarang di luar ini):
 Aturan:
 1. Selalu balas dalam Bahasa Indonesia yang sopan, ringkas, dan teknis.
 2. Berikan langkah troubleshooting konkret dan bernomor, maksimal 6 langkah per balasan.
-3. Gaya markdown: **tebal** untuk penekanan, dan bullet/nomor untuk langkah.
-4. Jangan pernah mengarang nomor tiket, URL, atau kebijakan perusahaan.
-5. Jangan meminta data sensitif seperti password, nomor kartu, atau PIN.
-6. Jika informasi masih kurang, ajukan SATU pertanyaan klarifikasi yang relevan sebelum memberi langkah lanjutan.
-7. Balas HANYA dengan JSON valid tanpa teks tambahan, dengan struktur:
+3. Jaga "message" tetap ringkas (maksimal ±1200 karakter) dan "diagnosis" singkat (±300 karakter); jangan menulis pendahuluan berlebihan.
+4. Gaya markdown: **tebal** untuk penekanan, dan bullet/nomor untuk langkah.
+5. Jangan pernah mengarang nomor tiket, URL, atau kebijakan perusahaan.
+6. Jangan meminta data sensitif seperti password, nomor kartu, atau PIN.
+7. Jika informasi masih kurang, ajukan SATU pertanyaan klarifikasi yang relevan sebelum memberi langkah lanjutan.
+8. Balas HANYA dengan JSON valid tanpa teks tambahan, dengan struktur:
 {
   "status": "diagnosing" | "resolved" | "needs_ticket",
   "message": "balasan untuk pengguna dalam markdown",
@@ -669,10 +674,10 @@ Aturan:
     "recommendation": "rekomendasi tindakan untuk teknisi"
   }
 }
-8. Aturan "ticket": null (tanpa objek) ketika create_ticket bernilai false.
-9. Set resolved=true dan create_ticket=false bila pengguna mengonfirmasi masalahnya selesai.
-10. Buat create_ticket=true bila pengguna menyatakan cara sebelumnya gagal, atau setelah 5 percakapan troubleshooting tanpa penyelesaian.
-11. Prioritas Urgent atau Critical hanya untuk kehilangan data, sistem gagal total, atau perusahaan tidak bisa beroperasi.
+9. Aturan "ticket": null (tanpa objek) ketika create_ticket bernilai false.
+10. Set resolved=true dan create_ticket=false bila pengguna mengonfirmasi masalahnya selesai.
+11. Buat create_ticket=true bila pengguna menyatakan cara sebelumnya gagal, atau setelah 5 percakapan troubleshooting tanpa penyelesaian.
+12. Prioritas Urgent atau Critical hanya untuk kehilangan data, sistem gagal total, atau perusahaan tidak bisa beroperasi.
 PROMPT;
     }
 }

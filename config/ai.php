@@ -26,10 +26,11 @@ return [
     /*
      * Provider yang dipakai pertama. Nilai: gemini | groq | openrouter | openai | local
      */
-    'provider' => env('AI_PROVIDER', 'gemini'),
+    'provider' => env('AI_PROVIDER', 'groq'),
 
     /*
      * Urutan fallback ketika provider utama gagal / tidak punya key.
+     * "local" selalu dicoba paling akhir sebagai jaring pengaman.
      */
     'fallback_order' => [
         'gemini',
@@ -38,10 +39,13 @@ return [
         'local',
     ],
 
-    'timeout' => env('AI_TIMEOUT', 60),
-    // Cukup besar karena beberapa model (mis. Gemini 3.x) memakai sebagian
-    // kuota untuk token reasoning sebelum menulis JSON.
-    'max_tokens' => env('AI_MAX_TOKENS', 4096),
+    // Timeout HTTP per panggilan. Diturunkan dari 60 ke 30 supaya pengguna
+    // tidak menunggu lama ketika provider utama lambat/hang; provider lain
+    // dijalur fallback akan menyusul.
+    'timeout' => env('AI_TIMEOUT', 30),
+    // Batas token output. 2048 sudah cukup untuk balasan troubleshooting +
+    // JSON tiket, dan jauh lebih cepat daripada 4096.
+    'max_tokens' => env('AI_MAX_TOKENS', 2048),
     'temperature' => env('AI_TEMPERATURE', 0.4),
 
     /*
@@ -53,7 +57,13 @@ return [
      * Berapa kali provider dicoba ulang pada error transient (429/5xx) sebelum
      * pindah ke provider berikutnya.
      */
-    'retries' => env('AI_RETRIES', 2),
+    'retries' => env('AI_RETRIES', 1),
+
+    /*
+     * Berapa provider remote yang boleh dicoba berurutan sebelum jatuh ke
+     * fallback lokal.
+     */
+    'max_remote_attempts' => env('AI_MAX_REMOTE_ATTEMPTS', 2),
 
     /*
      * Batas jumlah percakapan sebelum AI otomatis menawarkan escalation.
@@ -63,7 +73,7 @@ return [
     /*
      * Jumlah baris knowledge base (FAQ + Article) yang di-inject sebagai konteks.
      */
-    'knowledge_limit' => 5,
+    'knowledge_limit' => 4,
 
     'providers' => [
 

@@ -903,9 +903,21 @@
         }
     });
 
-    let ctmername =  {!! json_encode($ticket->cust->username) !!};
-    let pchase =  {!! json_encode(decrypt($ticket->purchasecode)) !!};
+    let ctmername =  {!! json_encode(optional($ticket->cust)->username) !!};
     let encryptpchase =  {!! json_encode($ticket->purchasecode) !!};
+    // decrypt() melempar exception kalau purchasecode kosong atau tidak pernah
+    // terenkripsi, jadi amankan lebih dulu.
+    let pchase = null;
+    @if(!empty($ticket->purchasecode))
+        @php
+            try {
+                $decodedPurchase = decrypt($ticket->purchasecode);
+            } catch (\Throwable $e) {
+                $decodedPurchase = null;
+            }
+        @endphp
+        let pchase =  {!! json_encode($decodedPurchase ?? null) !!};
+    @endif
 
     if(pchase != null && pchase != 'undefined'){
         $.ajax({
