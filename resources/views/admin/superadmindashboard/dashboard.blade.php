@@ -158,14 +158,14 @@
         <div class="col-xxl-2 col-xl-6 col-lg-6 col-sm-6">
             <div class="card">
                 <div class="card-body p-4">
-                    <a href="{{route('admin.recenttickets')}}">
+                    <a href="{{route('admin.overdueticket')}}">
                         <div class="d-flex">
                             <div class="icon2 bg-secondary-transparent my-auto me-3">
                                 <i class="las la-ticket-alt"></i>
                             </div>
                             <div>
-                                <p class="fs-14 font-weight-semibold mb-1">{{lang('Recent Tickets')}} </p>
-                                <h5 class="mb-0">{{$recentticketcount}}</h5>
+                                <p class="fs-14 font-weight-semibold mb-1">{{lang('Overdue Tickets')}}</p>
+                                <h5 class="mb-0">{{$overdueticketcount}}</h5>
                             </div>
                         </div>
                     </a>

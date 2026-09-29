@@ -79,6 +79,9 @@ class AdminDashboardController extends Controller
         }
         $data['recentticketcount'] = $recentticketcount;
 
+        $overdueticketcount = Ticket::whereIn('overduestatus', ['Overdue'])->count();
+        $data['overdueticketcount'] = $overdueticketcount;
+
         $selfassigncount = Ticket::where('selfassignuser_id',Auth::id())->where('status', '!=' ,'Closed')->where('status', '!=' ,'Suspend')->count();
         $data['selfassigncount'] = $selfassigncount;
 
