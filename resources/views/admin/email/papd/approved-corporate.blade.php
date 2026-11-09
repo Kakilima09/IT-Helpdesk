@@ -13,37 +13,44 @@ Berikut adalah data lengkap permintaan perjalanan dinas yang **telah disetujui**
 - **ID Karyawan:** {{ $request->id_karyawan }}
 - **Jabatan:** {{ $request->jabatan }}
 - **Departemen:** {{ $request->departemen }}
-- **Entitas:** {{ $request->entitas ?? '-' }}
 - **Atasan:** {{ $request->atasan_nama }}
 - **No HP:** {{ $request->no_hp }}
 - **Email:** {{ $request->email }}
 - **Tanggal Lahir:** {{ $request->ttl->format('d-m-Y') }}
+@if($request->jenis_perjalanan === 'internasional')
 - **No Paspor:** {{ $request->no_paspor ?? '-' }}
 - **Exp Paspor:** {{ $request->exp_date_paspor ? $request->exp_date_paspor->format('d-m-Y') : '-' }}
+@endif
 
 ---
 
 ## B. Perjalanan Dinas
 - **Jenis:** {{ ucfirst($request->jenis_perjalanan) }}
-- **Tujuan:** {{ $request->kota_tujuan }}
+- **{{ $request->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:** {{ $request->kota_tujuan }}
 - **Agenda:** {{ $request->agenda }}
+- **Role Perjalanan:** {{ ucfirst($request->role_perjalanan ?? 'sendiri') }}
+@if($request->role_perjalanan === 'team')
+- **Jumlah Anggota:** {{ $request->jumlah_anggota_team ?? 0 }}
+- **Nama Anggota Team:** {{ str_replace("\n", ', ', $request->nama_anggota_team ?? '') }}
+@endif
 - **No SPPD:** {{ $request->no_sppd ?? '-' }}
 - **Berangkat:** {{ $request->tanggal_keberangkatan->format('d-m-Y') }} {{ $request->jam_keberangkatan }}
 - **Kembali:** {{ $request->tanggal_kepulangan ? \Carbon\Carbon::parse($request->tanggal_kepulangan)->format('d-m-Y') . ' ' . ($request->jam_kepulangan ?? '') : '-' }}
-- **Durasi:** {{ $request->durasi_hari ? $request->durasi_hari . ' hari' : '-' }}
+- **Lama Perjalanan:** {{ $request->durasi_hari ? $request->durasi_hari . ' hari' : '-' }}
 - **Pembebanan Biaya:** {{ $request->pembebanan_biaya ?? '-' }}
 
 ---
 
 ## C1. Transportasi
+- **Jenis Tiket:** {{ ($request->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}
 - **Moda:** {{ ucfirst($request->moda_transportasi) }}
 - **Kelas:** {{ $request->kelas ?? '-' }}
 - **Rute:** {{ $request->rute ?? '-' }}
-- **Maskapai:** {{ $request->detail_maskapai ?? '-' }}
-- **No Penerbangan:** {{ $request->no_penerbangan ?? '-' }}
+- **Nama Operator:** {{ $request->detail_maskapai ?? '-' }}
+- **Nomor Perjalanan:** {{ $request->no_penerbangan ?? '-' }}
 - **Bagasi Tambahan:** {{ $request->bagasi_tambahan ? 'Ya' : 'Tidak' }}
 - **Transportasi Lokal:** {{ $request->transportasi_lokal ? 'Ya' : 'Tidak' }}
-- **Opsi:** {{ $request->opsi_transportasi ? implode(', ', $request->opsi_transportasi) : '-' }}
+- **Opsi:** {{ collect($request->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}
 
 ---
 

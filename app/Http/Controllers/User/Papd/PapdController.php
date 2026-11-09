@@ -114,6 +114,26 @@ class PapdController extends Controller
         return view('user.papd.create', $data);
     }
 
+    private function setTeamMemberCount(array $validated)
+    {
+        if ($validated['role_perjalanan'] === 'sendiri') {
+            $validated['nama_anggota_team'] = null;
+            $validated['jumlah_anggota_team'] = null;
+
+            return $validated;
+        }
+
+        $names = preg_split('/\r\n|\r|\n/', trim($validated['nama_anggota_team']));
+        $names = array_values(array_filter(array_map('trim', $names), function ($name) {
+            return $name !== '';
+        }));
+
+        $validated['nama_anggota_team'] = implode("\n", $names);
+        $validated['jumlah_anggota_team'] = count($names);
+
+        return $validated;
+    }
+
     /**
      * Menyimpan permintaan PAPD
      */
@@ -121,12 +141,12 @@ class PapdController extends Controller
     {
         // Aturan validasi dasar
         $rules = [
+            'jenis_pemohon' => 'required|in:internal,eksternal',
             'nama_lengkap' => 'required|string|max:255',
-            'id_karyawan' => 'required|string|max:50',
+            'id_karyawan' => 'nullable|string|max:50|required_if:jenis_pemohon,internal',
             'nik_ktp' => 'required|string|max:20',
             'jabatan' => 'required|string|max:255',
             'departemen' => 'required|string|max:255',
-            'entitas' => 'nullable|string|max:255',
             'atasan_nama' => 'required|string|max:255',
             'atasan_email' => 'required|email|max:255',
             'no_hp' => 'required|string|max:20',
@@ -135,17 +155,21 @@ class PapdController extends Controller
             'no_paspor' => 'nullable|string|max:50',
             'exp_date_paspor' => 'nullable|date|after:today',
             'jenis_perjalanan' => 'required|in:domestik,internasional',
+            'nama_sesuai_ktp' => 'nullable|string|max:255|required_if:jenis_perjalanan,domestik',
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
             'agenda' => 'required|string',
+            'role_perjalanan' => 'required|in:team,sendiri',
+            'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
             'no_sppd' => 'nullable|string|max:100',
             'tanggal_keberangkatan' => 'required|date|after_or_equal:today',
             'jam_keberangkatan' => 'required',
-            'tanggal_kepulangan' => 'nullable|date|after:tanggal_keberangkatan',
+            'tanggal_kepulangan' => 'nullable|required_if:jenis_tiket,pulang_pergi|date|after:tanggal_keberangkatan',
             'jam_kepulangan' => 'nullable',
             'durasi_hari' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
-            'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh,lainnya',
+            'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
+            'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
             'detail_maskapai' => 'nullable|string|max:255',
@@ -153,6 +177,7 @@ class PapdController extends Controller
             'bagasi_tambahan' => 'boolean',
             'transportasi_lokal' => 'boolean',
             'opsi_transportasi' => 'nullable|array',
+            'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'hotel_reservasi' => 'boolean',
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
@@ -170,11 +195,26 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        $validated['opsi_transportasi'] = array_values(array_diff(
+            $validated['opsi_transportasi'] ?? [],
+            !empty($validated['bagasi_tambahan']) ? [] : ['special_baggage', 'special_charge']
+        ));
+        if ($validated['jenis_pemohon'] === 'eksternal') {
+            $validated['id_karyawan'] = null;
+        }
+        $validated = $this->setTeamMemberCount($validated);
+        if ($validated['jenis_perjalanan'] === 'internasional') {
+            $validated['nama_sesuai_ktp'] = null;
+        } else {
+            $validated['nama_paspor'] = null;
+            $validated['no_paspor'] = null;
+            $validated['exp_date_paspor'] = null;
+        }
 
         // Jika durasi_hari tidak diisi dan kedua tanggal ada, hitung otomatis
-        if (empty($validated['durasi_hari']) && $request->filled('tanggal_keberangkatan') && $request->filled('tanggal_kepulangan')) {
-            $start = \Carbon\Carbon::parse($request->tanggal_keberangkatan);
-            $end   = \Carbon\Carbon::parse($request->tanggal_kepulangan);
+        if (empty($validated['durasi_hari']) && !empty($validated['tanggal_kepulangan'])) {
+            $start = \Carbon\Carbon::parse($validated['tanggal_keberangkatan']);
+            $end   = \Carbon\Carbon::parse($validated['tanggal_kepulangan']);
             if ($end >= $start) {
                 $validated['durasi_hari'] = $end->diffInDays($start) + 1; // inklusif
             }
@@ -461,11 +501,12 @@ class PapdController extends Controller
 
         $rules = [
             'nama_lengkap' => 'required|string|max:255',
-            'id_karyawan' => 'required|string|max:50',
+            'id_karyawan' => $papdRequest->jenis_pemohon === 'eksternal'
+                ? 'nullable|string|max:50'
+                : 'required|string|max:50',
             'nik_ktp' => 'required|string|max:20',
             'jabatan' => 'required|string|max:255',
             'departemen' => 'required|string|max:255',
-            'entitas' => 'nullable|string|max:255',
             'atasan_nama' => 'required|string|max:255',
             'atasan_email' => 'required|email|max:255',
             'no_hp' => 'required|string|max:20',
@@ -474,17 +515,21 @@ class PapdController extends Controller
             'no_paspor' => 'nullable|string|max:50',
             'exp_date_paspor' => 'nullable|date|after:today',
             'jenis_perjalanan' => 'required|in:domestik,internasional',
-            'nama_paspor' => 'required|string|max:255',
+            'nama_sesuai_ktp' => 'nullable|string|max:255|required_if:jenis_perjalanan,domestik',
+            'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
             'agenda' => 'required|string',
+            'role_perjalanan' => 'required|in:team,sendiri',
+            'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
             'no_sppd' => 'nullable|string|max:100',
             'tanggal_keberangkatan' => 'required|date|after_or_equal:today',
             'jam_keberangkatan' => 'required',
-            'tanggal_kepulangan' => 'nullable|date|after:tanggal_keberangkatan',
+            'tanggal_kepulangan' => 'nullable|required_if:jenis_tiket,pulang_pergi|date|after:tanggal_keberangkatan',
             'jam_kepulangan' => 'nullable',
             'durasi_hari' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
-            'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh,lainnya',
+            'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
+            'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
             'detail_maskapai' => 'nullable|string|max:255',
@@ -492,6 +537,7 @@ class PapdController extends Controller
             'bagasi_tambahan' => 'boolean',
             'transportasi_lokal' => 'boolean',
             'opsi_transportasi' => 'nullable|array',
+            'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'hotel_reservasi' => 'boolean',
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
@@ -508,11 +554,23 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        $validated['opsi_transportasi'] = array_values(array_diff(
+            $validated['opsi_transportasi'] ?? [],
+            !empty($validated['bagasi_tambahan']) ? [] : ['special_baggage', 'special_charge']
+        ));
+        $validated = $this->setTeamMemberCount($validated);
+        if ($validated['jenis_perjalanan'] === 'internasional') {
+            $validated['nama_sesuai_ktp'] = null;
+        } else {
+            $validated['nama_paspor'] = null;
+            $validated['no_paspor'] = null;
+            $validated['exp_date_paspor'] = null;
+        }
 
         // Hitung ulang durasi jika tanggal diisi
-        if (empty($validated['durasi_hari']) && $request->filled('tanggal_keberangkatan') && $request->filled('tanggal_kepulangan')) {
-            $start = \Carbon\Carbon::parse($request->tanggal_keberangkatan);
-            $end   = \Carbon\Carbon::parse($request->tanggal_kepulangan);
+        if (empty($validated['durasi_hari']) && !empty($validated['tanggal_kepulangan'])) {
+            $start = \Carbon\Carbon::parse($validated['tanggal_keberangkatan']);
+            $end   = \Carbon\Carbon::parse($validated['tanggal_kepulangan']);
             if ($end >= $start) {
                 $validated['durasi_hari'] = $end->diffInDays($start) + 1;
             }
@@ -566,7 +624,7 @@ class PapdController extends Controller
 
     private function generatePdf(PapdRequest $papdRequest)
     {
-        // Ambil logo dari file 
+        // Ambil logo dari file
         $logoPath = public_path('assets/images/logo.png');
         $logoBase64 = null;
         if (file_exists($logoPath)) {
@@ -628,7 +686,7 @@ class PapdController extends Controller
 
                 $results[] = [
                     'id'          => $fullName,
-                    'text'        => $fullName . ' (' . $user->email . ')',
+                    'text'        => $fullName,
                     'name'        => $fullName,
                     'email'       => $user->email,
                     'employee_id' => $hasEmployee ? ($user->empid ?? '') : '',
@@ -644,7 +702,7 @@ class PapdController extends Controller
     }
     public function printView($id)
     {
-        // Ambil logo dari file 
+        // Ambil logo dari file
         $logoPath = public_path('assets/images/logo.png');
         $logoBase64 = null;
         if (file_exists($logoPath)) {
@@ -764,10 +822,10 @@ class PapdController extends Controller
             $user->unreadNotifications()
                 ->where('data->papd_id', '!=', null)
                 ->update(['read_at' => now()]);
-            
+
             return response()->json(['success' => true, 'message' => 'Semua notifikasi PAPD telah ditandai sebagai sudah dibaca.']);
         }
-        
+
         return response()->json(['success' => false, 'message' => 'User tidak ditemukan.'], 404);
     }
 
@@ -822,12 +880,12 @@ class PapdController extends Controller
             $file = $request->file('image');
             $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $file->getClientOriginalName());
             $destinationPath = public_path('uploads/profile');
-            
+
             // Hapus foto lama jika ada
             if ($user->image && file_exists($destinationPath . '/' . $user->image)) {
                 unlink($destinationPath . '/' . $user->image);
             }
-            
+
             $file->move($destinationPath, $filename);
             $validated['image'] = $filename;
         } else {

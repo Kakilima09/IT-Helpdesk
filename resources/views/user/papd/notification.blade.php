@@ -141,7 +141,7 @@
                                                 @if($papd)
                                                     <div class="d-flex flex-wrap gap-3 small text-muted">
                                                         <span><strong>Pemohon:</strong> {{ $papd->nama_lengkap ?? '-' }}</span>
-                                                        <span><strong>Tujuan:</strong> {{ $papd->kota_tujuan ?? '-' }}</span>
+                                                        <span><strong>{{ $papd->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:</strong> {{ $papd->kota_tujuan ?? '-' }}</span>
                                                         <span><strong>Berangkat:</strong> 
                                                             @if($papd->tanggal_keberangkatan)
                                                                 {{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d M Y') }}

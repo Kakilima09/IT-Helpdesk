@@ -25,7 +25,7 @@
                             <tr><th>No SPPD</th><td>{{ $papdRequest->no_sppd ?? '-' }}</td></tr>
                             <tr><th>Pemohon</th><td>{{ $papdRequest->nama_lengkap ?? '-' }}</td></tr>
                             <tr><th>Departemen</th><td>{{ $papdRequest->departemen ?? '-' }}</td></tr>
-                            <tr><th>Tujuan</th><td>{{ $papdRequest->kota_tujuan ?? '-' }}</td></tr>
+                            <tr><th>{{ $papdRequest->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}</th><td>{{ $papdRequest->kota_tujuan ?? '-' }}</td></tr>
                             <tr>
                                 <th>Keberangkatan</th>
                                 <td>

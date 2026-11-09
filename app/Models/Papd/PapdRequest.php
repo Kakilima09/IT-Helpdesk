@@ -21,12 +21,13 @@ class PapdRequest extends Model
     const CLOSING_CANCEL  = 'cancel';
 
     protected $fillable = [
-        'user_id', 'nama_lengkap', 'id_karyawan', 'nik_ktp', 'jabatan', 'departemen',
-        'entitas', 'atasan_nama', 'atasan_email', 'no_hp', 'email',
+        'user_id', 'jenis_pemohon', 'nama_lengkap', 'id_karyawan', 'nik_ktp', 'jabatan', 'departemen',
+        'atasan_nama', 'atasan_email', 'no_hp', 'email',
         'ttl', 'no_paspor', 'exp_date_paspor',
-        'jenis_perjalanan', 'nama_paspor', 'kota_tujuan', 'agenda', 'no_sppd',
+        'jenis_perjalanan', 'nama_sesuai_ktp', 'nama_paspor', 'kota_tujuan', 'agenda',
+        'role_perjalanan', 'nama_anggota_team', 'jumlah_anggota_team', 'no_sppd',
         'tanggal_keberangkatan', 'jam_keberangkatan', 'tanggal_kepulangan', 'jam_kepulangan', 'durasi_hari', 'pembebanan_biaya',
-        'moda_transportasi', 'kelas', 'rute', 'detail_maskapai',
+        'moda_transportasi', 'jenis_tiket', 'kelas', 'rute', 'detail_maskapai',
         'no_penerbangan', 'bagasi_tambahan', 'transportasi_lokal',
         'opsi_transportasi',
         'hotel_reservasi', 'nama_hotel', 'lokasi_hotel', 'alamat_hotel',

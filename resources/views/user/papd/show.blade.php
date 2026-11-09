@@ -65,18 +65,16 @@
                             <div class="detail-section">
                                 <h5 class="mb-3">A. Informasi Pemohon</h5>
                                 <div class="row">
+                                    <div class="col-md-6"><span class="detail-label">Jenis Pemohon:</span> {{ ucfirst($papdRequest->jenis_pemohon ?? 'internal') }}</div>
                                     <div class="col-md-6"><span class="detail-label">Nama:</span> {{ $papdRequest->nama_lengkap }}</div>
                                     <div class="col-md-6"><span class="detail-label">ID Karyawan:</span> {{ $papdRequest->id_karyawan }}</div>
                                     <div class="col-md-6"><span class="detail-label">Jabatan:</span> {{ $papdRequest->jabatan }}</div>
                                     <div class="col-md-6"><span class="detail-label">Departemen:</span> {{ $papdRequest->departemen }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Entitas:</span> {{ $papdRequest->entitas ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Atasan:</span> {{ $papdRequest->atasan_nama }}</div>
                                     <div class="col-md-6"><span class="detail-label">Email Atasan:</span> {{ $papdRequest->atasan_email }}</div>
                                     <div class="col-md-6"><span class="detail-label">No HP:</span> {{ $papdRequest->no_hp }}</div>
                                     <div class="col-md-6"><span class="detail-label">Email:</span> {{ $papdRequest->email }}</div>
                                     <div class="col-md-6"><span class="detail-label">Tanggal Lahir:</span> {{ $papdRequest->ttl->format('d-m-Y') }}</div>
-                                    <div class="col-md-6"><span class="detail-label">No Paspor:</span> {{ $papdRequest->no_paspor ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Exp Paspor:</span> {{ $papdRequest->exp_date_paspor ? $papdRequest->exp_date_paspor->format('d-m-Y') : '-' }}</div>
                                 </div>
                             </div>
 
@@ -84,10 +82,23 @@
                                 <h5 class="mb-3">B. Informasi Perjalanan Dinas</h5>
                                 <div class="row">
                                     <div class="col-md-6"><span class="detail-label">Jenis:</span> {{ ucfirst($papdRequest->jenis_perjalanan) }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Tujuan:</span> {{ $papdRequest->kota_tujuan }}</div>
+                                    @if($papdRequest->jenis_perjalanan === 'domestik')
+                                        <div class="col-md-6"><span class="detail-label">Nama Sesuai KTP:</span> {{ $papdRequest->nama_sesuai_ktp ?? '-' }}</div>
+                                    @endif
+                                    @if($papdRequest->jenis_perjalanan === 'internasional')
+                                        <div class="col-md-6"><span class="detail-label">No Paspor:</span> {{ $papdRequest->no_paspor ?? '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Exp Paspor:</span> {{ $papdRequest->exp_date_paspor ? $papdRequest->exp_date_paspor->format('d-m-Y') : '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Nama sesuai Paspor:</span> {{ $papdRequest->nama_paspor ?? '-' }}</div>
+                                    @endif
+                                    <div class="col-md-6"><span class="detail-label">{{ $papdRequest->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:</span> {{ $papdRequest->kota_tujuan }}</div>
                                     <div class="col-md-12"><span class="detail-label">Agenda:</span> {{ $papdRequest->agenda }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Role Perjalanan:</span> {{ ucfirst($papdRequest->role_perjalanan ?? 'sendiri') }}</div>
+                                    @if($papdRequest->role_perjalanan === 'team')
+                                        <div class="col-md-6"><span class="detail-label">Jumlah Anggota:</span> {{ $papdRequest->jumlah_anggota_team ?? 0 }} orang</div>
+                                        <div class="col-md-12"><span class="detail-label">Nama Anggota Team:</span><br>{!! nl2br(e($papdRequest->nama_anggota_team)) !!}</div>
+                                    @endif
                                     <div class="col-md-6"><span class="detail-label">No SPPD:</span> {{ $papdRequest->no_sppd ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Durasi:</span> {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Lama Perjalanan:</span> {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Berangkat:</span> {{ $papdRequest->tanggal_keberangkatan->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</div>
                                     <div class="col-md-6"><span class="detail-label">Kembali:</span> 
                                         {{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') : '-' }}
@@ -100,14 +111,15 @@
                             <div class="detail-section">
                                 <h5 class="mb-3">C1. Transportasi</h5>
                                 <div class="row">
+                                    <div class="col-md-6"><span class="detail-label">Jenis Tiket:</span> {{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Moda:</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
                                     <div class="col-md-6"><span class="detail-label">Kelas:</span> {{ $papdRequest->kelas ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Rute:</span> {{ $papdRequest->rute ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Maskapai:</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">No Penerbangan:</span> {{ $papdRequest->no_penerbangan ?? '-' }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Nama Operator:</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Nomor Perjalanan:</span> {{ $papdRequest->no_penerbangan ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Bagasi Tambahan:</span> {{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Transportasi Lokal:</span> {{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</div>
-                                    <div class="col-md-12"><span class="detail-label">Opsi:</span> {{ $papdRequest->opsi_transportasi ? implode(', ', $papdRequest->opsi_transportasi) : '-' }}</div>
+                                    <div class="col-md-12"><span class="detail-label">Opsi:</span> {{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
                                 </div>
                             </div>
 

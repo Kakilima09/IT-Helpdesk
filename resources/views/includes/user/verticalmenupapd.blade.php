@@ -37,14 +37,14 @@
 						<span class="side-menu__label">{{lang('Edit Profile', 'Menu')}}</span>
 					</a>
 				</li>
-				@if(setting('CUSTOMER_TICKET') == 'no')
+				{{-- @if(setting('CUSTOMER_TICKET') == 'no')
 					<li>
 						<a class="side-menu__item" href="{{route('papd.create')}}">
 							<svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><g/><g><path d="M17,19.22H5V7h7V5H5C3.9,5,3,5.9,3,7v12c0,1.1,0.9,2,2,2h12c1.1,0,2-0.9,2-2v-7h-2V19.22z"/><path d="M19,2h-2v3h-3c0.01,0.01,0,2,0,2h3v2.99c0.01,0.01,2,0,2,0V7h3V5h-3V2z"/><rect height="2" width="8" x="7" y="9"/><polygon points="7,12 7,14 15,14 15,12 12,12"/><rect height="2" width="8" x="7" y="15"/></g></g></svg>
 							<span class="side-menu__label">{{lang('Create Ticket', 'Menu')}}</span>
 						</a>
 					</li>
-				@endif
+				@endif --}}
 				<li>
 					<a class="side-menu__item" href="{{ route('papd.notifications') }}" class="{{ $current_page == 'papd.notifications' ? 'active' : '' }}">
 						<svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
@@ -136,7 +136,7 @@
 	<!-- End Bussiness Hour -->
 	</div>
 	<!--Vertical Menu-->
-	
+
 	<script type="text/javascript">
 	'use strict';
 	let notifyToggl = document.querySelector('.notify-days-toggle');

@@ -92,17 +92,20 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Nama Lengkap <span class="text-red">*</span></label>
+                                            <label class="form-label mb-0 mt-2">Jenis Pemohon <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <select class="form-control select2-ajax @error('nama_lengkap') is-invalid @enderror" 
-                                                    name="nama_lengkap" id="nama_lengkap" required>
-                                                <option value="">{{ lang('Cari nama karyawan...') }}</option>
-                                            </select>
-                                            @error('nama_lengkap')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="jenis_pemohon" id="jenis_pemohon_internal" value="internal" {{ old('jenis_pemohon', 'internal') === 'internal' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="jenis_pemohon_internal">Internal</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="jenis_pemohon" id="jenis_pemohon_eksternal" value="eksternal" {{ old('jenis_pemohon') === 'eksternal' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="jenis_pemohon_eksternal">Eksternal</label>
+                                            </div>
+                                            @error('jenis_pemohon')
+                                                <span class="text-danger d-block" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Ketik minimal 2 huruf untuk mencari karyawan.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -110,11 +113,32 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">ID Karyawan <span class="text-red">*</span></label>
+                                            <label class="form-label mb-0 mt-2">Nama Lengkap <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('id_karyawan') is-invalid @enderror" 
-                                                   name="id_karyawan" id="id_karyawan" value="{{ old('id_karyawan') }}" readonly>
+                                            <select class="form-control select2-ajax @error('nama_lengkap') is-invalid @enderror"
+                                                    name="nama_lengkap" id="nama_lengkap" required>
+                                                <option value="">{{ lang('Cari nama karyawan...') }}</option>
+                                            </select>
+                                            <input type="text" class="form-control @error('nama_lengkap') is-invalid @enderror"
+                                                   name="nama_lengkap" id="nama_lengkap_eksternal" value="{{ old('nama_lengkap') }}"
+                                                   maxlength="255" placeholder="Masukkan nama lengkap pemohon" required disabled>
+                                            @error('nama_lengkap')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                            <small class="text-muted" id="nama-lengkap-help">Ketik minimal 2 huruf untuk mencari karyawan.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="id-karyawan-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">ID Karyawan <span class="text-red" id="id-karyawan-required">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('id_karyawan') is-invalid @enderror"
+                                                   name="id_karyawan" id="id_karyawan" value="{{ old('id_karyawan') }}" readonly required>
                                             @error('id_karyawan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -129,7 +153,7 @@
                                         </div>
                                         <div class="col-md-9">
                                             <input type="text" class="form-control @error('nik_ktp') is-invalid @enderror"
-                                                   name="nik_ktp" value="{{ old('nik_ktp') }}" maxlength="20" placeholder="Masukkan NIK KTP">
+                                                   name="nik_ktp" id="nik_ktp" value="{{ old('nik_ktp') }}" maxlength="20" placeholder="Masukkan NIK KTP" required>
                                             @error('nik_ktp')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -143,7 +167,7 @@
                                             <label class="form-label mb-0 mt-2">Jabatan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror"
                                                    name="jabatan" value="{{ old('jabatan') }}" required>
                                             @error('jabatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -155,27 +179,12 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Departemen <span class="text-red">*</span></label>
+                                            <label class="form-label mb-0 mt-2">Nama Perusahaan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('departemen') is-invalid @enderror" 
-                                                   name="departemen" id="departemen" value="{{ old('departemen') }}" readonly>
+                                            <input type="text" class="form-control @error('departemen') is-invalid @enderror"
+                                                   name="departemen" id="departemen" value="{{ old('departemen') }}" readonly required>
                                             @error('departemen')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Entitas</label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('entitas') is-invalid @enderror" 
-                                                   name="entitas" value="{{ old('entitas') }}">
-                                            @error('entitas')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -188,7 +197,7 @@
                                             <label class="form-label mb-0 mt-2">Atasan Langsung <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('atasan_nama') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('atasan_nama') is-invalid @enderror"
                                                    name="atasan_nama" value="{{ old('atasan_nama') }}" required>
                                             @error('atasan_nama')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -203,7 +212,7 @@
                                             <label class="form-label mb-0 mt-2">Email Atasan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="email" class="form-control @error('atasan_email') is-invalid @enderror" 
+                                            <input type="email" class="form-control @error('atasan_email') is-invalid @enderror"
                                                    name="atasan_email" value="{{ old('atasan_email') }}" required>
                                             <small class="text-muted">Notifikasi persetujuan akan dikirim ke email ini.</small>
                                             @error('atasan_email')
@@ -219,7 +228,7 @@
                                             <label class="form-label mb-0 mt-2">No HP <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror"
                                                    name="no_hp" value="{{ old('no_hp') }}" required>
                                             @error('no_hp')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -234,8 +243,8 @@
                                             <label class="form-label mb-0 mt-2">Email <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                                   name="email" id="email" value="{{ old('email', auth()->user()->email ?? '') }}" readonly>
+                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                                   name="email" id="email" value="{{ old('email', old('jenis_pemohon') === 'eksternal' ? '' : (auth()->user()->email ?? '')) }}" readonly required>
                                             @error('email')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -249,39 +258,9 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Lahir <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror" 
+                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror"
                                                    name="ttl" value="{{ old('ttl') }}" required>
                                             @error('ttl')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">No Paspor</label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_paspor') is-invalid @enderror" 
-                                                   name="no_paspor" value="{{ old('no_paspor') }}">
-                                            @error('no_paspor')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Exp Date Paspor</label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror" 
-                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor') }}">
-                                            @error('exp_date_paspor')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -299,7 +278,7 @@
                                             <label class="form-label mb-0 mt-2">Jenis Perjalanan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('jenis_perjalanan') is-invalid @enderror" name="jenis_perjalanan" required>
+                                            <select class="form-control @error('jenis_perjalanan') is-invalid @enderror" name="jenis_perjalanan" id="jenis_perjalanan" required>
                                                 <option value="domestik" {{ old('jenis_perjalanan') == 'domestik' ? 'selected' : '' }}>Domestik</option>
                                                 <option value="internasional" {{ old('jenis_perjalanan') == 'internasional' ? 'selected' : '' }}>Internasional</option>
                                             </select>
@@ -308,6 +287,38 @@
                                             @enderror
                                         </div>
                                     </div>
+                                </div>
+
+                                <div id="passport-details-group" style="{{ old('jenis_perjalanan', 'domestik') === 'internasional' ? 'display:block;' : 'display:none;' }}">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">No Paspor</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('no_paspor') is-invalid @enderror"
+                                                   name="no_paspor" value="{{ old('no_paspor') }}">
+                                            @error('no_paspor')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Exp Date Paspor</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror"
+                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor') }}">
+                                            @error('exp_date_paspor')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
                                 </div>
 
                                 <div class="form-group" id="nama_paspor_group" style="{{ old('jenis_perjalanan') == 'internasional' ? 'display:block;' : 'display:none;' }}">
@@ -326,13 +337,26 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" id="nama_sesuai_ktp_group" style="{{ old('jenis_perjalanan', 'domestik') == 'domestik' ? 'display:block;' : 'display:none;' }}">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Kota / Negara Tujuan <span class="text-red">*</span></label>
+                                            <label class="form-label mb-0 mt-2">Nama Sesuai KTP <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('nama_sesuai_ktp') is-invalid @enderror"
+                                                   name="nama_sesuai_ktp" value="{{ old('nama_sesuai_ktp') }}" maxlength="255">
+                                            @error('nama_sesuai_ktp')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3"><label class="form-label mb-0 mt-2" id="tujuan-label">Kota Tujuan <span class="text-red">*</span></label></div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
                                                    name="kota_tujuan" value="{{ old('kota_tujuan') }}" required>
                                             @error('kota_tujuan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -358,10 +382,49 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Role Perjalanan <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role_perjalanan" id="role_perjalanan_team" value="team" {{ old('role_perjalanan', 'sendiri') === 'team' ? 'checked' : '' }} required>
+                                                <label class="form-check-label" for="role_perjalanan_team">Team</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role_perjalanan" id="role_perjalanan_sendiri" value="sendiri" {{ old('role_perjalanan', 'sendiri') === 'sendiri' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="role_perjalanan_sendiri">Sendiri</label>
+                                            </div>
+                                            @error('role_perjalanan')
+                                                <span class="text-danger d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="nama_anggota_team_group" style="{{ old('role_perjalanan', 'sendiri') === 'team' ? 'display:block;' : 'display:none;' }}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Nama Anggota Team <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <textarea class="form-control @error('nama_anggota_team') is-invalid @enderror"
+                                                      name="nama_anggota_team" id="nama_anggota_team" rows="3"
+                                                      placeholder="Masukkan satu nama per baris">{{ old('nama_anggota_team') }}</textarea>
+                                            @error('nama_anggota_team')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                            <small class="text-muted">Satu nama anggota per baris.</small>
+                                            <div class="mt-2">Jumlah anggota: <strong id="jumlah_anggota_team_display">0</strong> orang</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">No SPPD</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_sppd') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('no_sppd') is-invalid @enderror"
                                                    name="no_sppd" value="{{ old('no_sppd') }}">
                                             @error('no_sppd')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -376,15 +439,15 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Keberangkatan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror" 
-                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan" 
+                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
+                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan"
                                                    value="{{ old('tanggal_keberangkatan') }}" required>
                                             @error('tanggal_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_keberangkatan') is-invalid @enderror" 
+                                            <input type="time" class="form-control @error('jam_keberangkatan') is-invalid @enderror"
                                                    name="jam_keberangkatan" value="{{ old('jam_keberangkatan') }}" required>
                                             @error('jam_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -392,22 +455,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
+                                <div id="return-trip-fields">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Tanggal Kepulangan </label>
+                                            <label class="form-label mb-0 mt-2">Tanggal Kepulangan <span id="return-date-required-marker" class="text-red" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror" 
-                                                   name="tanggal_kepulangan" id="tanggal_kepulangan" 
+                                            <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
+                                                   name="tanggal_kepulangan" id="tanggal_kepulangan"
                                                    value="{{ old('tanggal_kepulangan') }}" >
                                             @error('tanggal_kepulangan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror" 
+                                            <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror"
                                                    name="jam_kepulangan" value="{{ old('jam_kepulangan') }}" >
                                             @error('jam_kepulangan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -415,16 +479,17 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
 
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Durasi (hari) </label>
+                                            <label class="form-label mb-0 mt-2">Lama Perjalanan (hari)</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror" 
-                                                   name="durasi_hari" id="durasi_hari" 
-                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}" 
+                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror"
+                                                   name="durasi_hari" id="durasi_hari"
+                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}"
                                                    readonly >
                                             @error('durasi_hari')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -439,7 +504,7 @@
                                             <label class="form-label mb-0 mt-2">Pembebanan Biaya <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('pembebanan_biaya') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('pembebanan_biaya') is-invalid @enderror"
                                                    name="pembebanan_biaya" value="{{ old('pembebanan_biaya') }}">
                                             @error('pembebanan_biaya')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -456,6 +521,27 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Jenis Tiket <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <label class="custom-control custom-radio d-inline-block me-3">
+                                                <input type="radio" class="custom-control-input" name="jenis_tiket" value="sekali_jalan" {{ old('jenis_tiket', 'sekali_jalan') === 'sekali_jalan' ? 'checked' : '' }} required>
+                                                <span class="custom-control-label">Sekali Jalan</span>
+                                            </label>
+                                            <label class="custom-control custom-radio d-inline-block me-3">
+                                                <input type="radio" class="custom-control-input" name="jenis_tiket" value="pulang_pergi" {{ old('jenis_tiket') === 'pulang_pergi' ? 'checked' : '' }} required>
+                                                <span class="custom-control-label">Pulang Pergi</span>
+                                            </label>
+                                            @error('jenis_tiket')
+                                                <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Moda Transportasi <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
@@ -465,7 +551,6 @@
                                                 <option value="bus" {{ old('moda_transportasi') == 'bus' ? 'selected' : '' }}>Bus / Travel</option>
                                                 <option value="kapal" {{ old('moda_transportasi') == 'kapal' ? 'selected' : '' }}>Kapal</option>
                                                 <option value="whoosh" {{ old('moda_transportasi') == 'whoosh' ? 'selected' : '' }}>Whoosh</option>
-                                                <option value="lainnya" {{ old('moda_transportasi') == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
                                             </select>
                                             @error('moda_transportasi')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -500,7 +585,7 @@
                                             <label class="form-label mb-0 mt-2">Rute</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('rute') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('rute') is-invalid @enderror"
                                                    name="rute" value="{{ old('rute') }}">
                                             @error('rute')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -512,18 +597,18 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Maskapai & No Penerbangan</label>
+                                            <label class="form-label mb-0 mt-2">Nama Operator & Nomor Perjalanan</label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="text" class="form-control @error('detail_maskapai') is-invalid @enderror" 
-                                                   name="detail_maskapai" placeholder="Maskapai" value="{{ old('detail_maskapai') }}">
+                                            <input type="text" class="form-control @error('detail_maskapai') is-invalid @enderror"
+                                                   name="detail_maskapai" placeholder="Nama Operator" value="{{ old('detail_maskapai') }}">
                                             @error('detail_maskapai')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="text" class="form-control @error('no_penerbangan') is-invalid @enderror" 
-                                                   name="no_penerbangan" placeholder="No Penerbangan" value="{{ old('no_penerbangan') }}">
+                                            <input type="text" class="form-control @error('no_penerbangan') is-invalid @enderror"
+                                                   name="no_penerbangan" placeholder="Nomor Perjalanan" value="{{ old('no_penerbangan') }}">
                                             @error('no_penerbangan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -548,6 +633,17 @@
                                             @error('bagasi_tambahan')
                                                 <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
+                                            <div id="special-baggage-options" class="mt-2" style="{{ old('bagasi_tambahan') == '1' ? '' : 'display:none;' }}">
+                                                <span class="d-block mb-1">Pilih opsi bagasi:</span>
+                                                <label class="custom-control custom-checkbox d-inline-block me-3">
+                                                    <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="special_baggage" {{ in_array('special_baggage', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                    <span class="custom-control-label">Special Baggage</span>
+                                                </label>
+                                                <label class="custom-control custom-checkbox d-inline-block me-3">
+                                                    <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="special_charge" {{ in_array('special_charge', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                    <span class="custom-control-label">Special Charge</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -586,10 +682,6 @@
                                             <label class="custom-control custom-checkbox d-inline-block me-3">
                                                 <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                 <span class="custom-control-label">Refundable</span>
-                                            </label>
-                                            <label class="custom-control custom-checkbox d-inline-block me-3">
-                                                <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="lainnya" {{ in_array('lainnya', old('opsi_transportasi', [])) ? 'checked' : '' }}>
-                                                <span class="custom-control-label">Lainnya</span>
                                             </label>
                                             @error('opsi_transportasi')
                                                 <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
@@ -631,7 +723,7 @@
                                                 <label class="form-label mb-0 mt-2">Nama Hotel</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('nama_hotel') is-invalid @enderror" 
+                                                <input type="text" class="form-control @error('nama_hotel') is-invalid @enderror"
                                                        name="nama_hotel" value="{{ old('nama_hotel') }}">
                                                 @error('nama_hotel')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -646,12 +738,12 @@
                                                 <label class="form-label mb-0 mt-2">Lokasi / Alamat</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('lokasi_hotel') is-invalid @enderror" 
+                                                <input type="text" class="form-control @error('lokasi_hotel') is-invalid @enderror"
                                                        name="lokasi_hotel" placeholder="Kota / Wilayah" value="{{ old('lokasi_hotel') }}">
                                                 @error('lokasi_hotel')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
-                                                <textarea class="form-control mt-2 @error('alamat_hotel') is-invalid @enderror" 
+                                                <textarea class="form-control mt-2 @error('alamat_hotel') is-invalid @enderror"
                                                           name="alamat_hotel" rows="2" placeholder="Alamat lengkap">{{ old('alamat_hotel') }}</textarea>
                                                 @error('alamat_hotel')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -666,14 +758,14 @@
                                                 <label class="form-label mb-0 mt-2">Tanggal Check-in / Check-out</label>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_in') is-invalid @enderror" 
+                                                <input type="date" class="form-control @error('check_in') is-invalid @enderror"
                                                        name="check_in" value="{{ old('check_in') }}">
                                                 @error('check_in')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_out') is-invalid @enderror" 
+                                                <input type="date" class="form-control @error('check_out') is-invalid @enderror"
                                                        name="check_out" value="{{ old('check_out') }}">
                                                 @error('check_out')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -688,7 +780,7 @@
                                                 <label class="form-label mb-0 mt-2">Jumlah Kamar</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <input type="number" min="1" class="form-control @error('jumlah_kamar') is-invalid @enderror" 
+                                                <input type="number" min="1" class="form-control @error('jumlah_kamar') is-invalid @enderror"
                                                        name="jumlah_kamar" value="{{ old('jumlah_kamar') }}">
                                                 @error('jumlah_kamar')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -703,7 +795,7 @@
                                                 <label class="form-label mb-0 mt-2">Permintaan Khusus</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <textarea class="form-control @error('permintaan_khusus') is-invalid @enderror" 
+                                                <textarea class="form-control @error('permintaan_khusus') is-invalid @enderror"
                                                           name="permintaan_khusus" rows="2">{{ old('permintaan_khusus') }}</textarea>
                                                 @error('permintaan_khusus')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -724,7 +816,7 @@
                                             <label class="form-label mb-0 mt-2">Notes</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <textarea class="summernote form-control @error('notes') is-invalid @enderror" 
+                                            <textarea class="summernote form-control @error('notes') is-invalid @enderror"
                                                       name="notes" rows="4">{{ old('notes') }}</textarea>
                                             @error('notes')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -820,8 +912,38 @@
             $('#email').val('');
         });
 
+        function setApplicantType(clearFields) {
+            var isInternal = $('input[name="jenis_pemohon"]:checked').val() === 'internal';
+
+            $('#nama_lengkap').prop('disabled', !isInternal).prop('required', isInternal);
+            $('#nama_lengkap').next('.select2-container').toggle(isInternal);
+            $('#nama_lengkap_eksternal').toggle(!isInternal).prop('disabled', isInternal).prop('required', !isInternal);
+            $('#nama-lengkap-help').text(isInternal
+                ? 'Ketik minimal 2 huruf untuk mencari karyawan.'
+                : 'Masukkan nama lengkap pemohon eksternal.');
+            $('#id-karyawan-group').toggle(isInternal);
+            $('#id_karyawan').prop('disabled', !isInternal).prop('required', isInternal);
+            $('#id-karyawan-required').toggle(isInternal);
+            $('#departemen').prop('readonly', isInternal);
+            $('#email').prop('readonly', isInternal);
+
+            if (clearFields) {
+                $('#nama_lengkap').val(null).trigger('change');
+                $('#nama_lengkap_eksternal').val('');
+                $('#id_karyawan').val('');
+                $('#departemen').val('');
+                $('#email').val('');
+                $('#nik_ktp').val('');
+            }
+        }
+
+        $('input[name="jenis_pemohon"]').on('change', function() {
+            setApplicantType(true);
+        });
+        setApplicantType(false);
+
         // Jika ada nilai old (setelah error validasi), set nilai awal
-        @if(old('nama_lengkap'))
+        @if(old('nama_lengkap') && old('jenis_pemohon', 'internal') === 'internal')
             var oldName = "{{ old('nama_lengkap') }}";
             var oldId = "{{ old('id_karyawan') }}";
             var oldDept = "{{ old('departemen') }}";
@@ -880,17 +1002,78 @@
             }
         });
 
-        // Toggle Nama Paspor berdasarkan jenis perjalanan
-        $('select[name="jenis_perjalanan"]').on('change', function() {
-            if ($(this).val() == 'internasional') {
+        function updateTripTypeFields() {
+            var isInternational = $('#jenis_perjalanan').val() === 'internasional';
+            var passportDetails = $('#passport-details-group');
+            var passportFields = passportDetails.find('input');
+
+            passportDetails.toggle(isInternational);
+            passportFields.prop('disabled', !isInternational);
+            if (!isInternational) {
+                passportFields.val('');
+            }
+
+            if (isInternational) {
                 $('#nama_paspor_group').slideDown();
                 $('input[name="nama_paspor"]').prop('required', true);
+                $('#nama_sesuai_ktp_group').hide();
+                $('input[name="nama_sesuai_ktp"]').prop('required', false).prop('disabled', true);
+                $('#tujuan-label').html('Negara Tujuan <span class="text-red">*</span>');
             } else {
                 $('#nama_paspor_group').slideUp();
                 $('input[name="nama_paspor"]').prop('required', false);
-                $('input[name="nama_paspor"]').val(''); // optional: kosongkan field
+                $('#nama_sesuai_ktp_group').show();
+                $('input[name="nama_sesuai_ktp"]').prop('required', true).prop('disabled', false);
+                $('#tujuan-label').html('Kota Tujuan <span class="text-red">*</span>');
             }
-        });
+        }
+
+        $('#jenis_perjalanan').on('change', updateTripTypeFields);
+        updateTripTypeFields();
+
+        function updateTravelRole() {
+            var isTeam = $('input[name="role_perjalanan"]:checked').val() === 'team';
+            $('#nama_anggota_team_group').toggle(isTeam);
+            $('#nama_anggota_team').prop('required', isTeam).prop('disabled', !isTeam);
+            if (!isTeam) {
+                $('#nama_anggota_team').val('');
+            }
+            updateTeamCount();
+        }
+
+        function updateTeamCount() {
+            var names = $('#nama_anggota_team').val().split(/\r\n|\r|\n/).filter(function(name) {
+                return name.trim() !== '';
+            });
+            $('#jumlah_anggota_team_display').text(names.length);
+        }
+
+        $('input[name="role_perjalanan"]').on('change', updateTravelRole);
+        $('#nama_anggota_team').on('input', updateTeamCount);
+        updateTravelRole();
+
+        function updateTicketTypeFields() {
+            var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
+            $('#tanggal_kepulangan').prop('required', isRoundTrip);
+            $('#return-date-required-marker').toggle(isRoundTrip);
+            hitungDurasi();
+        }
+
+        $('input[name="jenis_tiket"]').on('change', updateTicketTypeFields);
+
+        function updateSpecialBaggageOptions() {
+            var baggageRequested = $('input[name="bagasi_tambahan"]:checked').val() === '1';
+            var options = $('#special-baggage-options');
+
+            options.toggle(baggageRequested);
+            options.find('input').prop('disabled', !baggageRequested);
+            if (!baggageRequested) {
+                options.find('input').prop('checked', false);
+            }
+        }
+
+        $('input[name="bagasi_tambahan"]').on('change', updateSpecialBaggageOptions);
+        updateSpecialBaggageOptions();
 
         // ===== OTOMATIS DURASI HARI =====
         function hitungDurasi() {
@@ -926,6 +1109,7 @@
 
         // Panggil saat halaman dimuat (untuk nilai old)
         hitungDurasi();
+        updateTicketTypeFields();
     });
 </script>
 

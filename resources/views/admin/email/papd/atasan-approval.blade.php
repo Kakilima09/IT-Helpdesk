@@ -7,7 +7,12 @@ Berikut adalah ringkasan permintaan perjalanan dinas dari:
 
 - **Nama Pemohon:** {{ $request->nama_lengkap }}
 - **Departemen:** {{ $request->departemen }}
-- **Tujuan:** {{ $request->kota_tujuan }}
+- **{{ $request->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:** {{ $request->kota_tujuan }}
+- **Role Perjalanan:** {{ ucfirst($request->role_perjalanan ?? 'sendiri') }}
+@if($request->role_perjalanan === 'team')
+- **Jumlah Anggota:** {{ $request->jumlah_anggota_team ?? 0 }}
+- **Nama Anggota Team:** {{ str_replace("\n", ', ', $request->nama_anggota_team ?? '') }}
+@endif
 - **Keberangkatan:** {{ \Carbon\Carbon::parse($request->tanggal_keberangkatan)->format('d-m-Y') }} {{ $request->jam_keberangkatan ?? '' }}
 - **Kepulangan:** {{ $request->tanggal_kepulangan ? \Carbon\Carbon::parse($request->tanggal_kepulangan)->format('d-m-Y') : '-' }} {{ $request->jam_kepulangan ?? '' }}
 - **Agenda:** {{ Str::limit($request->agenda, 100) }}
@@ -16,6 +21,7 @@ Berikut adalah ringkasan permintaan perjalanan dinas dari:
 
 ### 🚆 Transportasi
 @if($request->moda_transportasi)
+- **Jenis Tiket:** {{ ($request->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}
 - **Moda:** {{ ucfirst($request->moda_transportasi) }}
 @if($request->kelas)
 - **Kelas:** {{ $request->kelas }}
@@ -24,10 +30,10 @@ Berikut adalah ringkasan permintaan perjalanan dinas dari:
 - **Rute:** {{ $request->rute }}
 @endif
 @if($request->detail_maskapai)
-- **Maskapai:** {{ $request->detail_maskapai }}
+- **Nama Operator:** {{ $request->detail_maskapai }}
 @endif
 @if($request->no_penerbangan)
-- **No. Penerbangan:** {{ $request->no_penerbangan }}
+- **Nomor Perjalanan:** {{ $request->no_penerbangan }}
 @endif
 @if($request->bagasi_tambahan !== null)
 - **Bagasi Tambahan:** {{ $request->bagasi_tambahan ? 'Ya' : 'Tidak' }}

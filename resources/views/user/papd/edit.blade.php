@@ -66,9 +66,18 @@
 
                                 <div class="form-group">
                                     <div class="row">
+                                        <div class="col-md-3"><label class="form-label">Jenis Pemohon</label></div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" value="{{ ucfirst($papdRequest->jenis_pemohon ?? 'internal') }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
                                         <div class="col-md-3"><label class="form-label">Nama Lengkap <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('nama_lengkap') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('nama_lengkap') is-invalid @enderror"
                                                    name="nama_lengkap" value="{{ old('nama_lengkap', $papdRequest->nama_lengkap) }}" required>
                                             @error('nama_lengkap')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -77,10 +86,10 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">ID Karyawan <span class="text-red">*</span></label></div>
+                                        <div class="col-md-3"><label class="form-label">ID Karyawan @if($papdRequest->jenis_pemohon !== 'eksternal')<span class="text-red">*</span>@endif</label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('id_karyawan') is-invalid @enderror" 
-                                                   name="id_karyawan" value="{{ old('id_karyawan', $papdRequest->id_karyawan) }}" required>
+                                            <input type="text" class="form-control @error('id_karyawan') is-invalid @enderror"
+                                                   name="id_karyawan" value="{{ old('id_karyawan', $papdRequest->id_karyawan) }}" {{ $papdRequest->jenis_pemohon === 'eksternal' ? '' : 'required' }}>
                                             @error('id_karyawan')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
@@ -105,7 +114,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Jabatan <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror"
                                                    name="jabatan" value="{{ old('jabatan', $papdRequest->jabatan) }}" required>
                                             @error('jabatan')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -114,9 +123,9 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Departemen <span class="text-red">*</span></label></div>
+                                        <div class="col-md-3"><label class="form-label">Nama Perusahaan <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('departemen') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('departemen') is-invalid @enderror"
                                                    name="departemen" value="{{ old('departemen', $papdRequest->departemen) }}" required>
                                             @error('departemen')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -125,20 +134,9 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Entitas</label></div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('entitas') is-invalid @enderror" 
-                                                   name="entitas" value="{{ old('entitas', $papdRequest->entitas) }}">
-                                            @error('entitas')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
                                         <div class="col-md-3"><label class="form-label">Atasan Langsung <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('atasan_nama') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('atasan_nama') is-invalid @enderror"
                                                    name="atasan_nama" value="{{ old('atasan_nama', $papdRequest->atasan_nama) }}" required>
                                             @error('atasan_nama')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -149,7 +147,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Email Atasan <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="email" class="form-control @error('atasan_email') is-invalid @enderror" 
+                                            <input type="email" class="form-control @error('atasan_email') is-invalid @enderror"
                                                    name="atasan_email" value="{{ old('atasan_email', $papdRequest->atasan_email) }}" required>
                                             <small class="text-muted">Notifikasi persetujuan akan dikirim ke email ini.</small>
                                             @error('atasan_email')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
@@ -161,7 +159,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">No HP <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror"
                                                    name="no_hp" value="{{ old('no_hp', $papdRequest->no_hp) }}" required>
                                             @error('no_hp')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -172,7 +170,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Email <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
                                                    name="email" value="{{ old('email', $papdRequest->email) }}" required>
                                             @error('email')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -183,31 +181,9 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Tanggal Lahir <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror" 
+                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror"
                                                    name="ttl" value="{{ old('ttl', $papdRequest->ttl->format('Y-m-d')) }}" required>
                                             @error('ttl')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3"><label class="form-label">No Paspor</label></div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_paspor') is-invalid @enderror" 
-                                                   name="no_paspor" value="{{ old('no_paspor', $papdRequest->no_paspor) }}">
-                                            @error('no_paspor')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Exp Date Paspor</label></div>
-                                        <div class="col-md-9">
-                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror" 
-                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor', optional($papdRequest->exp_date_paspor)->format('Y-m-d')) }}">
-                                            @error('exp_date_paspor')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
                                 </div>
@@ -221,11 +197,48 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Jenis Perjalanan <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('jenis_perjalanan') is-invalid @enderror" name="jenis_perjalanan" required>
+                                            <select class="form-control @error('jenis_perjalanan') is-invalid @enderror" name="jenis_perjalanan" id="jenis_perjalanan" required>
                                                 <option value="domestik" {{ old('jenis_perjalanan', $papdRequest->jenis_perjalanan) == 'domestik' ? 'selected' : '' }}>Domestik</option>
                                                 <option value="internasional" {{ old('jenis_perjalanan', $papdRequest->jenis_perjalanan) == 'internasional' ? 'selected' : '' }}>Internasional</option>
                                             </select>
                                             @error('jenis_perjalanan')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="passport-details-group" style="{{ old('jenis_perjalanan', $papdRequest->jenis_perjalanan) === 'internasional' ? 'display:block;' : 'display:none;' }}">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3"><label class="form-label">No Paspor</label></div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('no_paspor') is-invalid @enderror"
+                                                   name="no_paspor" value="{{ old('no_paspor', $papdRequest->no_paspor) }}">
+                                            @error('no_paspor')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3"><label class="form-label">Exp Date Paspor</label></div>
+                                        <div class="col-md-9">
+                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror"
+                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor', optional($papdRequest->exp_date_paspor)->format('Y-m-d')) }}">
+                                            @error('exp_date_paspor')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div class="form-group" id="nama_sesuai_ktp_group" style="{{ old('jenis_perjalanan', $papdRequest->jenis_perjalanan) == 'domestik' ? 'display:block;' : 'display:none;' }}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Nama Sesuai KTP <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('nama_sesuai_ktp') is-invalid @enderror"
+                                                   name="nama_sesuai_ktp" value="{{ old('nama_sesuai_ktp', $papdRequest->nama_sesuai_ktp) }}" maxlength="255">
+                                            @error('nama_sesuai_ktp')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
                                 </div>
@@ -248,9 +261,9 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Kota / Negara Tujuan <span class="text-red">*</span></label></div>
+                                        <div class="col-md-3"><label class="form-label" id="tujuan-label">{{ old('jenis_perjalanan', $papdRequest->jenis_perjalanan) == 'internasional' ? 'Negara Tujuan' : 'Kota Tujuan' }} <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
                                                    name="kota_tujuan" value="{{ old('kota_tujuan', $papdRequest->kota_tujuan) }}" required>
                                             @error('kota_tujuan')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -269,9 +282,40 @@
 
                                 <div class="form-group">
                                     <div class="row">
+                                        <div class="col-md-3"><label class="form-label">Role Perjalanan <span class="text-red">*</span></label></div>
+                                        <div class="col-md-9">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role_perjalanan" id="role_perjalanan_team" value="team" {{ old('role_perjalanan', $papdRequest->role_perjalanan ?? 'sendiri') === 'team' ? 'checked' : '' }} required>
+                                                <label class="form-check-label" for="role_perjalanan_team">Team</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="role_perjalanan" id="role_perjalanan_sendiri" value="sendiri" {{ old('role_perjalanan', $papdRequest->role_perjalanan ?? 'sendiri') === 'sendiri' ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="role_perjalanan_sendiri">Sendiri</label>
+                                            </div>
+                                            @error('role_perjalanan')<span class="text-danger d-block"><strong>{{ $message }}</strong></span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="nama_anggota_team_group" style="{{ old('role_perjalanan', $papdRequest->role_perjalanan ?? 'sendiri') === 'team' ? 'display:block;' : 'display:none;' }}">
+                                    <div class="row">
+                                        <div class="col-md-3"><label class="form-label">Nama Anggota Team <span class="text-red">*</span></label></div>
+                                        <div class="col-md-9">
+                                            <textarea class="form-control @error('nama_anggota_team') is-invalid @enderror"
+                                                      name="nama_anggota_team" id="nama_anggota_team" rows="3"
+                                                      placeholder="Masukkan satu nama per baris">{{ old('nama_anggota_team', $papdRequest->nama_anggota_team) }}</textarea>
+                                            @error('nama_anggota_team')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                            <small class="text-muted">Satu nama anggota per baris.</small>
+                                            <div class="mt-2">Jumlah anggota: <strong id="jumlah_anggota_team_display">{{ $papdRequest->jumlah_anggota_team ?? 0 }}</strong> orang</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
                                         <div class="col-md-3"><label class="form-label">No SPPD</label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_sppd') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('no_sppd') is-invalid @enderror"
                                                    name="no_sppd" value="{{ old('no_sppd', $papdRequest->no_sppd) }}">
                                             @error('no_sppd')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -284,15 +328,15 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Keberangkatan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror" 
-                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan" 
+                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
+                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan"
                                                    value="{{ old('tanggal_keberangkatan', $papdRequest->tanggal_keberangkatan->format('Y-m-d')) }}" required>
                                             @error('tanggal_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_keberangkatan') is-invalid @enderror" 
+                                            <input type="time" class="form-control @error('jam_keberangkatan') is-invalid @enderror"
                                                    name="jam_keberangkatan" value="{{ old('jam_keberangkatan', $papdRequest->jam_keberangkatan) }}" required>
                                             @error('jam_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -300,22 +344,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
+                                <div id="return-trip-fields">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Tanggal Kepulangan </label>
+                                            <label class="form-label mb-0 mt-2">Tanggal Kepulangan <span id="return-date-required-marker" class="text-red" style="{{ old('jenis_tiket', $papdRequest->jenis_tiket ?? ($papdRequest->tanggal_kepulangan ? 'pulang_pergi' : 'sekali_jalan')) === 'pulang_pergi' ? '' : 'display:none;' }}">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror" 
-                                                   name="tanggal_kepulangan" id="tanggal_kepulangan" 
-                                                   value="{{ old('tanggal_kepulangan', $papdRequest->tanggal_kepulangan->format('Y-m-d')) }}" >
+                                            <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
+                                                   name="tanggal_kepulangan" id="tanggal_kepulangan"
+                                                   value="{{ old('tanggal_kepulangan', optional($papdRequest->tanggal_kepulangan)->format('Y-m-d')) }}" >
                                             @error('tanggal_kepulangan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror" 
+                                            <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror"
                                                    name="jam_kepulangan" value="{{ old('jam_kepulangan', $papdRequest->jam_kepulangan) }}" >
                                             @error('jam_kepulangan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -323,16 +368,17 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
 
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Durasi (hari) </label>
+                                            <label class="form-label mb-0 mt-2">Lama Perjalanan (hari)</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror" 
-                                                   name="durasi_hari" id="durasi_hari" 
-                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}" 
+                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror"
+                                                   name="durasi_hari" id="durasi_hari"
+                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}"
                                                    readonly >
                                             @error('durasi_hari')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -345,7 +391,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Pembebanan Biaya <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('pembebanan_biaya') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('pembebanan_biaya') is-invalid @enderror"
                                                    name="pembebanan_biaya" value="{{ old('pembebanan_biaya', $papdRequest->pembebanan_biaya) }}">
                                             @error('pembebanan_biaya')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -359,6 +405,23 @@
 
                                 <div class="form-group">
                                     <div class="row">
+                                        <div class="col-md-3"><label class="form-label">Jenis Tiket <span class="text-red">*</span></label></div>
+                                        <div class="col-md-9">
+                                            <label class="custom-control custom-radio d-inline-block me-3">
+                                                <input type="radio" class="custom-control-input" name="jenis_tiket" value="sekali_jalan" {{ old('jenis_tiket', $papdRequest->jenis_tiket ?? ($papdRequest->tanggal_kepulangan ? 'pulang_pergi' : 'sekali_jalan')) === 'sekali_jalan' ? 'checked' : '' }} required>
+                                                <span class="custom-control-label">Sekali Jalan</span>
+                                            </label>
+                                            <label class="custom-control custom-radio d-inline-block me-3">
+                                                <input type="radio" class="custom-control-input" name="jenis_tiket" value="pulang_pergi" {{ old('jenis_tiket', $papdRequest->jenis_tiket ?? ($papdRequest->tanggal_kepulangan ? 'pulang_pergi' : 'sekali_jalan')) === 'pulang_pergi' ? 'checked' : '' }} required>
+                                                <span class="custom-control-label">Pulang Pergi</span>
+                                            </label>
+                                            @error('jenis_tiket')<span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>@enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
                                         <div class="col-md-3"><label class="form-label">Moda Transportasi <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
                                             <select class="form-control @error('moda_transportasi') is-invalid @enderror" name="moda_transportasi" required>
@@ -367,7 +430,6 @@
                                                 <option value="bus" {{ old('moda_transportasi', $papdRequest->moda_transportasi) == 'bus' ? 'selected' : '' }}>Bus / Travel</option>
                                                 <option value="kapal" {{ old('moda_transportasi', $papdRequest->moda_transportasi) == 'kapal' ? 'selected' : '' }}>Kapal</option>
                                                 <option value="whoosh" {{ old('moda_transportasi', $papdRequest->moda_transportasi) == 'whoosh' ? 'selected' : '' }}>Whoosh</option>
-                                                <option value="lainnya" {{ old('moda_transportasi', $papdRequest->moda_transportasi) == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
                                             </select>
                                             @error('moda_transportasi')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -394,7 +456,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Rute</label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('rute') is-invalid @enderror" 
+                                            <input type="text" class="form-control @error('rute') is-invalid @enderror"
                                                    name="rute" value="{{ old('rute', $papdRequest->rute) }}">
                                             @error('rute')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -403,15 +465,15 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Maskapai & No Penerbangan</label></div>
+                                        <div class="col-md-3"><label class="form-label">Nama Operator & Nomor Perjalanan</label></div>
                                         <div class="col-md-5">
-                                            <input type="text" class="form-control @error('detail_maskapai') is-invalid @enderror" 
-                                                   name="detail_maskapai" placeholder="Maskapai" value="{{ old('detail_maskapai', $papdRequest->detail_maskapai) }}">
+                                            <input type="text" class="form-control @error('detail_maskapai') is-invalid @enderror"
+                                                   name="detail_maskapai" placeholder="Nama Operator" value="{{ old('detail_maskapai', $papdRequest->detail_maskapai) }}">
                                             @error('detail_maskapai')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="text" class="form-control @error('no_penerbangan') is-invalid @enderror" 
-                                                   name="no_penerbangan" placeholder="No Penerbangan" value="{{ old('no_penerbangan', $papdRequest->no_penerbangan) }}">
+                                            <input type="text" class="form-control @error('no_penerbangan') is-invalid @enderror"
+                                                   name="no_penerbangan" placeholder="Nomor Perjalanan" value="{{ old('no_penerbangan', $papdRequest->no_penerbangan) }}">
                                             @error('no_penerbangan')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
@@ -430,6 +492,17 @@
                                                 <span class="custom-control-label">Tidak</span>
                                             </label>
                                             @error('bagasi_tambahan')<span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>@enderror
+                                            <div id="special-baggage-options" class="mt-2" style="{{ old('bagasi_tambahan', $papdRequest->bagasi_tambahan) ? '' : 'display:none;' }}">
+                                                <span class="d-block mb-1">Pilih opsi bagasi:</span>
+                                                <label class="custom-control custom-checkbox d-inline-block me-3">
+                                                    <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="special_baggage" {{ in_array('special_baggage', old('opsi_transportasi', $papdRequest->opsi_transportasi ?? [])) ? 'checked' : '' }}>
+                                                    <span class="custom-control-label">Special Baggage</span>
+                                                </label>
+                                                <label class="custom-control custom-checkbox d-inline-block me-3">
+                                                    <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="special_charge" {{ in_array('special_charge', old('opsi_transportasi', $papdRequest->opsi_transportasi ?? [])) ? 'checked' : '' }}>
+                                                    <span class="custom-control-label">Special Charge</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -466,10 +539,6 @@
                                                 <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', $selectedOps) ? 'checked' : '' }}>
                                                 <span class="custom-control-label">Refundable</span>
                                             </label>
-                                            <label class="custom-control custom-checkbox d-inline-block me-3">
-                                                <input type="checkbox" class="custom-control-input" name="opsi_transportasi[]" value="lainnya" {{ in_array('lainnya', $selectedOps) ? 'checked' : '' }}>
-                                                <span class="custom-control-label">Lainnya</span>
-                                            </label>
                                             @error('opsi_transportasi')<span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
@@ -502,7 +571,7 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Nama Hotel</label></div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('nama_hotel') is-invalid @enderror" 
+                                                <input type="text" class="form-control @error('nama_hotel') is-invalid @enderror"
                                                        name="nama_hotel" value="{{ old('nama_hotel', $papdRequest->nama_hotel) }}">
                                                 @error('nama_hotel')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -513,10 +582,10 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Lokasi / Alamat</label></div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('lokasi_hotel') is-invalid @enderror" 
+                                                <input type="text" class="form-control @error('lokasi_hotel') is-invalid @enderror"
                                                        name="lokasi_hotel" placeholder="Kota / Wilayah" value="{{ old('lokasi_hotel', $papdRequest->lokasi_hotel) }}">
                                                 @error('lokasi_hotel')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                                <textarea class="form-control mt-2 @error('alamat_hotel') is-invalid @enderror" 
+                                                <textarea class="form-control mt-2 @error('alamat_hotel') is-invalid @enderror"
                                                           name="alamat_hotel" rows="2" placeholder="Alamat lengkap">{{ old('alamat_hotel', $papdRequest->alamat_hotel) }}</textarea>
                                                 @error('alamat_hotel')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -527,12 +596,12 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Check-in / Check-out</label></div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_in') is-invalid @enderror" 
+                                                <input type="date" class="form-control @error('check_in') is-invalid @enderror"
                                                        name="check_in" value="{{ old('check_in', optional($papdRequest->check_in)->format('Y-m-d')) }}">
                                                 @error('check_in')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_out') is-invalid @enderror" 
+                                                <input type="date" class="form-control @error('check_out') is-invalid @enderror"
                                                        name="check_out" value="{{ old('check_out', optional($papdRequest->check_out)->format('Y-m-d')) }}">
                                                 @error('check_out')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -543,7 +612,7 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Jumlah Kamar</label></div>
                                             <div class="col-md-9">
-                                                <input type="number" min="1" class="form-control @error('jumlah_kamar') is-invalid @enderror" 
+                                                <input type="number" min="1" class="form-control @error('jumlah_kamar') is-invalid @enderror"
                                                        name="jumlah_kamar" value="{{ old('jumlah_kamar', $papdRequest->jumlah_kamar) }}">
                                                 @error('jumlah_kamar')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -554,7 +623,7 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Permintaan Khusus</label></div>
                                             <div class="col-md-9">
-                                                <textarea class="form-control @error('permintaan_khusus') is-invalid @enderror" 
+                                                <textarea class="form-control @error('permintaan_khusus') is-invalid @enderror"
                                                           name="permintaan_khusus" rows="2">{{ old('permintaan_khusus', $papdRequest->permintaan_khusus) }}</textarea>
                                                 @error('permintaan_khusus')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -571,7 +640,7 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Notes</label></div>
                                         <div class="col-md-9">
-                                            <textarea class="summernote form-control @error('notes') is-invalid @enderror" 
+                                            <textarea class="summernote form-control @error('notes') is-invalid @enderror"
                                                       name="notes" rows="4">{{ old('notes', $papdRequest->notes) }}</textarea>
                                             @error('notes')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -723,16 +792,55 @@
             }
         });
 
-        $('select[name="jenis_perjalanan"]').on('change', function() {
-            if ($(this).val() == 'internasional') {
+        function updateTripTypeFields() {
+            var isInternational = $('#jenis_perjalanan').val() === 'internasional';
+            var passportDetails = $('#passport-details-group');
+            var passportFields = passportDetails.find('input');
+
+            passportDetails.toggle(isInternational);
+            passportFields.prop('disabled', !isInternational);
+            if (!isInternational) {
+                passportFields.val('');
+            }
+
+            if (isInternational) {
                 $('#nama_paspor_group').slideDown();
                 $('input[name="nama_paspor"]').prop('required', true);
+                $('#nama_sesuai_ktp_group').hide();
+                $('input[name="nama_sesuai_ktp"]').prop('required', false).prop('disabled', true);
+                $('#tujuan-label').html('Negara Tujuan <span class="text-red">*</span>');
             } else {
                 $('#nama_paspor_group').slideUp();
                 $('input[name="nama_paspor"]').prop('required', false);
-                $('input[name="nama_paspor"]').val(''); // optional: kosongkan field
+                $('#nama_sesuai_ktp_group').show();
+                $('input[name="nama_sesuai_ktp"]').prop('required', true).prop('disabled', false);
+                $('#tujuan-label').html('Kota Tujuan <span class="text-red">*</span>');
             }
-        });
+        }
+
+        $('#jenis_perjalanan').on('change', updateTripTypeFields);
+        updateTripTypeFields();
+
+        function updateTeamCount() {
+            var names = $('#nama_anggota_team').val().split(/\r\n|\r|\n/).filter(function(name) {
+                return name.trim() !== '';
+            });
+            $('#jumlah_anggota_team_display').text(names.length);
+        }
+
+        function updateTravelRole() {
+            var isTeam = $('input[name="role_perjalanan"]:checked').val() === 'team';
+            $('#nama_anggota_team_group').toggle(isTeam);
+            $('#nama_anggota_team').prop('required', isTeam).prop('disabled', !isTeam);
+            if (!isTeam) {
+                $('#nama_anggota_team').val('');
+            }
+            updateTeamCount();
+        }
+
+        $('input[name="role_perjalanan"]').on('change', updateTravelRole);
+        $('#nama_anggota_team').on('input', updateTeamCount);
+        updateTravelRole();
 
         var initialData = {
             name: "{{ $papdRequest->nama_lengkap }}",
@@ -749,6 +857,29 @@
             $('#departemen').val(initialData.departemen);
             $('#email').val(initialData.email);
         }
+
+        function updateTicketTypeFields() {
+            var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
+            $('#tanggal_kepulangan').prop('required', isRoundTrip);
+            $('#return-date-required-marker').toggle(isRoundTrip);
+            hitungDurasi();
+        }
+
+        $('input[name="jenis_tiket"]').on('change', updateTicketTypeFields);
+
+        function updateSpecialBaggageOptions() {
+            var baggageRequested = $('input[name="bagasi_tambahan"]:checked').val() === '1';
+            var options = $('#special-baggage-options');
+
+            options.toggle(baggageRequested);
+            options.find('input').prop('disabled', !baggageRequested);
+            if (!baggageRequested) {
+                options.find('input').prop('checked', false);
+            }
+        }
+
+        $('input[name="bagasi_tambahan"]').on('change', updateSpecialBaggageOptions);
+        updateSpecialBaggageOptions();
 
         // ===== OTOMATIS DURASI HARI =====
         function hitungDurasi() {
@@ -780,7 +911,8 @@
 
         // Panggil saat halaman dimuat (untuk nilai dari database)
         hitungDurasi();
+        updateTicketTypeFields();
     });
-    
+
 </script>
 @endsection

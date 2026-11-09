@@ -5,7 +5,7 @@ Yth. **{{ $request->nama_lengkap }}**,
 
 Dengan ini kami informasikan bahwa permintaan perjalanan dinas Anda dengan rincian berikut **tidak disetujui** oleh atasan:
 
-- **Tujuan:** {{ $request->kota_tujuan }}
+- **{{ $request->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:** {{ $request->kota_tujuan }}
 - **Tanggal Berangkat:** {{ \Carbon\Carbon::parse($request->tanggal_keberangkatan)->format('d-m-Y') }}
 - **Tanggal Kembali:** {{ $request->tanggal_kepulangan ? \Carbon\Carbon::parse($request->tanggal_kepulangan . ' ' . ($request->jam_kepulangan ?? '00:00'))->format('d-m-Y H:i') : '-' }}
 

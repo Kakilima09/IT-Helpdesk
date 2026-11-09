@@ -50,7 +50,7 @@
                             <i class="fe fe-clipboard me-3 fs-18 text-info"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <h6 class="alert-heading mb-1">Permintaan Perjalanan Dinas</h6>
+                            <h6 class="alert-heading mb-1">Pengajuan Akomodasi Perjalanan Dinas</h6>
                             <p class="mb-0 fs-13">Anda memiliki <strong>{{ $total ?? 0 }}</strong> permintaan PAPD total.</p>
                         </div>
                     </div>
@@ -68,8 +68,8 @@
                                             </div>
                                         </div>
                                         <div class="col-5">
-                                            <div class="icon1 bg-primary-transparent my-auto float-end"> 
-                                                <i class="las la-clipboard-list"></i> 
+                                            <div class="icon1 bg-primary-transparent my-auto float-end">
+                                                <i class="las la-clipboard-list"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -88,8 +88,8 @@
                                             </div>
                                         </div>
                                         <div class="col-5">
-                                            <div class="icon1 bg-warning-transparent my-auto float-end"> 
-                                                <i class="ri-time-line"></i> 
+                                            <div class="icon1 bg-warning-transparent my-auto float-end">
+                                                <i class="ri-time-line"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -108,8 +108,8 @@
                                             </div>
                                         </div>
                                         <div class="col-5">
-                                            <div class="icon1 bg-success-transparent my-auto float-end"> 
-                                                <i class="ri-checkbox-circle-line"></i> 
+                                            <div class="icon1 bg-success-transparent my-auto float-end">
+                                                <i class="ri-checkbox-circle-line"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -128,8 +128,8 @@
                                             </div>
                                         </div>
                                         <div class="col-5">
-                                            <div class="icon1 bg-danger-transparent my-auto float-end"> 
-                                                <i class="ri-close-circle-line"></i> 
+                                            <div class="icon1 bg-danger-transparent my-auto float-end">
+                                                <i class="ri-close-circle-line"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -149,8 +149,8 @@
                                             </div>
                                         </div>
                                         <div class="col-5">
-                                            <div class="icon1 bg-secondary-transparent my-auto float-end"> 
-                                                <i class="ri-time-line"></i> 
+                                            <div class="icon1 bg-secondary-transparent my-auto float-end">
+                                                <i class="ri-time-line"></i>
                                             </div>
                                         </div>
                                     </div>

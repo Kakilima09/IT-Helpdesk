@@ -147,13 +147,10 @@
         <tr><td class="label-col">NIK KTP</td><td class="value-col">{{ $papdRequest->nik_ktp }}</td></tr>
         <tr><td class="label-col">Jabatan</td><td class="value-col">{{ $papdRequest->jabatan }}</td></tr>
         <tr><td class="label-col">Departemen</td><td class="value-col">{{ $papdRequest->departemen }}</td></tr>
-        <tr><td class="label-col">Entitas</td><td class="value-col">{{ $papdRequest->entitas ?? '-' }}</td></tr>
         <tr><td class="label-col">Atasan</td><td class="value-col">{{ $papdRequest->atasan_nama }}</td></tr>
         <tr><td class="label-col">No HP</td><td class="value-col">{{ $papdRequest->no_hp }}</td></tr>
         <tr><td class="label-col">Email</td><td class="value-col">{{ $papdRequest->email }}</td></tr>
         <tr><td class="label-col">Tanggal Lahir</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->ttl)->format('d-m-Y') }}</td></tr>
-        <tr><td class="label-col">No Paspor</td><td class="value-col">{{ $papdRequest->no_paspor ?? '-' }}</td></tr>
-        <tr><td class="label-col">Exp Paspor</td><td class="value-col">{{ $papdRequest->exp_date_paspor ? \Carbon\Carbon::parse($papdRequest->exp_date_paspor)->format('d-m-Y') : '-' }}</td></tr>
     </table>
 </div>
 
@@ -162,16 +159,28 @@
     <div class="section-title">B. Perjalanan Dinas</div>
     <table class="detail-table">
         <tr><td class="label-col">Jenis</td><td class="value-col">{{ ucfirst($papdRequest->jenis_perjalanan) }}</td></tr>
-        <tr><td class="label-col">Nama Paspor</td><td class="value-col">{{ $papdRequest->nama_paspor ?? '-' }}</td></tr>
-        <tr><td class="label-col">Tujuan</td><td class="value-col">{{ $papdRequest->kota_tujuan }}</td></tr>
+        @if($papdRequest->jenis_perjalanan === 'domestik')
+        <tr><td class="label-col">Nama Sesuai KTP</td><td class="value-col">{{ $papdRequest->nama_sesuai_ktp ?? '-' }}</td></tr>
+        @endif
+        @if($papdRequest->jenis_perjalanan === 'internasional')
+        <tr><td class="label-col">No Paspor</td><td class="value-col">{{ $papdRequest->no_paspor ?? '-' }}</td></tr>
+        <tr><td class="label-col">Exp Paspor</td><td class="value-col">{{ $papdRequest->exp_date_paspor ? \Carbon\Carbon::parse($papdRequest->exp_date_paspor)->format('d-m-Y') : '-' }}</td></tr>
+        <tr><td class="label-col">Nama sesuai Paspor</td><td class="value-col">{{ $papdRequest->nama_paspor ?? '-' }}</td></tr>
+        @endif
+        <tr><td class="label-col">{{ $papdRequest->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}</td><td class="value-col">{{ $papdRequest->kota_tujuan }}</td></tr>
         <tr><td class="label-col">Agenda</td><td class="value-col">{{ $papdRequest->agenda }}</td></tr>
+        <tr><td class="label-col">Role Perjalanan</td><td class="value-col">{{ ucfirst($papdRequest->role_perjalanan ?? 'sendiri') }}</td></tr>
+        @if($papdRequest->role_perjalanan === 'team')
+        <tr><td class="label-col">Jumlah Anggota</td><td class="value-col">{{ $papdRequest->jumlah_anggota_team ?? 0 }} orang</td></tr>
+        <tr><td class="label-col">Nama Anggota Team</td><td class="value-col">{!! nl2br(e($papdRequest->nama_anggota_team)) !!}</td></tr>
+        @endif
         <tr><td class="label-col">No SPPD</td><td class="value-col">{{ $papdRequest->no_sppd ?? '-' }}</td></tr>
         <tr><td class="label-col">Berangkat</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</td></tr>
         <tr><td class="label-col">Kembali</td><td class="value-col">
             {{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') : '-' }}
             {{ $papdRequest->jam_kepulangan ?? '' }}
         </td></tr>
-        <tr><td class="label-col">Durasi</td><td class="value-col">{{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</td></tr>
+        <tr><td class="label-col">Lama Perjalanan</td><td class="value-col">{{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</td></tr>
         <tr><td class="label-col">Pembebanan Biaya</td><td class="value-col">{{ $papdRequest->pembebanan_biaya ?? '-' }}</td></tr>
     </table>
 </div>
@@ -180,14 +189,15 @@
 <div class="section page-break">
     <div class="section-title">C1. Transportasi</div>
     <table class="detail-table">
+        <tr><td class="label-col">Jenis Tiket</td><td class="value-col">{{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</td></tr>
         <tr><td class="label-col">Moda</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi) }}</td></tr>
         <tr><td class="label-col">Kelas</td><td class="value-col">{{ $papdRequest->kelas ?? '-' }}</td></tr>
         <tr><td class="label-col">Rute</td><td class="value-col">{{ $papdRequest->rute ?? '-' }}</td></tr>
-        <tr><td class="label-col">Maskapai</td><td class="value-col">{{ $papdRequest->detail_maskapai ?? '-' }}</td></tr>
-        <tr><td class="label-col">No Penerbangan</td><td class="value-col">{{ $papdRequest->no_penerbangan ?? '-' }}</td></tr>
+        <tr><td class="label-col">Nama Operator</td><td class="value-col">{{ $papdRequest->detail_maskapai ?? '-' }}</td></tr>
+        <tr><td class="label-col">Nomor Perjalanan</td><td class="value-col">{{ $papdRequest->no_penerbangan ?? '-' }}</td></tr>
         <tr><td class="label-col">Bagasi Tambahan</td><td class="value-col">{{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><td class="label-col">Transportasi Lokal</td><td class="value-col">{{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><td class="label-col">Opsi</td><td class="value-col">{{ $papdRequest->opsi_transportasi ? implode(', ', $papdRequest->opsi_transportasi) : '-' }}</td></tr>
+        <tr><td class="label-col">Opsi</td><td class="value-col">{{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
     </table>
 </div>
 
