@@ -262,16 +262,23 @@
                     @forelse($papdRequests as $papd)
                     <tr>
                         <td>{{ $papd->id }}</td>
-                        <td>{{ $papd->nama_lengkap }}</td>
+                        <td>
+                            {{ $papd->nama_lengkap }}
+                            <br><small class="text-muted">{{ ucfirst($papd->jenis_pemohon ?? 'internal') }} · {{ ucfirst($papd->jenis_perjalanan ?? '-') }}</small>
+                        </td>
                         <td>{{ $papd->pembebanan_biaya ?? '-' }}</td>
                         <td>{{ $papd->created_at->format('d-m-Y H:i') }}</td>
                         <td>
+                            <small class="text-muted">{{ ($papd->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</small><br>
                             <strong>{{ ucfirst($papd->moda_transportasi) }}</strong>
                             @if($papd->hotel_reservasi && $papd->nama_hotel)
                                 <br><span class="text-muted">Hotel: {{ $papd->nama_hotel }}</span>
                             @endif
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papd->jam_keberangkatan }}</td>
+                        <td>
+                            <span class="d-block">Berangkat: {{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papd->jam_keberangkatan }}</span>
+                            <span class="d-block text-muted">Kembali: {{ $papd->tanggal_kepulangan ? \Carbon\Carbon::parse($papd->tanggal_kepulangan)->format('d-m-Y') . ' ' . ($papd->jam_kepulangan ?? '') : '-' }}</span>
+                        </td>
                         <td>
                             @if($papd->closing_status == 'pending')
                                 <span class="badge badge-warning">Pending</span>

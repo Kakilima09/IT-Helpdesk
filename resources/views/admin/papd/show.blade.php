@@ -64,7 +64,9 @@
             <h5 class="mb-3">A. Informasi Pemohon</h5>
             <div class="detail-row"><span class="detail-label">Jenis Pemohon</span> {{ ucfirst($papdRequest->jenis_pemohon ?? 'internal') }}</div>
             <div class="detail-row"><span class="detail-label">Nama Lengkap</span> {{ $papdRequest->nama_lengkap }}</div>
-            <div class="detail-row"><span class="detail-label">ID Karyawan</span> {{ $papdRequest->id_karyawan }}</div>
+            @if(($papdRequest->jenis_pemohon ?? 'internal') === 'internal')
+                <div class="detail-row"><span class="detail-label">ID Karyawan</span> {{ $papdRequest->id_karyawan ?? '-' }}</div>
+            @endif
             <div class="detail-row"><span class="detail-label">NIK KTP</span> {{ $papdRequest->nik_ktp ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Jabatan</span> {{ $papdRequest->jabatan }}</div>
             <div class="detail-row"><span class="detail-label">Departemen</span> {{ $papdRequest->departemen }}</div>
@@ -73,7 +75,6 @@
             <div class="detail-row"><span class="detail-label">No HP</span> {{ $papdRequest->no_hp }}</div>
             <div class="detail-row"><span class="detail-label">Email</span> {{ $papdRequest->email }}</div>
             <div class="detail-row"><span class="detail-label">Tanggal Lahir</span> {{ \Carbon\Carbon::parse($papdRequest->ttl)->format('d-m-Y') }}</div>
-            <div class="detail-row"><span class="detail-label">Nama Paspor</span> {{ $papdRequest->nama_paspor ?? '-' }}</div>
         </div>
 
         <!-- B. Perjalanan Dinas -->
@@ -115,6 +116,21 @@
         <!-- C1. Transportasi -->
         <div class="detail-section">
             <h5 class="mb-3">C1. Transportasi</h5>
+            @php
+                $transportOptions = collect($papdRequest->opsi_transportasi ?? []);
+                $optionLabels = [
+                    'insurance' => 'Insurance',
+                    'refundable' => 'Refundable',
+                    'special_baggage' => 'Special Baggage',
+                    'special_charge' => 'Special Charge',
+                ];
+                $baggageOptions = $transportOptions->filter(function ($option) {
+                    return in_array($option, ['special_baggage', 'special_charge']);
+                });
+                $otherTransportOptions = $transportOptions->reject(function ($option) {
+                    return in_array($option, ['special_baggage', 'special_charge']);
+                });
+            @endphp
             <div class="detail-row"><span class="detail-label">Jenis Tiket</span> {{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</div>
             <div class="detail-row"><span class="detail-label">Moda</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
             <div class="detail-row"><span class="detail-label">Kelas</span> {{ $papdRequest->kelas ?? '-' }}</div>
@@ -122,8 +138,11 @@
             <div class="detail-row"><span class="detail-label">Nama Operator</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Nomor Perjalanan</span> {{ $papdRequest->no_penerbangan ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Bagasi Tambahan</span> {{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div>
+            @if($papdRequest->bagasi_tambahan)
+                <div class="detail-row"><span class="detail-label">Opsi Bagasi</span> {{ $baggageOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+            @endif
             <div class="detail-row"><span class="detail-label">Transportasi Lokal</span> {{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</div>
-            <div class="detail-row"><span class="detail-label">Opsi</span> {{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+            <div class="detail-row"><span class="detail-label">Opsi Tambahan</span> {{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
         </div>
 
         <!-- C2. Akomodasi Hotel -->
