@@ -804,7 +804,6 @@ class PapdController extends Controller
                 $notification->papd = PapdRequest::find($papdId);
             }
         });
-use App\Models\Papd\PapdRequest;
 
         $data = array_merge(
             compact('notifications'),

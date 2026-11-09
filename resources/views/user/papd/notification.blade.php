@@ -163,7 +163,7 @@
                                                             <i class="fe fe-eye"></i>
                                                         </a>
                                                         @if($papd->status == 'approved')
-                                                            <a href="{{ route('papd.downloadPdf', $papd->id) }}" class="btn btn-outline-success" title="Download PDF">
+                                                            <a href="{{ URL::temporarySignedRoute('papd.downloadPdfSigned', now()->addDays(7), ['id' => $papd->id]) }}" class="btn btn-outline-success" title="Download PDF">
                                                                 <i class="fe fe-download"></i>
                                                             </a>
                                                         @endif

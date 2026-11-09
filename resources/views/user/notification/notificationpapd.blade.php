@@ -141,7 +141,7 @@
                                     <!-- Tombol Aksi -->
                                     <div class="action-buttons mt-3">
                                         @if($papdRequest->status == 'approved')
-                                            <a href="{{ route('papd.downloadPdf', $papdRequest->id) }}" class="btn btn-success btn-sm">
+                                            <a href="{{ URL::temporarySignedRoute('papd.downloadPdfSigned', now()->addDays(7), ['id' => $papdRequest->id]) }}" class="btn btn-success btn-sm">
                                                 <i class="fe fe-download"></i> Download PDF
                                             </a>
                                         @endif

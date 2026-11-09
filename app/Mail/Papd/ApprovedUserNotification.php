@@ -25,7 +25,10 @@ class ApprovedUserNotification extends Mailable
         // Generate PDF
         $pdfContent = null;
         try {
-            $pdf = Pdf::loadView('user.pdf.papd-approval', ['papd' => $this->papdRequest]);
+            $pdf = Pdf::loadView('user.pdf.papd-approval', [
+                'papdRequest' => $this->papdRequest,
+                'logo' => null,
+            ]);
             $pdfContent = $pdf->output();
         } catch (\Exception $e) {
             Log::error('Gagal generate PDF untuk user: ' . $e->getMessage());

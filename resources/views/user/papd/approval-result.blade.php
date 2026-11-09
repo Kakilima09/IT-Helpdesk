@@ -53,7 +53,7 @@
                         <!-- ===== TOMBOL AKSI ===== -->
                         <div class="mt-4">
                             @if($status == 'approved')
-                                <a href="{{ route('papd.downloadPdf', $papdRequest->id) }}" class="btn btn-success">
+                                <a href="{{ URL::temporarySignedRoute('papd.downloadPdfSigned', now()->addDays(7), ['id' => $papdRequest->id]) }}" class="btn btn-success">
                                     <i class="fe fe-download"></i> Download PDF
                                 </a>
                                 {{-- <a href="{{ route('papd.print', $papdRequest->id) }}" target="_blank" class="btn btn-primary">
