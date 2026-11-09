@@ -60,7 +60,7 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
                 Route::get('/validatelog', 'Auth\LoginController@validatelog');
 				Route::post('/change-password', 'ChangepasswordController@changePassword');
 
-				Route::middleware('auth','admin.auth')->group( function () {
+ 				Route::middleware(['auth', 'admin.auth'])->group( function () {
 
 					Route::get('/mark-as-read', 'AdminDashboardController@markNotification')->name('admin.markNotification');
 
@@ -510,7 +510,7 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 					Route::get('/user/verify/{token}','RegisterController@verifyUser')->middleware('guest:customer')->name('verify.email');
 				});
 
-				Route::middleware('auth:customer','customer.auth')->group(function () {
+				Route::middleware(['auth:customer', 'customer.auth'])->group(function () {
 					Route::get('/ticket-selection', 'Auth\LoginController@showSelection')->name('user.ticket-selection');
 
 					//Route AI
