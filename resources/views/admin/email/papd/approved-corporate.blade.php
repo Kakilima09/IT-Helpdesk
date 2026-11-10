@@ -43,7 +43,10 @@ Berikut adalah data lengkap permintaan perjalanan dinas yang **telah disetujui**
 
 ## C1. Transportasi
 - **Jenis Tiket:** {{ ($request->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}
-- **Moda:** {{ ucfirst($request->moda_transportasi) }}
+- **Moda Berangkat:** {{ ucfirst($request->moda_transportasi) }}
+@if($request->moda_transportasi_pulang)
+- **Moda Pulang:** {{ ucfirst($request->moda_transportasi_pulang) }}
+@endif
 - **Kelas:** {{ $request->kelas ?? '-' }}
 - **Rute:** {{ $request->rute ?? '-' }}
 - **Nama Operator:** {{ $request->detail_maskapai ?? '-' }}

@@ -7,16 +7,16 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h4>{{ $status == 'approved' ? 'Permintaan Disetujui' : 'Permintaan Ditolak' }}</h4>
+                        <h4>{{ $status == 'approved' ? 'Pengajuan Disetujui' : 'Pengajuan Ditolak' }}</h4>
                     </div>
                     <div class="card-body">
                         @if($status == 'approved')
                             <div class="alert alert-success">
-                                <i class="fe fe-check-circle"></i> {{ $message ?? 'Permintaan PAPD berhasil disetujui.' }}
+                                <i class="fe fe-check-circle"></i> {{ $message ?? 'Pengajuan PAPD berhasil disetujui.' }}
                             </div>
                         @else
                             <div class="alert alert-danger">
-                                <i class="fe fe-x-circle"></i> {{ $message ?? 'Permintaan PAPD telah ditolak.' }}
+                                <i class="fe fe-x-circle"></i> {{ $message ?? 'Pengajuan PAPD telah ditolak.' }}
                             </div>
                         @endif
 

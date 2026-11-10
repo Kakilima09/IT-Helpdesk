@@ -132,7 +132,10 @@
                 });
             @endphp
             <div class="detail-row"><span class="detail-label">Jenis Tiket</span> {{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</div>
-            <div class="detail-row"><span class="detail-label">Moda</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
+            <div class="detail-row"><span class="detail-label">Moda Berangkat</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
+            @if($papdRequest->moda_transportasi_pulang)
+                <div class="detail-row"><span class="detail-label">Moda Pulang</span> {{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div>
+            @endif
             <div class="detail-row"><span class="detail-label">Kelas</span> {{ $papdRequest->kelas ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Rute</span> {{ $papdRequest->rute ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Nama Operator</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>

@@ -169,6 +169,7 @@ class PapdController extends Controller
             'durasi_hari' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
             'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
+            'moda_transportasi_pulang' => 'nullable|required_if:jenis_tiket,pulang_pergi|in:pesawat,kereta,bus,kapal,whoosh',
             'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
@@ -195,6 +196,9 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        if ($validated['jenis_tiket'] !== 'pulang_pergi') {
+            $validated['moda_transportasi_pulang'] = null;
+        }
         $validated['opsi_transportasi'] = array_values(array_diff(
             $validated['opsi_transportasi'] ?? [],
             !empty($validated['bagasi_tambahan']) ? [] : ['special_baggage', 'special_charge']
@@ -529,6 +533,7 @@ class PapdController extends Controller
             'durasi_hari' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
             'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
+            'moda_transportasi_pulang' => 'nullable|required_if:jenis_tiket,pulang_pergi|in:pesawat,kereta,bus,kapal,whoosh',
             'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
@@ -554,6 +559,9 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        if ($validated['jenis_tiket'] !== 'pulang_pergi') {
+            $validated['moda_transportasi_pulang'] = null;
+        }
         $validated['opsi_transportasi'] = array_values(array_diff(
             $validated['opsi_transportasi'] ?? [],
             !empty($validated['bagasi_tambahan']) ? [] : ['special_baggage', 'special_charge']

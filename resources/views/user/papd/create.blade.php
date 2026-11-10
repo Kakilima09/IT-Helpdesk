@@ -41,7 +41,7 @@
             <div class="container">
                 <div class="row text-white">
                     <div class="col">
-                        <h1 class="mb-0">{{lang('Permintaan Akomodasi Perjalanan Dinas (PAPD)')}}</h1>
+                        <h1 class="mb-0">{{lang('Pengajuan Akomodasi Perjalanan Dinas (PAPD)')}}</h1>
                     </div>
                     <div class="col col-auto">
                         <ol class="breadcrumb text-center">
@@ -69,7 +69,7 @@
                 <div class="col-xl-9">
                     <div class="card">
                         <div class="card-header border-0">
-                            <h4 class="card-title">{{lang('Form Permintaan Perjalanan Dinas')}}</h4>
+                            <h4 class="card-title">{{lang('Form Pengajuan Akomodasi Perjalanan Dinas')}}</h4>
                         </div>
                         <form method="POST" action="{{ route('papd.store') }}" id="papdForm" enctype="multipart/form-data">
                             @csrf
@@ -543,6 +543,7 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Moda Transportasi <span class="text-red">*</span></label>
+                                            <small class="text-muted d-block">Untuk perjalanan berangkat.</small>
                                         </div>
                                         <div class="col-md-9">
                                             <select class="form-control @error('moda_transportasi') is-invalid @enderror" name="moda_transportasi" required>
@@ -553,6 +554,29 @@
                                                 <option value="whoosh" {{ old('moda_transportasi') == 'whoosh' ? 'selected' : '' }}>Whoosh</option>
                                             </select>
                                             @error('moda_transportasi')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="return-transport-mode-group" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Moda Transportasi Pulang <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-control @error('moda_transportasi_pulang') is-invalid @enderror"
+                                                    name="moda_transportasi_pulang" id="moda_transportasi_pulang"
+                                                    {{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'disabled' }}>
+                                                <option value="">Pilih Moda Transportasi</option>
+                                                <option value="pesawat" {{ old('moda_transportasi_pulang') == 'pesawat' ? 'selected' : '' }}>Pesawat</option>
+                                                <option value="kereta" {{ old('moda_transportasi_pulang') == 'kereta' ? 'selected' : '' }}>Kereta</option>
+                                                <option value="bus" {{ old('moda_transportasi_pulang') == 'bus' ? 'selected' : '' }}>Bus / Travel</option>
+                                                <option value="kapal" {{ old('moda_transportasi_pulang') == 'kapal' ? 'selected' : '' }}>Kapal</option>
+                                                <option value="whoosh" {{ old('moda_transportasi_pulang') == 'whoosh' ? 'selected' : '' }}>Whoosh</option>
+                                            </select>
+                                            @error('moda_transportasi_pulang')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -1056,6 +1080,11 @@
             var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
             $('#tanggal_kepulangan').prop('required', isRoundTrip);
             $('#return-date-required-marker').toggle(isRoundTrip);
+            $('#return-transport-mode-group').toggle(isRoundTrip);
+            $('#moda_transportasi_pulang').prop('required', isRoundTrip).prop('disabled', !isRoundTrip);
+            if (!isRoundTrip) {
+                $('#moda_transportasi_pulang').val('');
+            }
             hitungDurasi();
         }
 

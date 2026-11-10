@@ -208,7 +208,10 @@
     @endphp
     <table class="detail-table">
         <tr><td class="label-col">Jenis Tiket</td><td class="value-col">{{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</td></tr>
-        <tr><td class="label-col">Moda</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi) }}</td></tr>
+        <tr><td class="label-col">Moda Berangkat</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi) }}</td></tr>
+        @if($papdRequest->moda_transportasi_pulang)
+        <tr><td class="label-col">Moda Pulang</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi_pulang) }}</td></tr>
+        @endif
         <tr><td class="label-col">Kelas</td><td class="value-col">{{ $papdRequest->kelas ?? '-' }}</td></tr>
         <tr><td class="label-col">Rute</td><td class="value-col">{{ $papdRequest->rute ?? '-' }}</td></tr>
         <tr><td class="label-col">Nama Operator</td><td class="value-col">{{ $papdRequest->detail_maskapai ?? '-' }}</td></tr>

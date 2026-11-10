@@ -270,7 +270,10 @@
                         <td>{{ $papd->created_at->format('d-m-Y H:i') }}</td>
                         <td>
                             <small class="text-muted">{{ ($papd->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</small><br>
-                            <strong>{{ ucfirst($papd->moda_transportasi) }}</strong>
+                            <strong>Berangkat: {{ ucfirst($papd->moda_transportasi) }}</strong>
+                            @if($papd->moda_transportasi_pulang)
+                                <br><strong>Pulang: {{ ucfirst($papd->moda_transportasi_pulang) }}</strong>
+                            @endif
                             @if($papd->hotel_reservasi && $papd->nama_hotel)
                                 <br><span class="text-muted">Hotel: {{ $papd->nama_hotel }}</span>
                             @endif

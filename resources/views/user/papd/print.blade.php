@@ -114,7 +114,7 @@
         <!-- Bisa dikosongkan, atau tambahkan info kecil jika diperlukan -->
     </div>
     <div class="header-center">
-        <div class="title-main">Permintaan Akomodasi</div>
+        <div class="title-main">Pengajuan Akomodasi</div>
         <div class="title-sub">Perjalanan Dinas (PAPD)</div>
         <div class="title-sppd">No. SPPD: {{ $papdRequest->no_sppd ?? '-' }}</div>
     </div>
@@ -129,7 +129,7 @@
 
 <!-- ===== STATUS ===== -->
 <div style="text-align:center; margin-bottom:3px;">
-    <span class="badge 
+    <span class="badge
         @if($papdRequest->status == 'approved') badge-success
         @elseif($papdRequest->status == 'rejected') badge-danger
         @else badge-warning @endif">
@@ -180,7 +180,10 @@
 <div class="section page-break">
     <div class="section-title">C1. Transportasi</div>
     <div class="row"><div class="label">Jenis Tiket</div><div class="value">{{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</div></div>
-    <div class="row"><div class="label">Moda</div><div class="value">{{ ucfirst($papdRequest->moda_transportasi) }}</div></div>
+    <div class="row"><div class="label">Moda Berangkat</div><div class="value">{{ ucfirst($papdRequest->moda_transportasi) }}</div></div>
+    @if($papdRequest->moda_transportasi_pulang)
+    <div class="row"><div class="label">Moda Pulang</div><div class="value">{{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div></div>
+    @endif
     <div class="row"><div class="label">Kelas</div><div class="value">{{ $papdRequest->kelas ?? '-' }}</div></div>
     <div class="row"><div class="label">Rute</div><div class="value">{{ $papdRequest->rute ?? '-' }}</div></div>
     <div class="row"><div class="label">Nama Operator</div><div class="value">{{ $papdRequest->detail_maskapai ?? '-' }}</div></div>

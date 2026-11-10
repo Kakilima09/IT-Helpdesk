@@ -22,7 +22,10 @@ Berikut adalah ringkasan permintaan perjalanan dinas dari:
 ### 🚆 Transportasi
 @if($request->moda_transportasi)
 - **Jenis Tiket:** {{ ($request->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}
-- **Moda:** {{ ucfirst($request->moda_transportasi) }}
+- **Moda Berangkat:** {{ ucfirst($request->moda_transportasi) }}
+@if($request->moda_transportasi_pulang)
+- **Moda Pulang:** {{ ucfirst($request->moda_transportasi_pulang) }}
+@endif
 @if($request->kelas)
 - **Kelas:** {{ $request->kelas }}
 @endif

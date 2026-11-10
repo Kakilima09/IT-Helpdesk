@@ -51,7 +51,7 @@
                         </div>
                         <div class="flex-grow-1">
                             <h6 class="alert-heading mb-1">Pengajuan Akomodasi Perjalanan Dinas</h6>
-                            <p class="mb-0 fs-13">Anda memiliki <strong>{{ $total ?? 0 }}</strong> permintaan PAPD total.</p>
+                            <p class="mb-0 fs-13">Anda memiliki <strong>{{ $total ?? 0 }}</strong> pengajuan PAPD total.</p>
                         </div>
                     </div>
 
@@ -63,7 +63,7 @@
                                     <div class="row">
                                         <div class="col-7">
                                             <div class="mt-0 text-start">
-                                                <span class="fs-16 font-weight-semibold">{{lang('Total Permintaan')}}</span>
+                                                <span class="fs-16 font-weight-semibold">{{lang('Total Pengajuan')}}</span>
                                                 <h3 class="mb-0 mt-1 text-primary fs-25">{{ $total ?? 0 }}</h3>
                                             </div>
                                         </div>

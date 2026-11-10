@@ -57,6 +57,9 @@ class PapdExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
 
         // Transportasi & Akomodasi
         $transportasi = ucfirst($row->moda_transportasi);
+        if ($row->moda_transportasi_pulang) {
+            $transportasi .= ' / Pulang: ' . ucfirst($row->moda_transportasi_pulang);
+        }
         if ($row->kelas) {
             $transportasi .= ' (' . $row->kelas . ')';
         }

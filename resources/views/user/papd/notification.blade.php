@@ -45,7 +45,7 @@
                 <div class="row text-white">
                     <div class="col">
                         <h1 class="mb-0">Notifikasi PAPD</h1>
-                        <p class="mb-0 fs-14 opacity-75">Semua notifikasi terkait permintaan perjalanan dinas Anda.</p>
+                        <p class="mb-0 fs-14 opacity-75">Semua Notifikasi Terkait Pengajuan Perjalanan Dinas Anda.</p>
                     </div>
                     <div class="col col-auto">
                         <ol class="breadcrumb text-center">
@@ -120,7 +120,7 @@
                                                         {{ $notification->data['mailsubject'] ?? 'Notifikasi PAPD' }}
                                                     </span>
                                                     @if($papd)
-                                                        <span class="badge badge-status 
+                                                        <span class="badge badge-status
                                                             @if($papd->status == 'pending') badge-warning
                                                             @elseif($papd->status == 'approved') badge-success
                                                             @elseif($papd->status == 'rejected') badge-danger
@@ -142,7 +142,7 @@
                                                     <div class="d-flex flex-wrap gap-3 small text-muted">
                                                         <span><strong>Pemohon:</strong> {{ $papd->nama_lengkap ?? '-' }}</span>
                                                         <span><strong>{{ $papd->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:</strong> {{ $papd->kota_tujuan ?? '-' }}</span>
-                                                        <span><strong>Berangkat:</strong> 
+                                                        <span><strong>Berangkat:</strong>
                                                             @if($papd->tanggal_keberangkatan)
                                                                 {{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d M Y') }}
                                                                 {{ $papd->jam_keberangkatan ?? '' }}

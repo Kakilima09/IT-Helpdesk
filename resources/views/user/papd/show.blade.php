@@ -26,7 +26,7 @@
             <div class="container">
                 <div class="row text-white">
                     <div class="col">
-                        <h1 class="mb-0">Detail Permintaan PAPD</h1>
+                        <h1 class="mb-0">Detail Pengajuan Akomodasi Perjalanan Dinas</h1>
                     </div>
                     <div class="col col-auto">
                         <ol class="breadcrumb text-center">
@@ -48,8 +48,8 @@
                 <div class="col-xl-9">
                     <div class="card">
                         <div class="card-header border-0 d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">Permintaan #{{ $papdRequest->id }}</h4>
-                            <span class="badge status-badge 
+                            <h4 class="card-title">Pengajuan #{{ $papdRequest->id }}</h4>
+                            <span class="badge status-badge
                                 @if($papdRequest->status == 'pending') badge-warning
                                 @elseif($papdRequest->status == 'approved') badge-success
                                 @elseif($papd->status == 'expired') badge-secondary
@@ -100,7 +100,7 @@
                                     <div class="col-md-6"><span class="detail-label">No SPPD:</span> {{ $papdRequest->no_sppd ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Lama Perjalanan:</span> {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Berangkat:</span> {{ $papdRequest->tanggal_keberangkatan->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Kembali:</span> 
+                                    <div class="col-md-6"><span class="detail-label">Kembali:</span>
                                         {{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') : '-' }}
                                         {{ $papdRequest->jam_kepulangan ?? '' }}
                                     </div>
@@ -112,7 +112,10 @@
                                 <h5 class="mb-3">C1. Transportasi</h5>
                                 <div class="row">
                                     <div class="col-md-6"><span class="detail-label">Jenis Tiket:</span> {{ ($papdRequest->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Moda:</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Moda Berangkat:</span> {{ ucfirst($papdRequest->moda_transportasi) }}</div>
+                                    @if($papdRequest->moda_transportasi_pulang)
+                                        <div class="col-md-6"><span class="detail-label">Moda Pulang:</span> {{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div>
+                                    @endif
                                     <div class="col-md-6"><span class="detail-label">Kelas:</span> {{ $papdRequest->kelas ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Rute:</span> {{ $papdRequest->rute ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Nama Operator:</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
