@@ -191,6 +191,15 @@
     <div class="row"><div class="label">Bagasi Tambahan</div><div class="value">{{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div></div>
     <div class="row"><div class="label">Transportasi Lokal</div><div class="value">{{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</div></div>
     <div class="row"><div class="label">Opsi</div><div class="value">{{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div></div>
+    @if($papdRequest->moda_transportasi_pulang)
+    <div class="row"><div class="label">Kelas Pulang</div><div class="value">{{ $papdRequest->kelas_pulang ?? '-' }}</div></div>
+    <div class="row"><div class="label">Rute Pulang</div><div class="value">{{ $papdRequest->rute_pulang ?? '-' }}</div></div>
+    <div class="row"><div class="label">Nama Operator Pulang</div><div class="value">{{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div></div>
+    <div class="row"><div class="label">Nomor Perjalanan Pulang</div><div class="value">{{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div></div>
+    <div class="row"><div class="label">Bagasi Tambahan Pulang</div><div class="value">{{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div></div>
+    <div class="row"><div class="label">Transportasi Lokal Pulang</div><div class="value">{{ $papdRequest->transportasi_lokal_pulang ? 'Ya' : 'Tidak' }}</div></div>
+    <div class="row"><div class="label">Opsi Pulang</div><div class="value">{{ collect($papdRequest->opsi_transportasi_pulang ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div></div>
+    @endif
 </div>
 
 <!-- ===== C2 ===== -->

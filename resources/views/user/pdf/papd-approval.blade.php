@@ -222,6 +222,15 @@
         @endif
         <tr><td class="label-col">Transportasi Lokal</td><td class="value-col">{{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><td class="label-col">Opsi Tambahan</td><td class="value-col">{{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
+        @if($papdRequest->moda_transportasi_pulang)
+        <tr><td class="label-col">Kelas Pulang</td><td class="value-col">{{ $papdRequest->kelas_pulang ?? '-' }}</td></tr>
+        <tr><td class="label-col">Rute Pulang</td><td class="value-col">{{ $papdRequest->rute_pulang ?? '-' }}</td></tr>
+        <tr><td class="label-col">Nama Operator Pulang</td><td class="value-col">{{ $papdRequest->detail_maskapai_pulang ?? '-' }}</td></tr>
+        <tr><td class="label-col">Nomor Perjalanan Pulang</td><td class="value-col">{{ $papdRequest->no_penerbangan_pulang ?? '-' }}</td></tr>
+        <tr><td class="label-col">Bagasi Tambahan Pulang</td><td class="value-col">{{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</td></tr>
+        <tr><td class="label-col">Transportasi Lokal Pulang</td><td class="value-col">{{ $papdRequest->transportasi_lokal_pulang ? 'Ya' : 'Tidak' }}</td></tr>
+        <tr><td class="label-col">Opsi Tambahan Pulang</td><td class="value-col">{{ collect($papdRequest->opsi_transportasi_pulang ?? [])->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
+        @endif
     </table>
 </div>
 

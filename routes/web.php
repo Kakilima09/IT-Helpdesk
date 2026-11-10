@@ -318,6 +318,8 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 					Route::get('/admin/papd/mark-all-read', [PapdAdminController::class, 'markAllRead'])->name('admin.papd.markAllRead');
 					Route::post('/papd/{id}/close', [PapdAdminController::class, 'updateClosing'])->name('admin.papd.close');
 					Route::post('/papd/{id}/reopen', [PapdAdminController::class, 'reopen'])->name('admin.papd.reopen');
+					Route::post('/papd/{id}/corporate-approve', [PapdAdminController::class, 'corporateApprove'])->name('admin.papd.corporateApprove');
+					Route::post('/papd/{id}/corporate-reject', [PapdAdminController::class, 'corporateReject'])->name('admin.papd.corporateReject');
 
 					//Admin GA Request
 					Route::get('/ga', [GaAdminController::class, 'index'])->name('admin.ga.index');
@@ -520,6 +522,7 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 
 					// Route autocomplete (HARUS di dalam group customer)
     				Route::get('/papd/get-user-data', [PapdController::class, 'getUserData'])->name('papd.getUserData');
+    				Route::get('/papd/get-locations', [PapdController::class, 'getLocations'])->name('papd.getLocations');
 					// Route::get('/it-tickets', [App\Http\Controllers\User\TicketController::class, 'itIndex'])->name('client.dashboard');
     				Route::get('/papd-tickets', [PapdController::class, 'index'])->name('papd.index');
 					Route::get('/papd/create', [PapdController::class, 'create'])->name('papd.create');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User\Papd;
 
 use App\Http\Controllers\Controller;
 use App\Models\Papd\PapdRequest;
+use App\Models\Papd\TransportLocation;
 use App\Models\Apptitle;
 use App\Models\Footertext;
 use App\Models\Seosetting;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Papd\AtasanApprovalNotification;
 use App\Mail\Papd\ApprovedUserNotification;
 use App\Mail\Papd\ApprovedCorporateNotification;
+use App\Mail\Papd\CorporateApprovalNotification;
 use App\Mail\Papd\RejectedUserNotification;
 use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -22,7 +24,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 use App\Notifications\PapdNotification;
+use App\Services\PapdRecommendationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -135,6 +139,61 @@ class PapdController extends Controller
     }
 
     /**
+     * Lengkapi kode asal/tujuan dan susun rute otomatis.
+     */
+    private function prepareTransportCodes(array $validated)
+    {
+        $isRoundTrip = ($validated['jenis_tiket'] ?? null) === 'pulang_pergi';
+        $isFlight = ($validated['moda_transportasi'] ?? null) === 'pesawat';
+        $isFlightReturn = $isRoundTrip && ($validated['moda_transportasi_pulang'] ?? null) === 'pesawat';
+
+        if ($isFlight && (empty($validated['kode_asal']) || empty($validated['kode_tujuan']))) {
+            throw ValidationException::withMessages([
+                'kode_asal' => 'Kode bandara asal dan tujuan wajib diisi untuk transportasi pesawat.',
+            ]);
+        }
+
+        if ($isFlightReturn && (empty($validated['kode_asal_pulang']) || empty($validated['kode_tujuan_pulang']))) {
+            throw ValidationException::withMessages([
+                'kode_asal_pulang' => 'Kode bandara asal dan tujuan pulang wajib diisi untuk transportasi pesawat.',
+            ]);
+        }
+
+        if (empty($validated['kota_asal']) && !empty($validated['kode_asal'])) {
+            $origin = TransportLocation::where('code', $validated['kode_asal'])->first();
+            if ($origin) {
+                $validated['kota_asal'] = $origin->city;
+            }
+        }
+
+        if (empty($validated['rute']) && !empty($validated['kode_asal']) && !empty($validated['kode_tujuan'])) {
+            $validated['rute'] = trim(
+                ($validated['kota_asal'] ?? '') . ' (' . $validated['kode_asal'] . ') - '
+                . ($validated['kota_tujuan'] ?? '') . ' (' . $validated['kode_tujuan'] . ')'
+            );
+        }
+
+        if ($isRoundTrip) {
+            if (empty($validated['kota_asal_pulang']) && !empty($validated['kode_asal_pulang'])) {
+                $originReturn = TransportLocation::where('code', $validated['kode_asal_pulang'])->first();
+                if ($originReturn) {
+                    $validated['kota_asal_pulang'] = $originReturn->city;
+                }
+            }
+
+            if (empty($validated['rute_pulang']) && !empty($validated['kode_asal_pulang']) && !empty($validated['kode_tujuan_pulang'])) {
+                $destinationReturn = TransportLocation::where('code', $validated['kode_tujuan_pulang'])->first();
+                $validated['rute_pulang'] = trim(
+                    ($validated['kota_asal_pulang'] ?? '') . ' (' . $validated['kode_asal_pulang'] . ') - '
+                    . ($destinationReturn->city ?? '') . ' (' . $validated['kode_tujuan_pulang'] . ')'
+                );
+            }
+        }
+
+        return $validated;
+    }
+
+    /**
      * Menyimpan permintaan PAPD
      */
     public function store(Request $request)
@@ -158,6 +217,9 @@ class PapdController extends Controller
             'nama_sesuai_ktp' => 'nullable|string|max:255|required_if:jenis_perjalanan,domestik',
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
+            'kota_asal' => 'nullable|string|max:255',
+            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
+            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
             'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
@@ -179,6 +241,17 @@ class PapdController extends Controller
             'transportasi_lokal' => 'boolean',
             'opsi_transportasi' => 'nullable|array',
             'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
+            'kelas_pulang' => 'nullable|string|max:50',
+            'kota_asal_pulang' => 'nullable|string|max:255',
+            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'rute_pulang' => 'nullable|string|max:255',
+            'detail_maskapai_pulang' => 'nullable|string|max:255',
+            'no_penerbangan_pulang' => 'nullable|string|max:50',
+            'bagasi_tambahan_pulang' => 'boolean',
+            'transportasi_lokal_pulang' => 'boolean',
+            'opsi_transportasi_pulang' => 'nullable|array',
+            'opsi_transportasi_pulang.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'hotel_reservasi' => 'boolean',
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
@@ -197,7 +270,20 @@ class PapdController extends Controller
 
         $validated = $request->validate($rules);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
-            $validated['moda_transportasi_pulang'] = null;
+            foreach ([
+                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kode_asal_pulang',
+                'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
+                'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
+            ] as $returnField) {
+                $validated[$returnField] = null;
+            }
+        } else {
+            $validated['bagasi_tambahan_pulang'] = !empty($validated['bagasi_tambahan_pulang']);
+            $validated['transportasi_lokal_pulang'] = !empty($validated['transportasi_lokal_pulang']);
+            $validated['opsi_transportasi_pulang'] = array_values(array_diff(
+                $validated['opsi_transportasi_pulang'] ?? [],
+                $validated['bagasi_tambahan_pulang'] ? [] : ['special_baggage', 'special_charge']
+            ));
         }
         $validated['opsi_transportasi'] = array_values(array_diff(
             $validated['opsi_transportasi'] ?? [],
@@ -231,6 +317,7 @@ class PapdController extends Controller
 
         $validated['user_id'] = auth()->id();
         $validated['status'] = 'pending';
+        $validated = $this->prepareTransportCodes($validated);
 
         $papdRequest = PapdRequest::create($validated);
 
@@ -269,11 +356,14 @@ class PapdController extends Controller
                 'status' => 'approved',
                 'approved_at' => now(),
                 'approval_token' => null,
+                'corporate_status' => 'pending',
             ]);
 
             try {
                 // Kirim notifikasi database ke corporate/admin
-                $corporateUsers = User::whereIn('role', ['corporate', 'admin'])->get();
+                $corporateUsers = User::whereHas('roles', function ($q) {
+                    $q->whereIn('name', ['corporate', 'Corporate']);
+                })->get();
                 if ($corporateUsers->count() > 0) {
                     foreach ($corporateUsers as $corpUser) {
                         $corpUser->notify(new PapdNotification(
@@ -329,13 +419,13 @@ class PapdController extends Controller
                 }
             }
 
-            // ======== KIRIM EMAIL KE CORPORATE ========
+            // ======== KIRIM EMAIL KE CORPORATE (MENUNGGU APPROVAL) ========
             $corporateEmail = config('app.corporate_email', 'corporatesecretary@indovisual.co.id');
             if (!empty($corporateEmail)) {
                 try {
                     \Log::info('Mencoba kirim email ke corporate: ' . $corporateEmail);
 
-                    Mail::to($corporateEmail)->send(new ApprovedCorporateNotification($papdRequest));
+                    Mail::to($corporateEmail)->send(new CorporateApprovalNotification($papdRequest));
 
                     \Log::info('Email ke corporate berhasil dikirim: ' . $corporateEmail);
                 } catch (\Exception $e) {
@@ -343,9 +433,9 @@ class PapdController extends Controller
                     \Log::error($e->getTraceAsString());
                     // Fallback plain text
                     try {
-                        Mail::raw("Permintaan PAPD telah disetujui.\nData lengkap: " . route('papd.show', $papdRequest->id), function ($message) use ($corporateEmail) {
+                        Mail::raw("Permintaan PAPD menunggu approval corporate.\nBuka panel: " . route('admin.papd.show', $papdRequest->id), function ($message) use ($corporateEmail) {
                             $message->to($corporateEmail)
-                                    ->subject('Data PAPD untuk Pemesanan');
+                                    ->subject('Persetujuan Corporate PAPD');
                         });
                         \Log::info('Fallback email ke corporate terkirim');
                     } catch (\Exception $e2) {
@@ -467,8 +557,13 @@ class PapdController extends Controller
         $papdRequest = PapdRequest::where('user_id', auth()->id())
                                   ->findOrFail($id);
 
+        $recommendations = [];
+        if ($papdRequest->isCorporateApproved()) {
+            $recommendations = app(PapdRecommendationService::class)->buildLinks($papdRequest);
+        }
+
         $data = array_merge(
-            compact('papdRequest'),
+            compact('papdRequest', 'recommendations'),
             $this->getSharedData(),
             ['current_page' => 'papd.show']
         );
@@ -522,6 +617,9 @@ class PapdController extends Controller
             'nama_sesuai_ktp' => 'nullable|string|max:255|required_if:jenis_perjalanan,domestik',
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
+            'kota_asal' => 'nullable|string|max:255',
+            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
+            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
             'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
@@ -543,6 +641,17 @@ class PapdController extends Controller
             'transportasi_lokal' => 'boolean',
             'opsi_transportasi' => 'nullable|array',
             'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
+            'kelas_pulang' => 'nullable|string|max:50',
+            'kota_asal_pulang' => 'nullable|string|max:255',
+            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'rute_pulang' => 'nullable|string|max:255',
+            'detail_maskapai_pulang' => 'nullable|string|max:255',
+            'no_penerbangan_pulang' => 'nullable|string|max:50',
+            'bagasi_tambahan_pulang' => 'boolean',
+            'transportasi_lokal_pulang' => 'boolean',
+            'opsi_transportasi_pulang' => 'nullable|array',
+            'opsi_transportasi_pulang.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'hotel_reservasi' => 'boolean',
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
@@ -560,7 +669,20 @@ class PapdController extends Controller
 
         $validated = $request->validate($rules);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
-            $validated['moda_transportasi_pulang'] = null;
+            foreach ([
+                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kode_asal_pulang',
+                'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
+                'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
+            ] as $returnField) {
+                $validated[$returnField] = null;
+            }
+        } else {
+            $validated['bagasi_tambahan_pulang'] = !empty($validated['bagasi_tambahan_pulang']);
+            $validated['transportasi_lokal_pulang'] = !empty($validated['transportasi_lokal_pulang']);
+            $validated['opsi_transportasi_pulang'] = array_values(array_diff(
+                $validated['opsi_transportasi_pulang'] ?? [],
+                $validated['bagasi_tambahan_pulang'] ? [] : ['special_baggage', 'special_charge']
+            ));
         }
         $validated['opsi_transportasi'] = array_values(array_diff(
             $validated['opsi_transportasi'] ?? [],
@@ -587,6 +709,8 @@ class PapdController extends Controller
         if (empty($validated['durasi_hari'])) {
             $validated['durasi_hari'] = 0;
         }
+
+        $validated = $this->prepareTransportCodes($validated);
 
         $papdRequest->update($validated);
 
@@ -708,6 +832,41 @@ class PapdController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    public function getLocations(Request $request)
+    {
+        try {
+            $term = $request->input('q', '');
+            $type = $request->input('type');
+
+            $query = TransportLocation::query()->where('is_active', true);
+
+            if ($type) {
+                $query->where('type', $type);
+            }
+
+            if (strlen($term) >= 1) {
+                $query->search($term);
+            }
+
+            $locations = $query->orderBy('city')->orderBy('code')->limit(20)->get();
+
+            $results = $locations->map(function ($loc) {
+                return [
+                    'id'   => $loc->code,
+                    'code' => $loc->code,
+                    'city' => $loc->city,
+                    'name' => $loc->name,
+                    'text' => $loc->city . ' (' . $loc->code . ') - ' . $loc->name,
+                ];
+            });
+
+            return response()->json($results);
+        } catch (\Exception $e) {
+            \Log::error('Error di getLocations: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     public function printView($id)
     {
         // Ambil logo dari file

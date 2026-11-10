@@ -146,6 +146,15 @@
             @endif
             <div class="detail-row"><span class="detail-label">Transportasi Lokal</span> {{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</div>
             <div class="detail-row"><span class="detail-label">Opsi Tambahan</span> {{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+            @if($papdRequest->moda_transportasi_pulang)
+                <div class="detail-row"><span class="detail-label">Kelas Pulang</span> {{ $papdRequest->kelas_pulang ?? '-' }}</div>
+                <div class="detail-row"><span class="detail-label">Rute Pulang</span> {{ $papdRequest->rute_pulang ?? '-' }}</div>
+                <div class="detail-row"><span class="detail-label">Nama Operator Pulang</span> {{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div>
+                <div class="detail-row"><span class="detail-label">Nomor Perjalanan Pulang</span> {{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div>
+                <div class="detail-row"><span class="detail-label">Bagasi Tambahan Pulang</span> {{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div>
+                <div class="detail-row"><span class="detail-label">Transportasi Lokal Pulang</span> {{ $papdRequest->transportasi_lokal_pulang ? 'Ya' : 'Tidak' }}</div>
+                <div class="detail-row"><span class="detail-label">Opsi Tambahan Pulang</span> {{ collect($papdRequest->opsi_transportasi_pulang ?? [])->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+            @endif
         </div>
 
         <!-- C2. Akomodasi Hotel -->
@@ -194,6 +203,66 @@
             <div class="detail-row"><span class="detail-label">Catatan Closing</span> {{ $papdRequest->closing_note }}</div>
             @endif
         </div>
+
+        <!-- Corporate Approval -->
+        <div class="detail-section">
+            <h5 class="mb-3">Approval Corporate</h5>
+            @if($papdRequest->status === 'approved' && $papdRequest->corporate_status === 'pending')
+                <p class="text-muted">PAPD telah disetujui atasan dan menunggu persetujuan corporate.</p>
+                @if(($isCorporate ?? false) || ($isSuperadmin ?? false))
+                <div class="d-flex gap-2 flex-wrap">
+                    <form method="POST" action="{{ route('admin.papd.corporateApprove', $papdRequest->id) }}">
+                        @csrf
+                        <button type="submit" class="btn btn-success" onclick="return confirm('Setujui PAPD ini?');">
+                            <i class="fe fe-check"></i> Approve Corporate
+                        </button>
+                    </form>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="collapse" data-bs-target="#corpRejectForm">
+                        <i class="fe fe-x"></i> Reject
+                    </button>
+                </div>
+                <div class="collapse mt-3" id="corpRejectForm">
+                    <form method="POST" action="{{ route('admin.papd.corporateReject', $papdRequest->id) }}">
+                        @csrf
+                        <div class="mb-2">
+                            <label class="form-label">Alasan Penolakan</label>
+                            <textarea name="corporate_note" class="form-control" rows="2" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger btn-sm">Kirim Penolakan</button>
+                    </form>
+                </div>
+                @endif
+            @elseif($papdRequest->corporate_status === 'approved')
+                <div class="detail-row"><span class="detail-label">Status Corporate</span> <span class="badge badge-success">Approved</span></div>
+                @if($papdRequest->corporate_approved_at)
+                <div class="detail-row"><span class="detail-label">Tanggal Approve Corporate</span> {{ $papdRequest->corporate_approved_at->format('d-m-Y H:i') }}</div>
+                @endif
+            @elseif($papdRequest->corporate_status === 'rejected')
+                <div class="detail-row"><span class="detail-label">Status Corporate</span> <span class="badge badge-danger">Rejected</span></div>
+                @if($papdRequest->corporate_note)
+                <div class="detail-row"><span class="detail-label">Alasan</span> {{ $papdRequest->corporate_note }}</div>
+                @endif
+            @else
+                <span class="badge badge-secondary">Belum diproses</span>
+            @endif
+        </div>
+
+        <!-- Rekomendasi Tiket -->
+        @if($papdRequest->isCorporateApproved())
+        <div class="detail-section">
+            <h5 class="mb-3">Rekomendasi Tiket Termurah</h5>
+            <p class="text-muted">Buka salah satu situs berikut untuk melihat harga aktual. Harga mengikuti masing-masing situs.</p>
+            <div class="d-flex gap-2 flex-wrap">
+                @forelse($recommendations ?? [] as $rec)
+                    <a href="{{ $rec['url'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                        <i class="{{ $rec['icon'] }}"></i> {{ $rec['label'] }}
+                    </a>
+                @empty
+                    <span class="text-muted">Rekomendasi belum tersedia (data rute/kode belum lengkap).</span>
+                @endforelse
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection

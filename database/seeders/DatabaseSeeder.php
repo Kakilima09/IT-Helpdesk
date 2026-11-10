@@ -27,6 +27,7 @@ use Database\Seeders\SettingUpdateSeeder;
 use Database\Seeders\NewUpdateSeederV3_1;
 use Database\Seeders\GaSetupSeeder;
 use Database\Seeders\AiAssistantSeeder;
+use Database\Seeders\TransportLocationSeeder;
 use Modules\Uhelpupdate\Database\Seeders\UhelpupdateDatabaseSeeder;
 
 
@@ -72,6 +73,9 @@ class DatabaseSeeder extends Seeder
 
             // AI Assistant
             AiAssistantSeeder::class,
+
+            // PAPD Transport Locations
+            TransportLocationSeeder::class,
         ]);
     }
 }

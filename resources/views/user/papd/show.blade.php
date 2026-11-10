@@ -123,6 +123,15 @@
                                     <div class="col-md-6"><span class="detail-label">Bagasi Tambahan:</span> {{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Transportasi Lokal:</span> {{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</div>
                                     <div class="col-md-12"><span class="detail-label">Opsi:</span> {{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+                                    @if($papdRequest->moda_transportasi_pulang)
+                                        <div class="col-md-6"><span class="detail-label">Kelas Pulang:</span> {{ $papdRequest->kelas_pulang ?? '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Rute Pulang:</span> {{ $papdRequest->rute_pulang ?? '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Nama Operator Pulang:</span> {{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Nomor Perjalanan Pulang:</span> {{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Bagasi Tambahan Pulang:</span> {{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div>
+                                        <div class="col-md-6"><span class="detail-label">Transportasi Lokal Pulang:</span> {{ $papdRequest->transportasi_lokal_pulang ? 'Ya' : 'Tidak' }}</div>
+                                        <div class="col-md-12"><span class="detail-label">Opsi Pulang:</span> {{ collect($papdRequest->opsi_transportasi_pulang ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -141,6 +150,20 @@
                                     @endif
                                 </div>
                             </div>
+
+                            @if($papdRequest->isCorporateApproved() && !empty($recommendations))
+                            <div class="detail-section">
+                                <h5 class="mb-3">Rekomendasi Tiket Termurah</h5>
+                                <p class="text-muted">Buka salah satu situs berikut untuk melihat harga aktual.</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    @foreach($recommendations as $rec)
+                                        <a href="{{ $rec['url'] }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                            <i class="{{ $rec['icon'] }}"></i> {{ $rec['label'] }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
 
                             @if($papdRequest->notes)
                             <div class="detail-section">

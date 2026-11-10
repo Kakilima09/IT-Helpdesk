@@ -294,6 +294,16 @@
                             @endif
                             <br>
                             <small class="text-muted">{{ strtoupper($papd->status) }}</small>
+                            <br>
+                            @if($papd->corporate_status === 'approved')
+                                <span class="badge badge-success">CORP: APPROVED</span>
+                            @elseif($papd->corporate_status === 'rejected')
+                                <span class="badge badge-danger">CORP: REJECTED</span>
+                            @elseif($papd->corporate_status === 'pending')
+                                <span class="badge badge-warning">CORP: PENDING</span>
+                            @else
+                                <span class="badge badge-secondary">CORP: -</span>
+                            @endif
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-1">
@@ -305,11 +315,15 @@
                                 </a>
                             
                                 @if($isCorporate || $isSuperadmin)
-                                    @if($papd->status == 'approved' && $papd->closing_status == 'pending')
+                                    @if($papd->status == 'approved' && $papd->corporate_status === 'pending')
+                                        <a href="{{ route('admin.papd.show', $papd->id) }}" class="btn btn-warning btn-sm" title="Menunggu Approval Corporate">
+                                            <i class="fe fe-user-check"></i>
+                                        </a>
+                                    @elseif($papd->status == 'approved' && $papd->corporate_status === 'approved' && $papd->closing_status == 'pending')
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#closeModal{{ $papd->id }}" title="Update Closing">
                                             <i class="fe fe-check-circle"></i>
                                         </button>
-                                    @elseif($papd->status == 'approved' && in_array($papd->closing_status, ['done', 'cancel']))
+                                    @elseif($papd->status == 'approved' && $papd->corporate_status === 'approved' && in_array($papd->closing_status, ['done', 'cancel']))
                                         <!-- Ubah inline-block menjadi inline agar form tidak memecah fleksibelitas flexbox -->
                                         <form method="POST" action="{{ route('admin.papd.reopen', $papd->id) }}" style="display:inline; margin:0;">
                                             @csrf

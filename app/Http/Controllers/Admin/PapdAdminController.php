@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Papd\PapdRequest;
+use App\Models\User;
 use App\Models\Apptitle;
 use App\Models\Footertext;
 use App\Models\Seosetting;
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Notifications\PapdNotification;
+use App\Mail\Papd\ApprovedUserNotification;
+use App\Mail\Papd\RejectedUserNotification;
+use App\Services\PapdRecommendationService;
 
 class PapdAdminController extends Controller
 {
@@ -101,6 +108,8 @@ class PapdAdminController extends Controller
             $totalPending = (clone $statQuery)->where('status', 'pending')->count();
         }
 
+        $totalCorporatePending = (clone $statQuery)->where('status', 'approved')->where('corporate_status', 'pending')->count();
+
         $totalRejected = (clone $statQuery)->where('status', 'rejected')->count();
         $totalExpired  = (clone $statQuery)->where('status', 'expired')->count();
         $totalDone     = (clone $statQuery)->where('closing_status', 'done')->count();
@@ -119,6 +128,7 @@ class PapdAdminController extends Controller
         $data['papdRequests']     = $papdRequests;
         $data['totalApproved']    = $totalApproved;
         $data['totalPending']     = $totalPending;
+        $data['totalCorporatePending'] = $totalCorporatePending;
         $data['totalRejected']    = $totalRejected;
         $data['totalExpired']     = $totalExpired;
         $data['totalDone']        = $totalDone;
@@ -158,6 +168,10 @@ class PapdAdminController extends Controller
             return redirect()->back()->with('error', 'Hanya PAPD yang sudah approved yang dapat di-close.');
         }
 
+        if ($papd->corporate_status !== 'approved') {
+            return redirect()->back()->with('error', 'PAPD belum disetujui corporate.');
+        }
+
         if ($papd->closing_status != 'pending') {
             return redirect()->back()->with('error', 'PAPD ini sudah memiliki status closing.');
         }
@@ -176,6 +190,126 @@ class PapdAdminController extends Controller
         return redirect()->back()->with('success', 'Status closing berhasil diperbarui.');
     }
 
+    /**
+     * Corporate menyetujui PAPD (setelah approval atasan).
+     */
+    public function corporateApprove($id)
+    {
+        $user = auth()->user();
+        $isCorporate = $user->hasRole('corporate') || $user->hasRole('Corporate') || strtolower($user->role ?? '') == 'corporate';
+        $isSuperadmin = $user->hasRole('superadmin') || $user->hasRole('Superadmin') || strtolower($user->role ?? '') == 'superadmin';
+
+        if (!$isCorporate && !$isSuperadmin) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk approval corporate.');
+        }
+
+        $papd = PapdRequest::findOrFail($id);
+
+        if ($papd->status !== 'approved') {
+            return redirect()->back()->with('error', 'PAPD belum disetujui atasan.');
+        }
+
+        if (!in_array($papd->corporate_status, [null, 'pending'], true)) {
+            return redirect()->back()->with('error', 'PAPD ini sudah diproses oleh corporate.');
+        }
+
+        if ($papd->closing_status !== 'pending') {
+            return redirect()->back()->with('error', 'PAPD sudah di-closing.');
+        }
+
+        $papd->update([
+            'corporate_status'      => 'approved',
+            'corporate_approved_at' => now(),
+            'corporate_approved_by' => $user->id,
+            'corporate_note'        => null,
+        ]);
+
+        $this->notifyApplicant(
+            $papd,
+            'PAPD Disetujui Corporate',
+            'Permintaan PAPD Anda telah disetujui corporate. Rekomendasi tiket sudah tersedia.',
+            'approved',
+            new ApprovedUserNotification($papd)
+        );
+
+        return redirect()->back()->with('success', 'PAPD berhasil disetujui corporate.');
+    }
+
+    /**
+     * Corporate menolak PAPD (setelah approval atasan).
+     */
+    public function corporateReject(Request $request, $id)
+    {
+        $user = auth()->user();
+        $isCorporate = $user->hasRole('corporate') || $user->hasRole('Corporate') || strtolower($user->role ?? '') == 'corporate';
+        $isSuperadmin = $user->hasRole('superadmin') || $user->hasRole('Superadmin') || strtolower($user->role ?? '') == 'superadmin';
+
+        if (!$isCorporate && !$isSuperadmin) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk approval corporate.');
+        }
+
+        $validated = $request->validate([
+            'corporate_note' => 'required|string|max:500',
+        ]);
+
+        $papd = PapdRequest::findOrFail($id);
+
+        if ($papd->status !== 'approved') {
+            return redirect()->back()->with('error', 'PAPD belum disetujui atasan.');
+        }
+
+        if (!in_array($papd->corporate_status, [null, 'pending'], true)) {
+            return redirect()->back()->with('error', 'PAPD ini sudah diproses oleh corporate.');
+        }
+
+        $papd->update([
+            'status'                => 'rejected',
+            'rejected_at'           => now(),
+            'corporate_status'      => 'rejected',
+            'corporate_approved_by' => $user->id,
+            'corporate_note'        => $validated['corporate_note'],
+        ]);
+
+        $this->notifyApplicant(
+            $papd,
+            'PAPD Ditolak Corporate',
+            'Permintaan PAPD Anda ditolak oleh corporate: ' . $validated['corporate_note'],
+            'rejected',
+            new RejectedUserNotification($papd)
+        );
+
+        return redirect()->back()->with('success', 'PAPD berhasil ditolak corporate.');
+    }
+
+    /**
+     * Kirim notifikasi database + email ke pemohon.
+     */
+    private function notifyApplicant(PapdRequest $papd, $subject, $message, $status, $mailable = null)
+    {
+        try {
+            $applicant = User::find($papd->user_id);
+            if ($applicant) {
+                $applicant->notify(new PapdNotification(
+                    $papd->id,
+                    $subject,
+                    $message,
+                    $status,
+                    route('papd.show', $papd->id)
+                ));
+            }
+        } catch (\Exception $e) {
+            Log::error('Gagal kirim notifikasi corporate ke pemohon: ' . $e->getMessage());
+        }
+
+        if ($mailable) {
+            try {
+                Mail::to($papd->email)->send($mailable);
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim email corporate ke pemohon: ' . $e->getMessage());
+            }
+        }
+    }
+
     public function markAllRead()
     {
         $user = auth()->user();
@@ -192,11 +326,23 @@ class PapdAdminController extends Controller
     public function show($id)
     {
         $papdRequest = PapdRequest::findOrFail($id);
-        
+
+        $user = auth()->user();
+        $isSuperadmin = $user->hasRole('superadmin') || $user->hasRole('Superadmin') || strtolower($user->role ?? '') == 'superadmin';
+        $isCorporate = $user->hasRole('corporate') || $user->hasRole('Corporate') || strtolower($user->role ?? '') == 'corporate';
+
+        $recommendations = [];
+        if ($papdRequest->isCorporateApproved()) {
+            $recommendations = app(PapdRecommendationService::class)->buildLinks($papdRequest);
+        }
+
         $data = $this->getSharedData();
         $data['papdRequest'] = $papdRequest;
+        $data['recommendations'] = $recommendations;
+        $data['isCorporate'] = $isCorporate;
+        $data['isSuperadmin'] = $isSuperadmin;
         $data['current_page'] = 'papd-admin';
-        
+
         return view('admin.papd.show', $data);
     }
 
