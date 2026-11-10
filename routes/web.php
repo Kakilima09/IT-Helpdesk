@@ -517,6 +517,7 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 
 					//Route AI
 					Route::get('/ai-assistant', [AIAssistantController::class, 'index'])->name('customer.ai-assistant');
+					Route::get('/ai-assistant/history', [AIAssistantController::class, 'history'])->name('customer.ai-assistant.history');
 					Route::post('/ai-assistant/chat', [AIAssistantController::class, 'chat'])->name('customer.ai-assistant.chat');
 					Route::post('/ai-assistant/create-ticket', [AIAssistantController::class, 'createTicket'])->name('customer.ai-assistant.create-ticket');
 

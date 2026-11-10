@@ -653,6 +653,7 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Bagasi Tambahan</label>
+                                            <small class="text-muted d-block">(Spesial Case + Extra Charge)</small>
                                         </div>
                                         <div class="col-md-9">
                                             <label class="form-check form-check-inline">
@@ -706,14 +707,15 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Opsi Tambahan</label>
+                                            <small class="text-muted d-block">(Spesial Case + Extra Charge)</small>
                                         </div>
                                         <div class="col-md-9">
                                             <label class="form-check form-check-inline">
-                                                <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="insurance" {{ in_array('insurance', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                <input type="radio" class="form-check-input" name="opsi_transportasi[]" value="insurance" {{ in_array('insurance', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                 <span class="form-check-label">Insurance</span>
                                             </label>
                                             <label class="form-check form-check-inline">
-                                                <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                <input type="radio" class="form-check-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                 <span class="form-check-label">Refundable</span>
                                             </label>
                                             @error('opsi_transportasi')

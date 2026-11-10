@@ -67,7 +67,9 @@
             @endif
 		@endguest
 
-
+		@if(Route::currentRouteName() !== 'customer.ai-assistant')
+			@include('includes.user.ai-chat-widget')
+		@endif
 
 	@if (Session::has('error'))
         <script>

@@ -168,34 +168,6 @@
                         @endif
                         <!--- End Custom notification -->
 
-                        <!-- ====== AI IT ASSISTANT CARD ====== -->
-                        @if(setting('ai_enabled') == 'on')
-                        <div class="card mb-4 border-0 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center flex-wrap">
-                                    <div class="me-3 mb-2 mb-sm-0">
-                                        <span class="avatar avatar-lg bg-primary-transparent text-primary">
-                                            <i class="ri-robot-line fs-30"></i>
-                                        </span>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="card-title mb-1">🤖 AI IT ASSISTANT</h5>
-                                        <p class="card-text text-muted mb-0">
-                                            Ceritakan masalah IT Anda. AI akan mencoba mendiagnosa dan menyelesaikannya lebih dulu.
-                                            Bila tidak berhasil, tiket otomatis dibuatkan untuk tim IT.
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <a href="{{ route('customer.ai-assistant') }}" class="btn btn-primary">
-                                            Tanya AI Assistant <i class="fe fe-arrow-right ms-2"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        <!-- ====== END AI IT ASSISTANT CARD ====== -->
-
                         <div class="row">
                             <div class="col-xl-3 col-lg-3 col-md-12">
                                 <div class="card">

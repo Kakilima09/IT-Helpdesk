@@ -51,6 +51,47 @@ class AIAssistantController extends Controller
         ));
     }
 
+    public function history()
+    {
+        $customer = Auth::guard('customer')->user();
+
+        if (! $customer) {
+            return response()->json(['success' => false, 'error' => 'Unauthenticated'], 401);
+        }
+
+        $conversation = AIConversation::with('messages')
+            ->where('cust_id', $customer->id)
+            ->whereIn('status', ['ongoing', 'escalated'])
+            ->latest('id')
+            ->first();
+
+        if (! $conversation) {
+            return response()->json(['success' => true, 'conversation' => null]);
+        }
+
+        $ticket = $conversation->ticket_id ? $conversation->ticket : null;
+
+        return response()->json([
+            'success' => true,
+            'conversation' => [
+                'id' => $conversation->id,
+                'status' => $conversation->status,
+                'messages' => $conversation->messages->map(function ($message) {
+                    return [
+                        'role' => $message->role,
+                        'message' => $message->message,
+                        'metadata' => $message->metadata,
+                    ];
+                })->values(),
+                'ticket' => $ticket ? [
+                    'id' => $ticket->id,
+                    'ticket_id' => $ticket->ticket_id,
+                    'url' => route('loadmore.load_data', $ticket->ticket_id),
+                ] : null,
+            ],
+        ]);
+    }
+
     public function chat(Request $request)
     {
         $request->validate([
