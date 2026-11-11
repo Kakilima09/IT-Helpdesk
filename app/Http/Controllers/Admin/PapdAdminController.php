@@ -356,10 +356,17 @@ class PapdAdminController extends Controller
             $pdf = $this->generatePdf($papdRequest);
             $cleanName = $this->sanitizeFileName($papdRequest->nama_lengkap);
             $fileName = 'PAPD-' . $cleanName . '.pdf';
+            $pdfContent = $pdf->output();
 
-            return $pdf->download($fileName);
-        } catch (\Exception $e) {
-            \Log::error('Admin Download PDF error for PAPD #' . $id . ': ' . $e->getMessage());
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                'Content-Length' => strlen($pdfContent),
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Admin Download PDF error for PAPD #' . $id . ': ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
             return redirect()->back()->with('error', 'Gagal mendownload PDF.');
         }
     }
@@ -371,9 +378,11 @@ class PapdAdminController extends Controller
     {
         $logoPath = public_path('assets/images/logo.png');
         $logoBase64 = null;
-        if (file_exists($logoPath)) {
+        if (is_file($logoPath) && is_readable($logoPath)) {
             $logoData = file_get_contents($logoPath);
-            $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+            if ($logoData !== false) {
+                $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+            }
         }
 
         $pdf = Pdf::loadView('user.pdf.papd-approval', [
