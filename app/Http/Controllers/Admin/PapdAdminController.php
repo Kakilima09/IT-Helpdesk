@@ -353,7 +353,14 @@ class PapdAdminController extends Controller
     {
         try {
             $papdRequest = PapdRequest::findOrFail($id);
-            $pdf = $this->generatePdf($papdRequest);
+
+            try {
+                $pdf = $this->generatePdf($papdRequest);
+            } catch (\Throwable $e) {
+                Log::warning('Admin Download PDF: percobaan pertama gagal untuk PAPD #' . $id . ' (' . $e->getMessage() . '), coba ulang tanpa gambar di notes.');
+                $pdf = $this->generatePdf($papdRequest, true);
+            }
+
             $cleanName = $this->sanitizeFileName($papdRequest->nama_lengkap);
             $fileName = 'PAPD-' . $cleanName . '.pdf';
             $pdfContent = $pdf->output();
@@ -374,7 +381,7 @@ class PapdAdminController extends Controller
     /**
      * Generate PDF (sama seperti di user controller)
      */
-    private function generatePdf(PapdRequest $papdRequest)
+    private function generatePdf(PapdRequest $papdRequest, $stripImages = false)
     {
         $logoPath = public_path('assets/images/logo.png');
         $logoBase64 = null;
@@ -387,7 +394,8 @@ class PapdAdminController extends Controller
 
         $pdf = Pdf::loadView('user.pdf.papd-approval', [
             'papdRequest' => $papdRequest,
-            'logo' => $logoBase64
+            'logo' => $logoBase64,
+            'stripImages' => $stripImages
         ]);
         $pdf->setPaper('a4', 'portrait');
         return $pdf;

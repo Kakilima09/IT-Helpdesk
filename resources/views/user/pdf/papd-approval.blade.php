@@ -271,11 +271,28 @@
 <!-- ===== NOTES ===== -->
 @if($papdRequest->notes)
 @php
-    $pdfNotes = preg_replace_callback('/<img\b[^>]*>/i', function ($match) {
-        if (preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[0], $source)
-            && (stripos($source[2], 'data:image/webp') === 0
-                || preg_match('/\.webp(?:[?#]|$)/i', $source[2]))) {
-            return '<span>[Gambar WebP tidak dapat ditampilkan di PDF]</span>';
+    $stripImages = $stripImages ?? false;
+
+    $pdfNotes = preg_replace_callback('/<img\b[^>]*>/i', function ($match) use ($stripImages) {
+        $src = null;
+        if (preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[0], $source)) {
+            $src = $source[2];
+        }
+
+        $isWebp = $src !== null && (
+            stripos($src, 'data:image/webp') === 0
+            || preg_match('/\.webp(?:[?#]|$)/i', $src)
+        );
+
+        if ($isWebp || $stripImages) {
+            return '<span>[Gambar tidak dapat ditampilkan di PDF]</span>';
+        }
+
+        if ($src !== null && preg_match('/^data:image\/(?:png|jpe?g|gif);base64,(.+)$/is', $src, $uri)) {
+            $binary = base64_decode(preg_replace('/\s+/', '', $uri[1]), true);
+            if ($binary === false || @getimagesizefromstring($binary) === false) {
+                return '<span>[Gambar tidak dapat ditampilkan di PDF]</span>';
+            }
         }
 
         return $match[0];

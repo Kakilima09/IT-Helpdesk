@@ -458,7 +458,14 @@ class PapdController extends Controller
     {
         try {
             $papdRequest = PapdRequest::where('user_id', auth()->id())->findOrFail($id);
-            $pdf = $this->generatePdf($papdRequest);
+
+            try {
+                $pdf = $this->generatePdf($papdRequest);
+            } catch (\Throwable $e) {
+                \Log::warning('Download PDF: percobaan pertama gagal untuk PAPD #' . $id . ' (' . $e->getMessage() . '), coba ulang tanpa gambar di notes.');
+                $pdf = $this->generatePdf($papdRequest, true);
+            }
+
             $pdfContent = $pdf->output();
 
             // Sanitasi nama pemohon
@@ -743,7 +750,7 @@ class PapdController extends Controller
         }
     }
 
-    private function generatePdf(PapdRequest $papdRequest)
+    private function generatePdf(PapdRequest $papdRequest, $stripImages = false)
     {
         // Ambil logo dari file
         $logoPath = public_path('assets/images/logo.png');
@@ -758,7 +765,8 @@ class PapdController extends Controller
 
         $pdf = Pdf::loadView('user.pdf.papd-approval', [
             'papdRequest' => $papdRequest,
-            'logo' => $logoBase64
+            'logo' => $logoBase64,
+            'stripImages' => $stripImages
         ]);
 
         $pdf->setPaper('a4', 'portrait');
@@ -902,7 +910,13 @@ class PapdController extends Controller
                 abort(403, 'Permintaan belum disetujui.');
             }
 
-            $pdf = $this->generatePdf($papdRequest);
+            try {
+                $pdf = $this->generatePdf($papdRequest);
+            } catch (\Throwable $e) {
+                \Log::warning('Download PDF signed: percobaan pertama gagal untuk PAPD #' . $id . ' (' . $e->getMessage() . '), coba ulang tanpa gambar di notes.');
+                $pdf = $this->generatePdf($papdRequest, true);
+            }
+
             $pdfContent = $pdf->output();
 
             $cleanName = $this->sanitizeFileName($papdRequest->nama_lengkap);
