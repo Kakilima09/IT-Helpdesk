@@ -270,10 +270,21 @@
 
 <!-- ===== NOTES ===== -->
 @if($papdRequest->notes)
+@php
+    $pdfNotes = preg_replace_callback('/<img\b[^>]*>/i', function ($match) {
+        if (preg_match('/\bsrc\s*=\s*(["\'])(.*?)\1/i', $match[0], $source)
+            && (stripos($source[2], 'data:image/webp') === 0
+                || preg_match('/\.webp(?:[?#]|$)/i', $source[2]))) {
+            return '<span>[Gambar WebP tidak dapat ditampilkan di PDF]</span>';
+        }
+
+        return $match[0];
+    }, $papdRequest->notes);
+@endphp
 <div class="section page-break">
     <div class="section-title">Catatan</div>
     <table class="detail-table">
-        <tr><td class="label-col">Notes</td><td class="value-col">{!! $papdRequest->notes !!}</td></tr>
+        <tr><td class="label-col">Notes</td><td class="value-col">{!! $pdfNotes !!}</td></tr>
     </table>
 </div>
 @endif
