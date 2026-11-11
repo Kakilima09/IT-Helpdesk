@@ -353,21 +353,13 @@ class PapdAdminController extends Controller
     {
         try {
             $papdRequest = PapdRequest::findOrFail($id);
-            
-            // Generate PDF
             $pdf = $this->generatePdf($papdRequest);
-            $pdfContent = $pdf->output();
-
-            // Sanitasi nama pemohon
             $cleanName = $this->sanitizeFileName($papdRequest->nama_lengkap);
             $fileName = 'PAPD-' . $cleanName . '.pdf';
 
-            return response($pdfContent)
-                ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"')
-                ->header('Content-Length', strlen($pdfContent));
+            return $pdf->download($fileName);
         } catch (\Exception $e) {
-            \Log::error('Admin Download PDF error: ' . $e->getMessage());
+            \Log::error('Admin Download PDF error for PAPD #' . $id . ': ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal mendownload PDF.');
         }
     }

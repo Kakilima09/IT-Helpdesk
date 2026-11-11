@@ -24,7 +24,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Validation\ValidationException;
 use App\Notifications\PapdNotification;
 use App\Services\PapdRecommendationService;
 use Illuminate\Support\Facades\Auth;
@@ -127,7 +126,10 @@ class PapdController extends Controller
             return $validated;
         }
 
-        $names = preg_split('/\r\n|\r|\n/', trim($validated['nama_anggota_team']));
+        $members = $validated['nama_anggota_team'] ?? [];
+        $names = is_array($members)
+            ? $members
+            : preg_split('/\r\n|\r|\n/', trim($members));
         $names = array_values(array_filter(array_map('trim', $names), function ($name) {
             return $name !== '';
         }));
@@ -139,26 +141,10 @@ class PapdController extends Controller
     }
 
     /**
-     * Lengkapi kode asal/tujuan dan susun rute otomatis.
+     * Lengkapi lokasi lama yang tersimpan sebagai kode dan susun rute.
      */
     private function prepareTransportCodes(array $validated)
     {
-        $isRoundTrip = ($validated['jenis_tiket'] ?? null) === 'pulang_pergi';
-        $isFlight = ($validated['moda_transportasi'] ?? null) === 'pesawat';
-        $isFlightReturn = $isRoundTrip && ($validated['moda_transportasi_pulang'] ?? null) === 'pesawat';
-
-        if ($isFlight && (empty($validated['kode_asal']) || empty($validated['kode_tujuan']))) {
-            throw ValidationException::withMessages([
-                'kode_asal' => 'Kode bandara asal dan tujuan wajib diisi untuk transportasi pesawat.',
-            ]);
-        }
-
-        if ($isFlightReturn && (empty($validated['kode_asal_pulang']) || empty($validated['kode_tujuan_pulang']))) {
-            throw ValidationException::withMessages([
-                'kode_asal_pulang' => 'Kode bandara asal dan tujuan pulang wajib diisi untuk transportasi pesawat.',
-            ]);
-        }
-
         if (empty($validated['kota_asal']) && !empty($validated['kode_asal'])) {
             $origin = TransportLocation::where('code', $validated['kode_asal'])->first();
             if ($origin) {
@@ -166,14 +152,11 @@ class PapdController extends Controller
             }
         }
 
-        if (empty($validated['rute']) && !empty($validated['kode_asal']) && !empty($validated['kode_tujuan'])) {
-            $validated['rute'] = trim(
-                ($validated['kota_asal'] ?? '') . ' (' . $validated['kode_asal'] . ') - '
-                . ($validated['kota_tujuan'] ?? '') . ' (' . $validated['kode_tujuan'] . ')'
-            );
+        if (empty($validated['rute']) && !empty($validated['kota_asal']) && !empty($validated['kota_tujuan'])) {
+            $validated['rute'] = trim($validated['kota_asal'] . ' - ' . $validated['kota_tujuan']);
         }
 
-        if ($isRoundTrip) {
+        if (($validated['jenis_tiket'] ?? null) === 'pulang_pergi') {
             if (empty($validated['kota_asal_pulang']) && !empty($validated['kode_asal_pulang'])) {
                 $originReturn = TransportLocation::where('code', $validated['kode_asal_pulang'])->first();
                 if ($originReturn) {
@@ -181,12 +164,15 @@ class PapdController extends Controller
                 }
             }
 
-            if (empty($validated['rute_pulang']) && !empty($validated['kode_asal_pulang']) && !empty($validated['kode_tujuan_pulang'])) {
+            if (empty($validated['kota_tujuan_pulang']) && !empty($validated['kode_tujuan_pulang'])) {
                 $destinationReturn = TransportLocation::where('code', $validated['kode_tujuan_pulang'])->first();
-                $validated['rute_pulang'] = trim(
-                    ($validated['kota_asal_pulang'] ?? '') . ' (' . $validated['kode_asal_pulang'] . ') - '
-                    . ($destinationReturn->city ?? '') . ' (' . $validated['kode_tujuan_pulang'] . ')'
-                );
+                if ($destinationReturn) {
+                    $validated['kota_tujuan_pulang'] = $destinationReturn->city;
+                }
+            }
+
+            if (empty($validated['rute_pulang']) && !empty($validated['kota_asal_pulang']) && !empty($validated['kota_tujuan_pulang'])) {
+                $validated['rute_pulang'] = trim($validated['kota_asal_pulang'] . ' - ' . $validated['kota_tujuan_pulang']);
             }
         }
 
@@ -217,12 +203,13 @@ class PapdController extends Controller
             'nama_sesuai_ktp' => 'nullable|string|max:255|required_if:jenis_perjalanan,domestik',
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
-            'kota_asal' => 'nullable|string|max:255',
-            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
-            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
+            'kota_asal' => 'nullable|string|max:255|required_if:moda_transportasi,pesawat',
+            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
-            'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
+            'nama_anggota_team' => 'required_if:role_perjalanan,team|array|min:1',
+            'nama_anggota_team.*' => 'required|string|max:255',
             'no_sppd' => 'nullable|string|max:100',
             'tanggal_keberangkatan' => 'required|date|after_or_equal:today',
             'jam_keberangkatan' => 'required',
@@ -242,9 +229,10 @@ class PapdController extends Controller
             'opsi_transportasi' => 'nullable|array',
             'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'kelas_pulang' => 'nullable|string|max:50',
-            'kota_asal_pulang' => 'nullable|string|max:255',
-            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
-            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'kota_asal_pulang' => 'nullable|string|max:255|required_if:moda_transportasi_pulang,pesawat',
+            'kota_tujuan_pulang' => 'nullable|string|max:255|required_if:moda_transportasi_pulang,pesawat',
+            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
             'rute_pulang' => 'nullable|string|max:255',
             'detail_maskapai_pulang' => 'nullable|string|max:255',
             'no_penerbangan_pulang' => 'nullable|string|max:50',
@@ -271,7 +259,7 @@ class PapdController extends Controller
         $validated = $request->validate($rules);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
-                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kode_asal_pulang',
+                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',
                 'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
                 'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
             ] as $returnField) {
@@ -618,8 +606,8 @@ class PapdController extends Controller
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
             'kota_asal' => 'nullable|string|max:255',
-            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
-            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi,pesawat',
+            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
             'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
@@ -643,8 +631,9 @@ class PapdController extends Controller
             'opsi_transportasi.*' => 'in:insurance,refundable,special_baggage,special_charge',
             'kelas_pulang' => 'nullable|string|max:50',
             'kota_asal_pulang' => 'nullable|string|max:255',
-            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
-            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code|required_if:moda_transportasi_pulang,pesawat',
+            'kota_tujuan_pulang' => 'nullable|string|max:255',
+            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
             'rute_pulang' => 'nullable|string|max:255',
             'detail_maskapai_pulang' => 'nullable|string|max:255',
             'no_penerbangan_pulang' => 'nullable|string|max:50',
@@ -670,7 +659,7 @@ class PapdController extends Controller
         $validated = $request->validate($rules);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
-                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kode_asal_pulang',
+                'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',
                 'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
                 'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
             ] as $returnField) {

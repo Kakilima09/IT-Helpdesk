@@ -121,12 +121,26 @@
                                                 <option value="">{{ lang('Cari nama karyawan...') }}</option>
                                             </select>
                                             <input type="text" class="form-control @error('nama_lengkap') is-invalid @enderror"
-                                                   name="nama_lengkap" id="nama_lengkap_eksternal" value="{{ old('nama_lengkap') }}"
-                                                   maxlength="255" placeholder="Masukkan nama lengkap pemohon" required disabled>
+                                            name="nama_lengkap" id="nama_lengkap_eksternal" value="{{ old('nama_lengkap') }}"
+                                            maxlength="255" placeholder="Masukkan nama lengkap pemohon" required disabled>
                                             @error('nama_lengkap')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                             <small class="text-muted" id="nama-lengkap-help">Ketik minimal 2 huruf untuk mencari karyawan.</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Email <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                                name="email" id="email" value="{{ old('email', old('jenis_pemohon') === 'eksternal' ? '' : (auth()->user()->email ?? '')) }}" readonly required>
+                                            @error('email')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
                                         </div>
                                     </div>
                                 </div>
@@ -240,21 +254,6 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Email <span class="text-red">*</span></label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                                   name="email" id="email" value="{{ old('email', old('jenis_pemohon') === 'eksternal' ? '' : (auth()->user()->email ?? '')) }}" readonly required>
-                                            @error('email')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Tanggal Lahir <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
@@ -354,19 +353,6 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label mb-0 mt-2" id="tujuan-label">Kota Tujuan <span class="text-red">*</span></label></div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
-                                                   name="kota_tujuan" value="{{ old('kota_tujuan') }}" required>
-                                            @error('kota_tujuan')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
                                         <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Agenda <span class="text-red">*</span></label>
                                         </div>
@@ -406,13 +392,35 @@
                                             <label class="form-label mb-0 mt-2">Nama Anggota Team <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <textarea class="form-control @error('nama_anggota_team') is-invalid @enderror"
-                                                      name="nama_anggota_team" id="nama_anggota_team" rows="3"
-                                                      placeholder="Masukkan satu nama per baris">{{ old('nama_anggota_team') }}</textarea>
+                                            @php
+                                                $oldTeamMembers = old('nama_anggota_team', ['']);
+                                                if (!is_array($oldTeamMembers)) {
+                                                    $oldTeamMembers = preg_split('/\r\n|\r|\n/', $oldTeamMembers);
+                                                }
+                                                $oldTeamMembers = array_values(array_filter(array_map('trim', $oldTeamMembers), function ($name) {
+                                                    return $name !== '';
+                                                }));
+                                            @endphp
+                                            <div class="d-flex mb-2">
+                                                <input type="text" class="form-control" id="new-team-member-name"
+                                                       maxlength="255" placeholder="Masukkan nama anggota">
+                                                <button type="button" class="btn btn-outline-primary" id="add-team-member" style="margin-left: 8px;">Add</button>
+                                            </div>
+                                            <div id="nama_anggota_team_inputs" class="mb-2">
+                                                @foreach($oldTeamMembers as $index => $teamMember)
+                                                    <div class="d-flex mb-2 team-member-row">
+                                                        <span class="form-control">{{ $teamMember }}</span>
+                                                        <input type="hidden" name="nama_anggota_team[]" value="{{ $teamMember }}">
+                                                        <button type="button" class="btn btn-outline-danger remove-team-member" aria-label="Hapus anggota" style="margin-left: 8px;">Hapus</button>
+                                                    </div>
+                                                    @error('nama_anggota_team.' . $index)
+                                                        <span class="text-danger d-block mb-2" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                @endforeach
+                                            </div>
                                             @error('nama_anggota_team')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Satu nama anggota per baris.</small>
                                             <div class="mt-2">Jumlah anggota: <strong id="jumlah_anggota_team_display">0</strong> orang</div>
                                         </div>
                                     </div>
@@ -457,28 +465,28 @@
                                 </div>
 
                                 <div id="return-trip-fields">
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Tanggal Kepulangan <span id="return-date-required-marker" class="text-red" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">*</span></label>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
-                                                   name="tanggal_kepulangan" id="tanggal_kepulangan"
-                                                   value="{{ old('tanggal_kepulangan') }}" >
-                                            @error('tanggal_kepulangan')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror"
-                                                   name="jam_kepulangan" value="{{ old('jam_kepulangan') }}" >
-                                            @error('jam_kepulangan')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label mb-0 mt-2">Tanggal Kepulangan <span id="return-date-required-marker" class="text-red" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">*</span></label>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
+                                                    name="tanggal_kepulangan" id="tanggal_kepulangan"
+                                                    value="{{ old('tanggal_kepulangan') }}" >
+                                                @error('tanggal_kepulangan')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror"
+                                                    name="jam_kepulangan" value="{{ old('jam_kepulangan') }}" >
+                                                @error('jam_kepulangan')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 </div>
 
                                 <div class="form-group">
@@ -547,6 +555,7 @@
                                         </div>
                                         <div class="col-md-9">
                                             <select class="form-control @error('moda_transportasi') is-invalid @enderror" name="moda_transportasi" id="moda_transportasi" required>
+                                                <option value="">Pilih Moda Transportasi</option>
                                                 <option value="pesawat" {{ old('moda_transportasi') == 'pesawat' ? 'selected' : '' }}>Pesawat</option>
                                                 <option value="kereta" {{ old('moda_transportasi') == 'kereta' ? 'selected' : '' }}>Kereta</option>
                                                 <option value="bus" {{ old('moda_transportasi') == 'bus' ? 'selected' : '' }}>Bus / Travel</option>
@@ -587,24 +596,24 @@
                                             <label class="form-label mb-0 mt-2" id="label_asal">Lokasi Asal</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('kode_asal') is-invalid @enderror" id="kode_asal_select" name="kode_asal"></select>
-                                            <input type="hidden" name="kota_asal" id="kota_asal" value="{{ old('kota_asal') }}">
-                                            @error('kode_asal')
+                                            <input type="text" class="form-control @error('kota_asal') is-invalid @enderror"
+                                                   name="kota_asal" id="kota_asal" value="{{ old('kota_asal') }}" maxlength="255"
+                                                   placeholder="Masukkan lokasi asal">
+                                            @error('kota_asal')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Cari berdasarkan nama kota atau kode lokasi (contoh: Jakarta / CGK).</small>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2" id="label_tujuan">Lokasi Tujuan</label>
-                                        </div>
+                                        <div class="col-md-3"><label class="form-label mb-0 mt-2" id="tujuan-label">Kota Tujuan <span class="text-red">*</span></label></div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('kode_tujuan') is-invalid @enderror" id="kode_tujuan_select" name="kode_tujuan"></select>
-                                            @error('kode_tujuan')
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
+                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
+                                                   placeholder="Masukkan lokasi tujuan" required>
+                                            @error('kota_tujuan')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -622,7 +631,7 @@
                                             @error('rute')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Terisi otomatis dari kode asal & tujuan.</small>
+                                            <small class="text-muted">Terisi otomatis dari lokasi asal dan tujuan.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -667,7 +676,7 @@
                                             @error('bagasi_tambahan')
                                                 <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <div id="special-baggage-options" class="mt-2" style="{{ old('bagasi_tambahan') == '1' ? '' : 'display:none;' }}">
+                                            {{-- <div id="special-baggage-options" class="mt-2" style="{{ old('bagasi_tambahan') == '1' ? '' : 'display:none;' }}">
                                                 <span class="d-block mb-1">Pilih opsi bagasi:</span>
                                                 <label class="form-check form-check-inline">
                                                     <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="special_baggage" {{ in_array('special_baggage', old('opsi_transportasi', [])) ? 'checked' : '' }}>
@@ -677,7 +686,7 @@
                                                     <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="special_charge" {{ in_array('special_charge', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                     <span class="form-check-label">Special Charge</span>
                                                 </label>
-                                            </div>
+                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -711,11 +720,11 @@
                                         </div>
                                         <div class="col-md-9">
                                             <label class="form-check form-check-inline">
-                                                <input type="radio" class="form-check-input" name="opsi_transportasi[]" value="insurance" {{ in_array('insurance', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="insurance" {{ in_array('insurance', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                 <span class="form-check-label">Insurance</span>
                                             </label>
                                             <label class="form-check form-check-inline">
-                                                <input type="radio" class="form-check-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', old('opsi_transportasi', [])) ? 'checked' : '' }}>
+                                                <input type="checkbox" class="form-check-input" name="opsi_transportasi[]" value="refundable" {{ in_array('refundable', old('opsi_transportasi', [])) ? 'checked' : '' }}>
                                                 <span class="form-check-label">Refundable</span>
                                             </label>
                                             @error('opsi_transportasi')
@@ -777,12 +786,12 @@
                                                 <label class="form-label mb-0 mt-2" id="label_asal_pulang">Lokasi Asal Pulang</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <select class="form-control @error('kode_asal_pulang') is-invalid @enderror" id="kode_asal_pulang_select" name="kode_asal_pulang"></select>
-                                                <input type="hidden" name="kota_asal_pulang" id="kota_asal_pulang" value="{{ old('kota_asal_pulang') }}">
-                                                @error('kode_asal_pulang')
-                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                @enderror
-                                                <small class="text-muted">Cari berdasarkan nama kota atau kode lokasi (contoh: Jakarta / CGK).</small>
+                                                    <input type="text" class="form-control @error('kota_asal_pulang') is-invalid @enderror"
+                                                           name="kota_asal_pulang" id="kota_asal_pulang" value="{{ old('kota_asal_pulang') }}" maxlength="255"
+                                                           placeholder="Masukkan lokasi asal pulang">
+                                                    @error('kota_asal_pulang')
+                                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
                                             </div>
                                         </div>
                                     </div>
@@ -793,11 +802,13 @@
                                                 <label class="form-label mb-0 mt-2" id="label_tujuan_pulang">Lokasi Tujuan Pulang</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <select class="form-control @error('kode_tujuan_pulang') is-invalid @enderror" id="kode_tujuan_pulang_select" name="kode_tujuan_pulang"></select>
-                                                @error('kode_tujuan_pulang')
-                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                @enderror
-                                            </div>
+                                                    <input type="text" class="form-control @error('kota_tujuan_pulang') is-invalid @enderror"
+                                                           name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang') }}" maxlength="255"
+                                                           placeholder="Masukkan lokasi tujuan pulang">
+                                                    @error('kota_tujuan_pulang')
+                                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
                                         </div>
                                     </div>
 
@@ -812,7 +823,7 @@
                                                 @error('rute_pulang')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
-                                                <small class="text-muted">Terisi otomatis dari kode asal & tujuan pulang.</small>
+                                                <small class="text-muted">Terisi otomatis dari lokasi asal dan tujuan pulang.</small>
                                             </div>
                                         </div>
                                     </div>
@@ -1136,202 +1147,49 @@
             $('#email').val('');
         });
 
-        // ===== Lokasi asal/tujuan =====
-        function currentLocationType() {
-            var moda = $('#moda_transportasi').val();
-            if (moda === 'pesawat') return 'airport';
-            if (moda === 'kereta' || moda === 'whoosh') return 'train';
-            if (moda === 'kapal') return 'port';
-            if (moda === 'bus') return 'bus';
-            return '';
-        }
-
-        function locationLabels() {
-            var moda = $('#moda_transportasi').val();
-            if (moda === 'pesawat') return { asal: 'Bandara Asal', tujuan: 'Bandara Tujuan', search: 'Cari bandara...' };
-            if (moda === 'kereta' || moda === 'whoosh') return { asal: 'Stasiun Asal', tujuan: 'Stasiun Tujuan', search: 'Cari stasiun...' };
-            if (moda === 'kapal') return { asal: 'Pelabuhan Asal', tujuan: 'Pelabuhan Tujuan', search: 'Cari pelabuhan...' };
-            if (moda === 'bus') return { asal: 'Terminal Asal', tujuan: 'Terminal Tujuan', search: 'Cari terminal...' };
-            return { asal: 'Lokasi Asal', tujuan: 'Lokasi Tujuan', search: 'Cari lokasi...' };
+        // ===== Lokasi manual =====
+        function transportLocationLabel(moda) {
+            if (moda === 'pesawat') return 'Bandara';
+            if (moda === 'kereta' || moda === 'whoosh') return 'Stasiun';
+            if (moda === 'kapal') return 'Pelabuhan';
+            if (moda === 'bus') return 'Terminal';
+            return 'Lokasi';
         }
 
         function updateLocationLabels() {
-            var label = locationLabels();
-            $('#label_asal').text(label.asal);
-            $('#label_tujuan').text(label.tujuan);
-            $('#kode_asal_select, #kode_tujuan_select').each(function() {
-                var instance = $(this).data('select2');
-                if (instance) {
-                    instance.$container.find('.select2-search__field').attr('placeholder', label.search);
-                    instance.$container.find('.select2-selection__placeholder').text(label.search);
-                }
-            });
-        }
-
-        function initLocationSelect(selector) {
-            $(selector).select2({
-                minimumInputLength: 1,
-                placeholder: 'Cari lokasi...',
-                allowClear: true,
-                ajax: {
-                    url: '{{ route("papd.getLocations") }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return { q: params.term, type: currentLocationType() };
-                    },
-                    processResults: function(data) {
-                        return { results: data.length ? data : [] };
-                    },
-                    cache: true
-                },
-                language: {
-                    noResults: function() { return 'Lokasi tidak ditemukan'; },
-                    searching: function() { return 'Mencari...'; }
-                }
-            });
-        }
-
-        function locationCity(text) {
-            var m = (text || '').match(/^(.*?)\s*\(/);
-            return m ? m[1].trim() : '';
-        }
-
-        function syncRoute() {
-            var originText = $('#kode_asal_select option:selected').text();
-            var destText = $('#kode_tujuan_select option:selected').text();
-            var originCode = $('#kode_asal_select').val() || '';
-            var destCode = $('#kode_tujuan_select').val() || '';
-            var originCity = locationCity(originText);
-            var destCity = locationCity(destText);
-
-            if (originCity) {
-                $('#kota_asal').val(originCity);
-            }
-
-            if (originCode && destCode) {
-                $('#rute').val(originCity + ' (' + originCode + ') - ' + destCity + ' (' + destCode + ')');
-            }
-        }
-
-        initLocationSelect('#kode_asal_select');
-        initLocationSelect('#kode_tujuan_select');
-        updateLocationLabels();
-
-        $('#kode_asal_select').on('select2:select select2:clear', syncRoute);
-        $('#kode_tujuan_select').on('select2:select select2:clear', syncRoute);
-        $('#moda_transportasi').on('change', function() {
-            $('#kode_asal_select').val(null).trigger('change');
-            $('#kode_tujuan_select').val(null).trigger('change');
-            $('#kota_asal').val('');
-            $('#rute').val('');
-            updateLocationLabels();
-        });
-
-        @if(old('kode_asal'))
-            var oldOrigin = new Option('{{ old('kota_asal') }} ({{ old('kode_asal') }})', '{{ old('kode_asal') }}', true, true);
-            $('#kode_asal_select').append(oldOrigin).trigger('change');
-        @endif
-        @if(old('kode_tujuan'))
-            var oldDest = new Option('{{ old('kota_tujuan') }} ({{ old('kode_tujuan') }})', '{{ old('kode_tujuan') }}', true, true);
-            $('#kode_tujuan_select').append(oldDest).trigger('change');
-        @endif
-
-        // ===== Lokasi pulang =====
-        function currentReturnLocationType() {
-            var moda = $('#moda_transportasi_pulang').val();
-            if (moda === 'pesawat') return 'airport';
-            if (moda === 'kereta' || moda === 'whoosh') return 'train';
-            if (moda === 'kapal') return 'port';
-            if (moda === 'bus') return 'bus';
-            return '';
-        }
-
-        function returnLocationLabels() {
-            var moda = $('#moda_transportasi_pulang').val();
-            if (moda === 'pesawat') return { asal: 'Bandara Asal Pulang', tujuan: 'Bandara Tujuan Pulang', search: 'Cari bandara...' };
-            if (moda === 'kereta' || moda === 'whoosh') return { asal: 'Stasiun Asal Pulang', tujuan: 'Stasiun Tujuan Pulang', search: 'Cari stasiun...' };
-            if (moda === 'kapal') return { asal: 'Pelabuhan Asal Pulang', tujuan: 'Pelabuhan Tujuan Pulang', search: 'Cari pelabuhan...' };
-            if (moda === 'bus') return { asal: 'Terminal Asal Pulang', tujuan: 'Terminal Tujuan Pulang', search: 'Cari terminal...' };
-            return { asal: 'Lokasi Asal Pulang', tujuan: 'Lokasi Tujuan Pulang', search: 'Cari lokasi...' };
+            var label = transportLocationLabel($('#moda_transportasi').val());
+            $('#label_asal').text(label + ' Asal');
+            $('#kota_asal').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' asal');
         }
 
         function updateReturnLocationLabels() {
-            var label = returnLocationLabels();
-            $('#label_asal_pulang').text(label.asal);
-            $('#label_tujuan_pulang').text(label.tujuan);
-            $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').each(function() {
-                var instance = $(this).data('select2');
-                if (instance) {
-                    instance.$container.find('.select2-search__field').attr('placeholder', label.search);
-                    instance.$container.find('.select2-selection__placeholder').text(label.search);
-                }
-            });
+            var label = transportLocationLabel($('#moda_transportasi_pulang').val());
+            $('#label_asal_pulang').text(label + ' Asal Pulang');
+            $('#label_tujuan_pulang').text(label + ' Tujuan Pulang');
+            $('#kota_asal_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' asal pulang');
+            $('#kota_tujuan_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' tujuan pulang');
         }
 
-        function initReturnLocationSelect(selector) {
-            $(selector).select2({
-                minimumInputLength: 1,
-                placeholder: 'Cari lokasi...',
-                allowClear: true,
-                ajax: {
-                    url: '{{ route("papd.getLocations") }}',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return { q: params.term, type: currentReturnLocationType() };
-                    },
-                    processResults: function(data) {
-                        return { results: data.length ? data : [] };
-                    },
-                    cache: true
-                },
-                language: {
-                    noResults: function() { return 'Lokasi tidak ditemukan'; },
-                    searching: function() { return 'Mencari...'; }
-                }
-            });
+        function syncRoute() {
+            var origin = $.trim($('#kota_asal').val());
+            var destination = $.trim($('#kota_tujuan').val());
+            $('#rute').val(origin && destination ? origin + ' - ' + destination : '');
         }
 
         function syncReturnRoute() {
-            var originText = $('#kode_asal_pulang_select option:selected').text();
-            var destText = $('#kode_tujuan_pulang_select option:selected').text();
-            var originCode = $('#kode_asal_pulang_select').val() || '';
-            var destCode = $('#kode_tujuan_pulang_select').val() || '';
-            var originCity = locationCity(originText);
-            var destCity = locationCity(destText);
-
-            if (originCity) {
-                $('#kota_asal_pulang').val(originCity);
-            }
-
-            if (originCode && destCode) {
-                $('#rute_pulang').val(originCity + ' (' + originCode + ') - ' + destCity + ' (' + destCode + ')');
-            }
+            var origin = $.trim($('#kota_asal_pulang').val());
+            var destination = $.trim($('#kota_tujuan_pulang').val());
+            $('#rute_pulang').val(origin && destination ? origin + ' - ' + destination : '');
         }
 
-        initReturnLocationSelect('#kode_asal_pulang_select');
-        initReturnLocationSelect('#kode_tujuan_pulang_select');
+        $('#kota_asal, #kota_tujuan').on('input', syncRoute);
+        $('#kota_asal_pulang, #kota_tujuan_pulang').on('input', syncReturnRoute);
+        $('#moda_transportasi').on('change', updateLocationLabels);
+        $('#moda_transportasi_pulang').on('change', updateReturnLocationLabels);
+        updateLocationLabels();
         updateReturnLocationLabels();
-
-        $('#kode_asal_pulang_select').on('select2:select select2:clear', syncReturnRoute);
-        $('#kode_tujuan_pulang_select').on('select2:select select2:clear', syncReturnRoute);
-        $('#moda_transportasi_pulang').on('change', function() {
-            $('#kode_asal_pulang_select').val(null).trigger('change');
-            $('#kode_tujuan_pulang_select').val(null).trigger('change');
-            $('#kota_asal_pulang').val('');
-            $('#rute_pulang').val('');
-            updateReturnLocationLabels();
-        });
-
-        @if(old('kode_asal_pulang'))
-            var oldReturnOrigin = new Option('{{ old('kota_asal_pulang') }} ({{ old('kode_asal_pulang') }})', '{{ old('kode_asal_pulang') }}', true, true);
-            $('#kode_asal_pulang_select').append(oldReturnOrigin).trigger('change');
-        @endif
-        @if(old('kode_tujuan_pulang'))
-            var oldReturnDest = new Option('{{ old('kode_tujuan_pulang') }}', '{{ old('kode_tujuan_pulang') }}', true, true);
-            $('#kode_tujuan_pulang_select').append(oldReturnDest).trigger('change');
-        @endif
+        syncRoute();
+        syncReturnRoute();
 
         function setApplicantType(clearFields) {
             var isInternal = $('input[name="jenis_pemohon"]:checked').val() === 'internal';
@@ -1455,22 +1313,52 @@
         function updateTravelRole() {
             var isTeam = $('input[name="role_perjalanan"]:checked').val() === 'team';
             $('#nama_anggota_team_group').toggle(isTeam);
-            $('#nama_anggota_team').prop('required', isTeam).prop('disabled', !isTeam);
             if (!isTeam) {
-                $('#nama_anggota_team').val('');
+                $('#nama_anggota_team_inputs').empty();
+                $('#new-team-member-name').val('');
             }
-            updateTeamCount();
+            refreshTeamInputs();
         }
 
-        function updateTeamCount() {
-            var names = $('#nama_anggota_team').val().split(/\r\n|\r|\n/).filter(function(name) {
-                return name.trim() !== '';
-            });
-            $('#jumlah_anggota_team_display').text(names.length);
+        function refreshTeamInputs() {
+            var isTeam = $('input[name="role_perjalanan"]:checked').val() === 'team';
+            var rows = $('#nama_anggota_team_inputs .team-member-row');
+            $('#new-team-member-name').prop('required', isTeam && rows.length === 0).prop('disabled', !isTeam);
+            rows.find('input[name="nama_anggota_team[]"]').prop('disabled', !isTeam);
+            $('#jumlah_anggota_team_display').text(rows.length);
         }
+
+        $('#add-team-member').on('click', function() {
+            var name = $.trim($('#new-team-member-name').val());
+            if (!name) {
+                $('#new-team-member-name').trigger('focus');
+                return;
+            }
+
+            var row = $('<div class="d-flex mb-2 team-member-row"></div>');
+            var memberName = $('<span class="form-control"></span>').text(name);
+            var input = $('<input type="hidden" name="nama_anggota_team[]">').val(name);
+            var removeButton = $('<button type="button" class="btn btn-outline-danger remove-team-member" aria-label="Hapus anggota" style="margin-left: 8px;">Hapus</button>');
+            row.append(memberName, input, removeButton);
+            $('#nama_anggota_team_inputs').append(row);
+            $('#new-team-member-name').val('');
+            refreshTeamInputs();
+            $('#new-team-member-name').trigger('focus');
+        });
+
+        $('#new-team-member-name').on('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                $('#add-team-member').trigger('click');
+            }
+        });
+
+        $('#nama_anggota_team_inputs').on('click', '.remove-team-member', function() {
+            $(this).closest('.team-member-row').remove();
+            refreshTeamInputs();
+        });
 
         $('input[name="role_perjalanan"]').on('change', updateTravelRole);
-        $('#nama_anggota_team').on('input', updateTeamCount);
         updateTravelRole();
 
         function updateTicketTypeFields() {
@@ -1481,9 +1369,8 @@
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');
-                $('#kode_asal_pulang_select').val(null).trigger('change');
-                $('#kode_tujuan_pulang_select').val(null).trigger('change');
                 $('#kota_asal_pulang').val('');
+                $('#kota_tujuan_pulang').val('');
                 $('#rute_pulang').val('');
                 updateReturnLocationLabels();
             }

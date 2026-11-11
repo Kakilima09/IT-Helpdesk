@@ -6,20 +6,20 @@
     <style>
         @page {
             size: A4;
-            margin: 0.6cm 0.6cm 0.6cm 0.6cm;
+            margin: 0.35cm;
         }
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 11px;
-            line-height: 1.2;
+            font-size: 9px;
+            line-height: 1.12;
             color: #333;
         }
         /* ===== HEADER ===== */
         .header-container {
             width: 100%;
-            border-bottom: 2px solid #1b86c7;
-            margin-bottom: 4px;
-            padding-bottom: 3px;
+            border-bottom: 1px solid #1b86c7;
+            margin-bottom: 2px;
+            padding-bottom: 1px;
         }
         .header-table {
             width: 100%;
@@ -34,31 +34,31 @@
             text-align: right;
         }
         .logo {
-            max-height: 80px;
+            max-height: 42px;
             width: auto;
         }
         .title-main {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: bold;
             color: #1b86c7;
         }
         .title-sub {
-            font-size: 11px;
+            font-size: 9px;
             font-weight: bold;
             color: #1b86c7;
         }
         .title-sppd {
-            font-size: 8px;
+            font-size: 7px;
             color: #888;
-            margin-top: 1px;
+            margin-top: 0;
         }
         /* ===== BADGE ===== */
         .badge {
             display: inline-block;
-            padding: 1px 8px;
+            padding: 1px 5px;
             border-radius: 8px;
             color: #fff;
-            font-size: 8px;
+            font-size: 9px;
             font-weight: bold;
             text-transform: uppercase;
         }
@@ -67,26 +67,30 @@
         .badge-danger { background: #dc3545; }
         /* ===== SECTION ===== */
         .section {
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
         .section-title {
             background: #f0f5f9;
-            padding: 1px 5px;
+            padding: 2px 4px;
             font-weight: bold;
-            font-size: 8px;
+            font-size: 9px;
             color: #1b86c7;
-            border-left: 3px solid #1b86c7;
-            margin-bottom: 2px;
+            border-left: 2px solid #1b86c7;
+            margin-bottom: 1px;
         }
         /* TABEL UNTUK BARIS LABEL-VALUE */
         .detail-table {
             width: 100%;
+            font-size: 12px;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         .detail-table td {
             padding: 1px 2px;
             border-bottom: 1px dotted #f0f0f0;
             vertical-align: top;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
         .label-col {
             width: 22%;
@@ -97,14 +101,17 @@
             width: 78%;
         }
         .footer {
-            margin-top: 6px;
-            font-size: 6.5px;
+            margin-top: 2px;
+            font-size: 9px;
             color: #aaa;
             text-align: center;
             border-top: 1px solid #ddd;
-            padding-top: 3px;
+            padding-top: 1px;
         }
-        .page-break { page-break-after: avoid; }
+        .page-break,
+        .detail-table tr {
+            page-break-inside: avoid;
+        }
     </style>
 </head>
 <body>
@@ -114,15 +121,17 @@
     <tr>
         <td style="width:15%;"></td>
         <td class="header-center" style="width:70%;">
-            <div class="title-main">Persetujuan Permintaan Akomodasi</div>
+            <div class="title-main">Persetujuan Pengajuan Akomodasi</div>
             <div class="title-sub">Perjalanan Dinas (PAPD)</div>
-            <div class="title-sppd">No. SPPD: {{ $papdRequest->no_sppd ?? '-' }}</div>
+            @if($papdRequest->no_sppd)
+                <div class="title-sppd">No. SPPD: {{ $papdRequest->no_sppd }}</div>
+            @endif
         </td>
         <td class="header-right" style="width:15%;">
             @if($logo)
                 <img src="{{ $logo }}" alt="Logo" class="logo">
             @else
-                <div style="font-size:10px; font-weight:bold; color:#1b86c7;">LOGO</div>
+                <div style="font-size:8px; font-weight:bold; color:#1b86c7;">LOGO</div>
             @endif
         </td>
     </tr>
@@ -130,7 +139,7 @@
 
 <!-- ===== STATUS ===== -->
 <div style="text-align:center; margin-bottom:3px;">
-    <span class="badge 
+    <span class="badge
         @if($papdRequest->status == 'approved') badge-success
         @elseif($papdRequest->status == 'rejected') badge-danger
         @else badge-warning @endif">
@@ -143,17 +152,17 @@
     <div class="section-title">A. Informasi Pemohon</div>
     <table class="detail-table">
         <tr><td class="label-col">Jenis Pemohon</td><td class="value-col">{{ ucfirst($papdRequest->jenis_pemohon ?? 'internal') }}</td></tr>
-        <tr><td class="label-col">Nama Lengkap</td><td class="value-col">{{ $papdRequest->nama_lengkap }}</td></tr>
+        @if($papdRequest->nama_lengkap)<tr><td class="label-col">Nama Lengkap</td><td class="value-col">{{ $papdRequest->nama_lengkap }}</td></tr>@endif
         @if(($papdRequest->jenis_pemohon ?? 'internal') === 'internal')
-        <tr><td class="label-col">ID Karyawan</td><td class="value-col">{{ $papdRequest->id_karyawan }}</td></tr>
+            @if($papdRequest->id_karyawan)<tr><td class="label-col">ID Karyawan</td><td class="value-col">{{ $papdRequest->id_karyawan }}</td></tr>@endif
         @endif
-        <tr><td class="label-col">NIK KTP</td><td class="value-col">{{ $papdRequest->nik_ktp }}</td></tr>
-        <tr><td class="label-col">Jabatan</td><td class="value-col">{{ $papdRequest->jabatan }}</td></tr>
-        <tr><td class="label-col">Departemen</td><td class="value-col">{{ $papdRequest->departemen }}</td></tr>
-        <tr><td class="label-col">Atasan</td><td class="value-col">{{ $papdRequest->atasan_nama }}</td></tr>
-        <tr><td class="label-col">No HP</td><td class="value-col">{{ $papdRequest->no_hp }}</td></tr>
-        <tr><td class="label-col">Email</td><td class="value-col">{{ $papdRequest->email }}</td></tr>
-        <tr><td class="label-col">Tanggal Lahir</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->ttl)->format('d-m-Y') }}</td></tr>
+        @if($papdRequest->nik_ktp)<tr><td class="label-col">NIK KTP</td><td class="value-col">{{ $papdRequest->nik_ktp }}</td></tr>@endif
+        @if($papdRequest->jabatan)<tr><td class="label-col">Jabatan</td><td class="value-col">{{ $papdRequest->jabatan }}</td></tr>@endif
+        @if($papdRequest->departemen)<tr><td class="label-col">Departemen</td><td class="value-col">{{ $papdRequest->departemen }}</td></tr>@endif
+        @if($papdRequest->atasan_nama)<tr><td class="label-col">Atasan</td><td class="value-col">{{ $papdRequest->atasan_nama }}</td></tr>@endif
+        @if($papdRequest->no_hp)<tr><td class="label-col">No HP</td><td class="value-col">{{ $papdRequest->no_hp }}</td></tr>@endif
+        @if($papdRequest->email)<tr><td class="label-col">Email</td><td class="value-col">{{ $papdRequest->email }}</td></tr>@endif
+        @if($papdRequest->ttl)<tr><td class="label-col">Tanggal Lahir</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->ttl)->format('d-m-Y') }}</td></tr>@endif
     </table>
 </div>
 
@@ -163,28 +172,30 @@
     <table class="detail-table">
         <tr><td class="label-col">Jenis</td><td class="value-col">{{ ucfirst($papdRequest->jenis_perjalanan) }}</td></tr>
         @if($papdRequest->jenis_perjalanan === 'domestik')
-        <tr><td class="label-col">Nama Sesuai KTP</td><td class="value-col">{{ $papdRequest->nama_sesuai_ktp ?? '-' }}</td></tr>
+            @if($papdRequest->nama_sesuai_ktp)<tr><td class="label-col">Nama Sesuai KTP</td><td class="value-col">{{ $papdRequest->nama_sesuai_ktp }}</td></tr>@endif
         @endif
         @if($papdRequest->jenis_perjalanan === 'internasional')
-        <tr><td class="label-col">No Paspor</td><td class="value-col">{{ $papdRequest->no_paspor ?? '-' }}</td></tr>
-        <tr><td class="label-col">Exp Paspor</td><td class="value-col">{{ $papdRequest->exp_date_paspor ? \Carbon\Carbon::parse($papdRequest->exp_date_paspor)->format('d-m-Y') : '-' }}</td></tr>
-        <tr><td class="label-col">Nama sesuai Paspor</td><td class="value-col">{{ $papdRequest->nama_paspor ?? '-' }}</td></tr>
+            @if($papdRequest->no_paspor)<tr><td class="label-col">No Paspor</td><td class="value-col">{{ $papdRequest->no_paspor }}</td></tr>@endif
+            @if($papdRequest->exp_date_paspor)<tr><td class="label-col">Exp Paspor</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->exp_date_paspor)->format('d-m-Y') }}</td></tr>@endif
+            @if($papdRequest->nama_paspor)<tr><td class="label-col">Nama sesuai Paspor</td><td class="value-col">{{ $papdRequest->nama_paspor }}</td></tr>@endif
         @endif
         <tr><td class="label-col">{{ $papdRequest->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}</td><td class="value-col">{{ $papdRequest->kota_tujuan }}</td></tr>
-        <tr><td class="label-col">Agenda</td><td class="value-col">{{ $papdRequest->agenda }}</td></tr>
+        @if($papdRequest->agenda)<tr><td class="label-col">Agenda</td><td class="value-col">{{ $papdRequest->agenda }}</td></tr>@endif
         <tr><td class="label-col">Role Perjalanan</td><td class="value-col">{{ ucfirst($papdRequest->role_perjalanan ?? 'sendiri') }}</td></tr>
         @if($papdRequest->role_perjalanan === 'team')
-        <tr><td class="label-col">Jumlah Anggota</td><td class="value-col">{{ $papdRequest->jumlah_anggota_team ?? 0 }} orang</td></tr>
-        <tr><td class="label-col">Nama Anggota Team</td><td class="value-col">{!! nl2br(e($papdRequest->nama_anggota_team)) !!}</td></tr>
+            @if($papdRequest->jumlah_anggota_team)<tr><td class="label-col">Jumlah Anggota</td><td class="value-col">{{ $papdRequest->jumlah_anggota_team }} orang</td></tr>@endif
+            @if($papdRequest->nama_anggota_team)<tr><td class="label-col">Nama Anggota Team</td><td class="value-col">{!! nl2br(e($papdRequest->nama_anggota_team)) !!}</td></tr>@endif
         @endif
-        <tr><td class="label-col">No SPPD</td><td class="value-col">{{ $papdRequest->no_sppd ?? '-' }}</td></tr>
+        @if($papdRequest->no_sppd)<tr><td class="label-col">No SPPD</td><td class="value-col">{{ $papdRequest->no_sppd }}</td></tr>@endif
         <tr><td class="label-col">Berangkat</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</td></tr>
+        @if($papdRequest->tanggal_kepulangan)
         <tr><td class="label-col">Kembali</td><td class="value-col">
-            {{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') : '-' }}
+            {{ \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') }}
             {{ $papdRequest->jam_kepulangan ?? '' }}
         </td></tr>
-        <tr><td class="label-col">Lama Perjalanan</td><td class="value-col">{{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</td></tr>
-        <tr><td class="label-col">Pembebanan Biaya</td><td class="value-col">{{ $papdRequest->pembebanan_biaya ?? '-' }}</td></tr>
+        @endif
+        @if($papdRequest->durasi_hari)<tr><td class="label-col">Lama Perjalanan</td><td class="value-col">{{ $papdRequest->durasi_hari }} hari</td></tr>@endif
+        @if($papdRequest->pembebanan_biaya)<tr><td class="label-col">Pembebanan Biaya</td><td class="value-col">{{ $papdRequest->pembebanan_biaya }}</td></tr>@endif
     </table>
 </div>
 
@@ -212,24 +223,30 @@
         @if($papdRequest->moda_transportasi_pulang)
         <tr><td class="label-col">Moda Pulang</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi_pulang) }}</td></tr>
         @endif
-        <tr><td class="label-col">Kelas</td><td class="value-col">{{ $papdRequest->kelas ?? '-' }}</td></tr>
-        <tr><td class="label-col">Rute</td><td class="value-col">{{ $papdRequest->rute ?? '-' }}</td></tr>
-        <tr><td class="label-col">Nama Operator</td><td class="value-col">{{ $papdRequest->detail_maskapai ?? '-' }}</td></tr>
-        <tr><td class="label-col">Nomor Perjalanan</td><td class="value-col">{{ $papdRequest->no_penerbangan ?? '-' }}</td></tr>
+        @if($papdRequest->kelas)<tr><td class="label-col">Kelas</td><td class="value-col">{{ $papdRequest->kelas }}</td></tr>@endif
+        @if($papdRequest->rute)<tr><td class="label-col">Rute</td><td class="value-col">{{ $papdRequest->rute }}</td></tr>@endif
+        @if($papdRequest->detail_maskapai)<tr><td class="label-col">Nama Operator</td><td class="value-col">{{ $papdRequest->detail_maskapai }}</td></tr>@endif
+        @if($papdRequest->no_penerbangan)<tr><td class="label-col">Nomor Perjalanan</td><td class="value-col">{{ $papdRequest->no_penerbangan }}</td></tr>@endif
         <tr><td class="label-col">Bagasi Tambahan</td><td class="value-col">{{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</td></tr>
         @if($papdRequest->bagasi_tambahan)
-        <tr><td class="label-col">Opsi Bagasi</td><td class="value-col">{{ $baggageOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
+            @if($baggageOptions->isNotEmpty())
+            <tr><td class="label-col">Opsi Bagasi</td><td class="value-col">{{ $baggageOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') }}</td></tr>
+            @endif
         @endif
         <tr><td class="label-col">Transportasi Lokal</td><td class="value-col">{{ $papdRequest->transportasi_lokal ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><td class="label-col">Opsi Tambahan</td><td class="value-col">{{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
+        @if($otherTransportOptions->isNotEmpty())
+        <tr><td class="label-col">Opsi Tambahan</td><td class="value-col">{{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') }}</td></tr>
+        @endif
         @if($papdRequest->moda_transportasi_pulang)
-        <tr><td class="label-col">Kelas Pulang</td><td class="value-col">{{ $papdRequest->kelas_pulang ?? '-' }}</td></tr>
-        <tr><td class="label-col">Rute Pulang</td><td class="value-col">{{ $papdRequest->rute_pulang ?? '-' }}</td></tr>
-        <tr><td class="label-col">Nama Operator Pulang</td><td class="value-col">{{ $papdRequest->detail_maskapai_pulang ?? '-' }}</td></tr>
-        <tr><td class="label-col">Nomor Perjalanan Pulang</td><td class="value-col">{{ $papdRequest->no_penerbangan_pulang ?? '-' }}</td></tr>
+        @if($papdRequest->kelas_pulang)<tr><td class="label-col">Kelas Pulang</td><td class="value-col">{{ $papdRequest->kelas_pulang }}</td></tr>@endif
+        @if($papdRequest->rute_pulang)<tr><td class="label-col">Rute Pulang</td><td class="value-col">{{ $papdRequest->rute_pulang }}</td></tr>@endif
+        @if($papdRequest->detail_maskapai_pulang)<tr><td class="label-col">Nama Operator Pulang</td><td class="value-col">{{ $papdRequest->detail_maskapai_pulang }}</td></tr>@endif
+        @if($papdRequest->no_penerbangan_pulang)<tr><td class="label-col">Nomor Perjalanan Pulang</td><td class="value-col">{{ $papdRequest->no_penerbangan_pulang }}</td></tr>@endif
         <tr><td class="label-col">Bagasi Tambahan Pulang</td><td class="value-col">{{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><td class="label-col">Transportasi Lokal Pulang</td><td class="value-col">{{ $papdRequest->transportasi_lokal_pulang ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><td class="label-col">Opsi Tambahan Pulang</td><td class="value-col">{{ collect($papdRequest->opsi_transportasi_pulang ?? [])->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</td></tr>
+        @if(!empty($papdRequest->opsi_transportasi_pulang))
+        <tr><td class="label-col">Opsi Tambahan Pulang</td><td class="value-col">{{ collect($papdRequest->opsi_transportasi_pulang)->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') }}</td></tr>
+        @endif
         @endif
     </table>
 </div>
@@ -240,13 +257,13 @@
     <table class="detail-table">
         <tr><td class="label-col">Reservasi</td><td class="value-col">{{ $papdRequest->hotel_reservasi ? 'Ya' : 'Tidak' }}</td></tr>
         @if($papdRequest->hotel_reservasi)
-        <tr><td class="label-col">Nama Hotel</td><td class="value-col">{{ $papdRequest->nama_hotel ?? '-' }}</td></tr>
-        <tr><td class="label-col">Lokasi</td><td class="value-col">{{ $papdRequest->lokasi_hotel ?? '-' }}</td></tr>
-        <tr><td class="label-col">Alamat</td><td class="value-col">{{ $papdRequest->alamat_hotel ?? '-' }}</td></tr>
-        <tr><td class="label-col">Check-in</td><td class="value-col">{{ $papdRequest->check_in ? \Carbon\Carbon::parse($papdRequest->check_in)->format('d-m-Y') : '-' }}</td></tr>
-        <tr><td class="label-col">Check-out</td><td class="value-col">{{ $papdRequest->check_out ? \Carbon\Carbon::parse($papdRequest->check_out)->format('d-m-Y') : '-' }}</td></tr>
-        <tr><td class="label-col">Jumlah Kamar</td><td class="value-col">{{ $papdRequest->jumlah_kamar ?? '-' }}</td></tr>
-        <tr><td class="label-col">Permintaan Khusus</td><td class="value-col">{{ $papdRequest->permintaan_khusus ?? '-' }}</td></tr>
+        @if($papdRequest->nama_hotel)<tr><td class="label-col">Nama Hotel</td><td class="value-col">{{ $papdRequest->nama_hotel }}</td></tr>@endif
+        @if($papdRequest->lokasi_hotel)<tr><td class="label-col">Lokasi</td><td class="value-col">{{ $papdRequest->lokasi_hotel }}</td></tr>@endif
+        @if($papdRequest->alamat_hotel)<tr><td class="label-col">Alamat</td><td class="value-col">{{ $papdRequest->alamat_hotel }}</td></tr>@endif
+        @if($papdRequest->check_in)<tr><td class="label-col">Check-in</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->check_in)->format('d-m-Y') }}</td></tr>@endif
+        @if($papdRequest->check_out)<tr><td class="label-col">Check-out</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->check_out)->format('d-m-Y') }}</td></tr>@endif
+        @if($papdRequest->jumlah_kamar)<tr><td class="label-col">Jumlah Kamar</td><td class="value-col">{{ $papdRequest->jumlah_kamar }}</td></tr>@endif
+        @if($papdRequest->permintaan_khusus)<tr><td class="label-col">Permintaan Khusus</td><td class="value-col">{{ $papdRequest->permintaan_khusus }}</td></tr>@endif
         @endif
     </table>
 </div>

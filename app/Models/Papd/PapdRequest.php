@@ -34,7 +34,7 @@ class PapdRequest extends Model
         'moda_transportasi', 'moda_transportasi_pulang', 'jenis_tiket', 'kelas', 'rute', 'detail_maskapai',
         'no_penerbangan', 'bagasi_tambahan', 'transportasi_lokal',
         'opsi_transportasi',
-        'kelas_pulang', 'kota_asal_pulang', 'kode_asal_pulang', 'kode_tujuan_pulang', 'rute_pulang',
+        'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang', 'kode_tujuan_pulang', 'rute_pulang',
         'detail_maskapai_pulang', 'no_penerbangan_pulang', 'bagasi_tambahan_pulang',
         'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
         'hotel_reservasi', 'nama_hotel', 'lokasi_hotel', 'alamat_hotel',
