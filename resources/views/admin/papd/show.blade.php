@@ -29,7 +29,7 @@
 <div class="page-header d-xl-flex d-block">
     <div class="page-leftheader">
         <h4 class="page-title">
-            <span class="font-weight-normal text-muted ms-2">Detail PAPD #{{ $papdRequest->id }}</span>
+            <span class="font-weight-normal text-muted ms-2">Detail {{ $papdRequest->ticket_number }}</span>
         </h4>
     </div>
     <div class="page-rightheader ms-md-auto">
@@ -137,7 +137,7 @@
                 <div class="detail-row"><span class="detail-label">Moda Pulang</span> {{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div>
             @endif
             <div class="detail-row"><span class="detail-label">Kelas</span> {{ $papdRequest->kelas ?? '-' }}</div>
-            <div class="detail-row"><span class="detail-label">Rute</span> {{ $papdRequest->rute ?? '-' }}</div>
+            <div class="detail-row"><span class="detail-label">Catatan Berangkat</span> {{ $papdRequest->catatan_berangkat ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Nama Operator</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Nomor Perjalanan</span> {{ $papdRequest->no_penerbangan ?? '-' }}</div>
             <div class="detail-row"><span class="detail-label">Bagasi Tambahan</span> {{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div>
@@ -148,7 +148,7 @@
             <div class="detail-row"><span class="detail-label">Opsi Tambahan</span> {{ $otherTransportOptions->map(function ($option) use ($optionLabels) { return $optionLabels[$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
             @if($papdRequest->moda_transportasi_pulang)
                 <div class="detail-row"><span class="detail-label">Kelas Pulang</span> {{ $papdRequest->kelas_pulang ?? '-' }}</div>
-                <div class="detail-row"><span class="detail-label">Rute Pulang</span> {{ $papdRequest->rute_pulang ?? '-' }}</div>
+                <div class="detail-row"><span class="detail-label">Catatan Pulang</span> {{ $papdRequest->catatan_pulang ?? '-' }}</div>
                 <div class="detail-row"><span class="detail-label">Nama Operator Pulang</span> {{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div>
                 <div class="detail-row"><span class="detail-label">Nomor Perjalanan Pulang</span> {{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div>
                 <div class="detail-row"><span class="detail-label">Bagasi Tambahan Pulang</span> {{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div>

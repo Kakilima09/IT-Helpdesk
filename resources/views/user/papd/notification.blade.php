@@ -185,7 +185,7 @@
                                 <div class="notification-empty">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.9,21.1l-19-19C2.7,2,2.4,2,2.2,2.1C2,2.3,2,2.7,2.1,2.9l4.5,4.5C6.2,8.2,6,9.1,6,10v4.1c-1.1,0.2-2,1.2-2,2.4v2C4,18.8,4.2,19,4.5,19h3.7c0.5,1.7,2,3,3.8,3c1.8,0,3.4-1.3,3.8-3h2.5l2.9,2.9c0.1,0.1,0.2,0.1,0.4,0.1c0.1,0,0.3-0.1,0.4-0.1C22,21.7,22,21.3,21.9,21.1z"/></svg>
                                     <h5>Belum ada notifikasi PAPD</h5>
-                                    <p class="text-muted">Anda akan menerima notifikasi terkait permintaan perjalanan dinas di sini.</p>
+                                    <p class="text-muted">Anda akan menerima notifikasi terkait pengajuan perjalanan dinas di sini.</p>
                                     <a href="{{ route('papd.create') }}" class="btn btn-primary mt-3">
                                         <i class="fe fe-plus"></i> Buat Permintaan Baru
                                     </a>

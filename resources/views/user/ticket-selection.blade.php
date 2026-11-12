@@ -34,7 +34,7 @@
                                 <i class="fe fe-file-text display-3 text-success"></i>
                             </div>
                             <h5 class="card-title fw-bold">PAPD</h5>
-                            <p class="card-text text-muted">Kelola tiket PAPD (Pengajuan Akomodasi Perjalanan Dinas) secara terpusat.</p>
+                            <p class="card-text text-muted">Kelola tiket PAPD (Pengajuan Akomodasi Perjalanan Dinas)</p>
                             <a href="{{ route('papd.index') }}" class="btn btn-success btn-lg w-100">
                                 <i class="fe fe-arrow-right me-2"></i> Masuk PAPD
                             </a>

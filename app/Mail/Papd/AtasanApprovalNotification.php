@@ -12,10 +12,12 @@ class AtasanApprovalNotification extends Mailable
     use Queueable, SerializesModels;
 
     public $papdRequest;
+    public $isUpdate;
 
-    public function __construct(PapdRequest $papdRequest)
+    public function __construct(PapdRequest $papdRequest, $isUpdate = false)
     {
         $this->papdRequest = $papdRequest;
+        $this->isUpdate = $isUpdate;
     }
 
     public function build()
@@ -23,12 +25,17 @@ class AtasanApprovalNotification extends Mailable
         $approveUrl = route('papd.approve', $this->papdRequest->approval_token);
         $rejectUrl  = route('papd.reject', $this->papdRequest->approval_token);
 
-        return $this->subject('Persetujuan Perjalanan Dinas - ' . $this->papdRequest->nama_lengkap)
+        $subject = $this->isUpdate
+            ? 'Pembaruan Permintaan Perjalanan Dinas - '
+            : 'Persetujuan Perjalanan Dinas - ';
+
+        return $this->subject($subject . $this->papdRequest->nama_lengkap)
                     ->markdown('admin.email.papd.atasan-approval')
                     ->with([
                         'request' => $this->papdRequest,
                         'approveUrl' => $approveUrl,
                         'rejectUrl' => $rejectUrl,
+                        'isUpdate' => $this->isUpdate,
                     ]);
     }
 }

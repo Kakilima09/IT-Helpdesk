@@ -29,6 +29,13 @@
     .toggle-hotel {
         transition: all 0.3s ease;
     }
+    .time-picker {
+        max-width: 240px;
+    }
+    .time-picker select {
+        flex: 1;
+        min-width: 0;
+    }
 </style>
 @endsection
 
@@ -92,7 +99,7 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Jenis Pemohon <span class="text-red">*</span></label>
+                                            <label class="form-label mb-0 mt-2">Pemohon <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
                                             <div class="form-check form-check-inline">
@@ -208,6 +215,36 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">No HP <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror"
+                                                   name="no_hp" value="{{ old('no_hp') }}" required>
+                                            @error('no_hp')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Tanggal Lahir <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror"
+                                                   name="ttl" value="{{ old('ttl') }}" required>
+                                            @error('ttl')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Atasan Langsung <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
@@ -236,35 +273,6 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">No HP <span class="text-red">*</span></label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('no_hp') is-invalid @enderror"
-                                                   name="no_hp" value="{{ old('no_hp') }}" required>
-                                            @error('no_hp')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Tanggal Lahir <span class="text-red">*</span></label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror"
-                                                   name="ttl" value="{{ old('ttl') }}" required>
-                                            @error('ttl')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <hr>
 
@@ -447,16 +455,36 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Keberangkatan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
-                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan"
-                                                   value="{{ old('tanggal_keberangkatan') }}" required>
+                                            <input type="text" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
+                                                   id="tanggal_keberangkatan_display" placeholder="12 November 2026"
+                                                   autocomplete="off" readonly required>
+                                            <input type="hidden" name="tanggal_keberangkatan" id="tanggal_keberangkatan"
+                                                   value="{{ old('tanggal_keberangkatan') }}">
                                             @error('tanggal_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="time" class="form-control @error('jam_keberangkatan') is-invalid @enderror"
-                                                   name="jam_keberangkatan" value="{{ old('jam_keberangkatan') }}" required>
+                                            @php($jamKeberangkatan = str_replace('.', ':', old('jam_keberangkatan', '')))
+                                            <input type="hidden" name="jam_keberangkatan" id="jam_keberangkatan"
+                                                   value="{{ $jamKeberangkatan }}">
+                                            <div class="time-picker d-flex align-items-center gap-2">
+                                                <select class="form-control @error('jam_keberangkatan') is-invalid @enderror"
+                                                        id="jam_keberangkatan_jam" aria-label="Jam keberangkatan" required data-time-part>
+                                                    <option value="">Jam</option>
+                                                    @for($hour = 0; $hour < 24; $hour++)
+                                                        <option value="{{ sprintf('%02d', $hour) }}" {{ substr($jamKeberangkatan, 0, 2) === sprintf('%02d', $hour) ? 'selected' : '' }}>{{ sprintf('%02d', $hour) }}</option>
+                                                    @endfor
+                                                </select>
+                                                <span>.</span>
+                                                <select class="form-control @error('jam_keberangkatan') is-invalid @enderror"
+                                                        id="jam_keberangkatan_menit" aria-label="Menit keberangkatan" required data-time-part>
+                                                    <option value="">Menit</option>
+                                                    @for($minute = 0; $minute < 60; $minute++)
+                                                        <option value="{{ sprintf('%02d', $minute) }}" {{ substr($jamKeberangkatan, 3, 2) === sprintf('%02d', $minute) ? 'selected' : '' }}>{{ sprintf('%02d', $minute) }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
                                             @error('jam_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -471,16 +499,36 @@
                                                 <label class="form-label mb-0 mt-2">Tanggal Kepulangan <span id="return-date-required-marker" class="text-red" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">*</span></label>
                                             </div>
                                             <div class="col-md-5">
-                                                <input type="date" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
-                                                    name="tanggal_kepulangan" id="tanggal_kepulangan"
-                                                    value="{{ old('tanggal_kepulangan') }}" >
+                                                <input type="text" class="form-control @error('tanggal_kepulangan') is-invalid @enderror"
+                                                    id="tanggal_kepulangan_display" placeholder="12 November 2026"
+                                                    autocomplete="off" readonly>
+                                                <input type="hidden" name="tanggal_kepulangan" id="tanggal_kepulangan"
+                                                    value="{{ old('tanggal_kepulangan') }}">
                                                 @error('tanggal_kepulangan')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="time" class="form-control @error('jam_kepulangan') is-invalid @enderror"
-                                                    name="jam_kepulangan" value="{{ old('jam_kepulangan') }}" >
+                                                @php($jamKepulangan = str_replace('.', ':', old('jam_kepulangan', '')))
+                                                <input type="hidden" name="jam_kepulangan" id="jam_kepulangan"
+                                                       value="{{ $jamKepulangan }}">
+                                                <div class="time-picker d-flex align-items-center gap-2">
+                                                    <select class="form-control @error('jam_kepulangan') is-invalid @enderror"
+                                                            id="jam_kepulangan_jam" aria-label="Jam kepulangan" data-time-part>
+                                                        <option value="">Jam</option>
+                                                        @for($hour = 0; $hour < 24; $hour++)
+                                                            <option value="{{ sprintf('%02d', $hour) }}" {{ substr($jamKepulangan, 0, 2) === sprintf('%02d', $hour) ? 'selected' : '' }}>{{ sprintf('%02d', $hour) }}</option>
+                                                        @endfor
+                                                    </select>
+                                                    <span>.</span>
+                                                    <select class="form-control @error('jam_kepulangan') is-invalid @enderror"
+                                                            id="jam_kepulangan_menit" aria-label="Menit kepulangan" data-time-part>
+                                                        <option value="">Menit</option>
+                                                        @for($minute = 0; $minute < 60; $minute++)
+                                                            <option value="{{ sprintf('%02d', $minute) }}" {{ substr($jamKepulangan, 3, 2) === sprintf('%02d', $minute) ? 'selected' : '' }}>{{ sprintf('%02d', $minute) }}</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
                                                 @error('jam_kepulangan')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
@@ -576,12 +624,11 @@
                                             <label class="form-label mb-0 mt-2">Kelas</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('kelas') is-invalid @enderror" name="kelas">
+                                            <select class="form-control @error('kelas') is-invalid @enderror" name="kelas" id="kelas_transportasi">
                                                 <option value="">Pilih Kelas</option>
-                                                <option value="Ekonomi" {{ old('kelas') == 'Ekonomi' ? 'selected' : '' }}>Ekonomi</option>
-                                                <option value="Bisnis" {{ old('kelas') == 'Bisnis' ? 'selected' : '' }}>Bisnis</option>
-                                                <option value="Eksekutif" {{ old('kelas') == 'Eksekutif' ? 'selected' : '' }}>Eksekutif</option>
-                                                <option value="VIP" {{ old('kelas') == 'VIP' ? 'selected' : '' }}>VIP</option>
+                                                @if(old('kelas'))
+                                                    <option value="{{ old('kelas') }}" selected>{{ old('kelas') }}</option>
+                                                @endif
                                             </select>
                                             @error('kelas')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
@@ -593,12 +640,12 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2" id="label_asal">Lokasi Asal</label>
+                                            <label class="form-label mb-0 mt-2">Kota Asal</label>
                                         </div>
                                         <div class="col-md-9">
                                             <input type="text" class="form-control @error('kota_asal') is-invalid @enderror"
                                                    name="kota_asal" id="kota_asal" value="{{ old('kota_asal') }}" maxlength="255"
-                                                   placeholder="Masukkan lokasi asal">
+                                                   placeholder="Masukkan kota asal">
                                             @error('kota_asal')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -608,13 +655,18 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label mb-0 mt-2" id="tujuan-label">Kota Tujuan <span class="text-red">*</span></label></div>
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2" id="label_asal">Bandara Asal</label>
+                                        </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
-                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
-                                                   placeholder="Masukkan lokasi tujuan" required>
-                                            @error('kota_tujuan')
-                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            <select class="form-control @error('kode_asal') is-invalid @enderror"
+                                                    name="kode_asal" id="kode_asal_select">
+                                                @if(old('kode_asal'))
+                                                    <option value="{{ old('kode_asal') }}" selected>{{ old('kode_asal') }}</option>
+                                                @endif
+                                            </select>
+                                            @error('kode_asal')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
                                     </div>
@@ -623,15 +675,50 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Rute</label>
+                                            <label class="form-label mb-0 mt-2">Kota Tujuan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('rute') is-invalid @enderror"
-                                            name="rute" id="rute" value="{{ old('rute') }}" readonly>
-                                            @error('rute')
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
+                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
+                                                   placeholder="Masukkan kota tujuan" required>
+                                            @error('kota_tujuan')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2" id="label_tujuan">Bandara Tujuan</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <select class="form-control @error('kode_tujuan') is-invalid @enderror"
+                                                    name="kode_tujuan" id="kode_tujuan_select">
+                                                @if(old('kode_tujuan'))
+                                                    <option value="{{ old('kode_tujuan') }}" selected>{{ old('kode_tujuan') }}</option>
+                                                @endif
+                                            </select>
+                                            @error('kode_tujuan')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                            <small class="text-muted">Data bandara global bersumber dari OurAirports; data stasiun, terminal, dan pelabuhan Indonesia dari OpenStreetMap. Cakupan OpenStreetMap mengikuti kontribusi komunitas.</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Catatan Berangkat</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <textarea class="form-control @error('catatan_berangkat') is-invalid @enderror"
+                                                      name="catatan_berangkat" rows="2" placeholder="Catatan untuk perjalanan berangkat">{{ old('catatan_berangkat') }}</textarea>
+                                            @error('catatan_berangkat')
                                             <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Terisi otomatis dari lokasi asal dan tujuan.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -766,14 +853,29 @@
                                                 <label class="form-label mb-0 mt-2">Kelas Pulang</label>
                                             </div>
                                             <div class="col-md-9">
-                                                <select class="form-control @error('kelas_pulang') is-invalid @enderror" name="kelas_pulang">
+                                                <select class="form-control @error('kelas_pulang') is-invalid @enderror" name="kelas_pulang" id="kelas_transportasi_pulang">
                                                     <option value="">Pilih Kelas</option>
-                                                    <option value="Ekonomi" {{ old('kelas_pulang') == 'Ekonomi' ? 'selected' : '' }}>Ekonomi</option>
-                                                    <option value="Bisnis" {{ old('kelas_pulang') == 'Bisnis' ? 'selected' : '' }}>Bisnis</option>
-                                                    <option value="Eksekutif" {{ old('kelas_pulang') == 'Eksekutif' ? 'selected' : '' }}>Eksekutif</option>
-                                                    <option value="VIP" {{ old('kelas_pulang') == 'VIP' ? 'selected' : '' }}>VIP</option>
+                                                    @if(old('kelas_pulang'))
+                                                        <option value="{{ old('kelas_pulang') }}" selected>{{ old('kelas_pulang') }}</option>
+                                                    @endif
                                                 </select>
                                                 @error('kelas_pulang')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label mb-0 mt-2" id="label_tujuan_pulang">Lokasi Tujuan Pulang</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control @error('kota_tujuan_pulang') is-invalid @enderror"
+                                                       name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang') }}" maxlength="255"
+                                                       placeholder="Masukkan lokasi tujuan pulang">
+                                                @error('kota_tujuan_pulang')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
                                             </div>
@@ -799,31 +901,14 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="form-label mb-0 mt-2" id="label_tujuan_pulang">Lokasi Tujuan Pulang</label>
+                                                <label class="form-label mb-0 mt-2">Catatan Pulang</label>
                                             </div>
                                             <div class="col-md-9">
-                                                    <input type="text" class="form-control @error('kota_tujuan_pulang') is-invalid @enderror"
-                                                           name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang') }}" maxlength="255"
-                                                           placeholder="Masukkan lokasi tujuan pulang">
-                                                    @error('kota_tujuan_pulang')
-                                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                    @enderror
-                                                </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-md-3">
-                                                <label class="form-label mb-0 mt-2">Rute Pulang</label>
-                                            </div>
-                                            <div class="col-md-9">
-                                                <input type="text" class="form-control @error('rute_pulang') is-invalid @enderror"
-                                                       name="rute_pulang" id="rute_pulang" value="{{ old('rute_pulang') }}" readonly>
-                                                @error('rute_pulang')
+                                                <textarea class="form-control @error('catatan_pulang') is-invalid @enderror"
+                                                          name="catatan_pulang" rows="2" placeholder="Catatan untuk perjalanan pulang">{{ old('catatan_pulang') }}</textarea>
+                                                @error('catatan_pulang')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
-                                                <small class="text-muted">Terisi otomatis dari lokasi asal dan tujuan pulang.</small>
                                             </div>
                                         </div>
                                     </div>
@@ -854,6 +939,7 @@
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <label class="form-label mb-0 mt-2">Bagasi Tambahan Pulang</label>
+                                                <small class="text-muted d-block">(Spesial Case + Extra Charge)</small>
                                             </div>
                                             <div class="col-md-9">
                                                 <label class="form-check form-check-inline">
@@ -867,7 +953,7 @@
                                                 @error('bagasi_tambahan_pulang')
                                                     <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
-                                                <div id="special-baggage-options-pulang" class="mt-2" style="{{ old('bagasi_tambahan_pulang') == '1' ? '' : 'display:none;' }}">
+                                                {{-- <div id="special-baggage-options-pulang" class="mt-2" style="{{ old('bagasi_tambahan_pulang') == '1' ? '' : 'display:none;' }}">
                                                     <span class="d-block mb-1">Pilih opsi bagasi pulang:</span>
                                                     <label class="form-check form-check-inline">
                                                         <input type="checkbox" class="form-check-input" name="opsi_transportasi_pulang[]" value="special_baggage" {{ in_array('special_baggage', old('opsi_transportasi_pulang', [])) ? 'checked' : '' }}>
@@ -877,7 +963,7 @@
                                                         <input type="checkbox" class="form-check-input" name="opsi_transportasi_pulang[]" value="special_charge" {{ in_array('special_charge', old('opsi_transportasi_pulang', [])) ? 'checked' : '' }}>
                                                         <span class="form-check-label">Special Charge</span>
                                                     </label>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -907,6 +993,7 @@
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <label class="form-label mb-0 mt-2">Opsi Tambahan Pulang</label>
+                                                <small class="text-muted d-block">(Spesial Case + Extra Charge)</small>
                                             </div>
                                             <div class="col-md-9">
                                                 <label class="form-check form-check-inline">
@@ -993,15 +1080,21 @@
                                                 <label class="form-label mb-0 mt-2">Tanggal Check-in / Check-out</label>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_in') is-invalid @enderror"
-                                                       name="check_in" value="{{ old('check_in') }}">
+                                                <input type="text" class="form-control @error('check_in') is-invalid @enderror"
+                                                       id="hotel_check_in_display" placeholder="12 November 2026"
+                                                       autocomplete="off" readonly>
+                                                <input type="hidden" name="check_in" id="hotel_check_in"
+                                                       value="{{ old('check_in') }}">
                                                 @error('check_in')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" class="form-control @error('check_out') is-invalid @enderror"
-                                                       name="check_out" value="{{ old('check_out') }}">
+                                                <input type="text" class="form-control @error('check_out') is-invalid @enderror"
+                                                       id="hotel_check_out_display" placeholder="12 November 2026"
+                                                       autocomplete="off" readonly>
+                                                <input type="hidden" name="check_out" id="hotel_check_out"
+                                                       value="{{ old('check_out') }}">
                                                 @error('check_out')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
@@ -1089,11 +1182,85 @@
 @section('scripts')
 <!-- INTERNAL Summernote js -->
 <script src="{{asset('assets/plugins/summernote/summernote.js')}}?v=<?php echo time(); ?>"></script>
+<script src="{{asset('assets/plugins/jquery/jquery-ui.js')}}?v=<?php echo time(); ?>"></script>
 <!-- Select2 -->
 <script src="{{ asset('assets/plugins/select2/select2.full.min.js') }}"></script>
 
 <script>
     $(document).ready(function() {
+        var bulanIndonesia = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        function setupTanggalPicker(displaySelector, valueSelector) {
+            var valueInput = $(valueSelector);
+            var dateInput = $(displaySelector).datepicker({
+                dateFormat: 'd MM yy',
+                monthNames: bulanIndonesia,
+                dayNamesMin: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                altField: valueSelector,
+                altFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function() {
+                    valueInput.trigger('change');
+                }
+            });
+            var value = valueInput.val();
+
+            if (value) {
+                var parts = value.split('-');
+                dateInput.datepicker('setDate', new Date(
+                    parseInt(parts[0], 10),
+                    parseInt(parts[1], 10) - 1,
+                    parseInt(parts[2], 10)
+                ));
+            }
+        }
+
+        setupTanggalPicker('#tanggal_keberangkatan_display', '#tanggal_keberangkatan');
+        setupTanggalPicker('#tanggal_kepulangan_display', '#tanggal_kepulangan');
+        setupTanggalPicker('#hotel_check_in_display', '#hotel_check_in');
+        setupTanggalPicker('#hotel_check_out_display', '#hotel_check_out');
+
+        var checkOutWasCustomized = Boolean($('#hotel_check_out').val()) &&
+            $('#hotel_check_out').val() !== $('#tanggal_kepulangan').val();
+
+        function setDatePickerValue(displaySelector, valueSelector, value) {
+            if (value) {
+                var parts = value.split('-');
+                $(displaySelector).datepicker('setDate', new Date(
+                    parseInt(parts[0], 10),
+                    parseInt(parts[1], 10) - 1,
+                    parseInt(parts[2], 10)
+                ));
+            } else {
+                $(displaySelector).datepicker('setDate', null);
+                $(valueSelector).val('');
+            }
+        }
+
+        function syncHotelDates() {
+            var departureDate = $('#tanggal_keberangkatan').val();
+            var returnDate = $('#tanggal_kepulangan').val();
+
+            if (departureDate !== $('#hotel_check_in').val()) {
+                setDatePickerValue('#hotel_check_in_display', '#hotel_check_in', departureDate);
+            }
+            if (!checkOutWasCustomized && returnDate &&
+                returnDate !== $('#hotel_check_out').val()) {
+                setDatePickerValue('#hotel_check_out_display', '#hotel_check_out', returnDate);
+            }
+        }
+
+        $('#tanggal_keberangkatan, #tanggal_kepulangan').on('change', syncHotelDates);
+        $('#hotel_check_out').on('change', function() {
+            checkOutWasCustomized = Boolean($(this).val()) &&
+                $(this).val() !== $('#tanggal_kepulangan').val();
+        });
+        syncHotelDates();
+
         // Inisialisasi Select2 dengan AJAX
         $('#nama_lengkap').select2({
             minimumInputLength: 2,
@@ -1147,19 +1314,94 @@
             $('#email').val('');
         });
 
-        // ===== Lokasi manual =====
+        // ===== Lokasi transportasi berangkat =====
+        function transportLocationConfig(moda) {
+            if (moda === 'pesawat') return { type: 'airport', label: 'Bandara', search: 'Cari bandara...' };
+            if (moda === 'kereta' || moda === 'whoosh') return { type: 'train', label: 'Stasiun', search: 'Cari stasiun...' };
+            if (moda === 'bus') return { type: 'bus', label: 'Terminal', search: 'Cari terminal...' };
+            if (moda === 'kapal') return { type: 'port', label: 'Pelabuhan', search: 'Cari pelabuhan...' };
+            return { type: '', label: 'Lokasi', search: 'Cari lokasi...' };
+        }
+
         function transportLocationLabel(moda) {
-            if (moda === 'pesawat') return 'Bandara';
-            if (moda === 'kereta' || moda === 'whoosh') return 'Stasiun';
-            if (moda === 'kapal') return 'Pelabuhan';
-            if (moda === 'bus') return 'Terminal';
-            return 'Lokasi';
+            return transportLocationConfig(moda).label;
+        }
+
+        function kelasOptionsForModa(moda) {
+            if (moda === 'pesawat') return ['Ekonomi', 'Bisnis'];
+            if (moda === 'bus') return ['Ekonomi', 'Bisnis', 'VIP', 'Eksekutif'];
+            if (moda === 'kapal') return ['Ekonomi', 'Bisnis', 'VIP', 'Sub-Kelas Kabin'];
+            if (moda === 'whoosh') return ['Ekonomi', 'Bisnis'];
+            if (moda === 'kereta') return ['Ekonomi', 'Bisnis', 'Eksekutif'];
+            return [];
+        }
+
+        function updateKelasOptions(selectSelector, moda, preserveLegacyValue) {
+            var select = $(selectSelector);
+            var currentValue = select.val();
+            var allowedOptions = kelasOptionsForModa(moda);
+
+            select.empty().append(new Option('Pilih Kelas', ''));
+            allowedOptions.forEach(function(option) {
+                select.append(new Option(option, option));
+            });
+
+            if (allowedOptions.indexOf(currentValue) !== -1) {
+                select.val(currentValue);
+            } else if (preserveLegacyValue && currentValue) {
+                select.append(new Option(currentValue + ' (tersimpan)', currentValue));
+                select.val(currentValue);
+            } else {
+                select.val('');
+            }
+        }
+
+        function updateKelasBerangkat(preserveLegacyValue) {
+            updateKelasOptions('#kelas_transportasi', $('#moda_transportasi').val(), preserveLegacyValue);
+        }
+
+        function updateKelasPulang(preserveLegacyValue) {
+            updateKelasOptions('#kelas_transportasi_pulang', $('#moda_transportasi_pulang').val(), preserveLegacyValue);
         }
 
         function updateLocationLabels() {
-            var label = transportLocationLabel($('#moda_transportasi').val());
-            $('#label_asal').text(label + ' Asal');
-            $('#kota_asal').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' asal');
+            var location = transportLocationConfig($('#moda_transportasi').val());
+            $('#label_asal').text(location.label + ' Asal');
+            $('#label_tujuan').text(location.label + ' Tujuan');
+            $('#kode_asal_select, #kode_tujuan_select').each(function() {
+                var instance = $(this).data('select2');
+                if (instance) {
+                    instance.$container.find('.select2-search__field').attr('placeholder', location.search);
+                    instance.$container.find('.select2-selection__placeholder').text(location.search);
+                }
+            });
+        }
+
+        function initTransportLocationSelect(selector) {
+            $(selector).select2({
+                minimumInputLength: 1,
+                placeholder: 'Cari lokasi...',
+                allowClear: true,
+                ajax: {
+                    url: '{{ route("papd.getLocations") }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                            type: transportLocationConfig($('#moda_transportasi').val()).type
+                        };
+                    },
+                    processResults: function(data) {
+                        return { results: data.length ? data : [] };
+                    },
+                    cache: true
+                },
+                language: {
+                    noResults: function() { return 'Lokasi tidak ditemukan'; },
+                    searching: function() { return 'Mencari...'; }
+                }
+            });
         }
 
         function updateReturnLocationLabels() {
@@ -1170,26 +1412,27 @@
             $('#kota_tujuan_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' tujuan pulang');
         }
 
-        function syncRoute() {
-            var origin = $.trim($('#kota_asal').val());
-            var destination = $.trim($('#kota_tujuan').val());
-            $('#rute').val(origin && destination ? origin + ' - ' + destination : '');
-        }
-
-        function syncReturnRoute() {
-            var origin = $.trim($('#kota_asal_pulang').val());
-            var destination = $.trim($('#kota_tujuan_pulang').val());
-            $('#rute_pulang').val(origin && destination ? origin + ' - ' + destination : '');
-        }
-
-        $('#kota_asal, #kota_tujuan').on('input', syncRoute);
-        $('#kota_asal_pulang, #kota_tujuan_pulang').on('input', syncReturnRoute);
-        $('#moda_transportasi').on('change', updateLocationLabels);
-        $('#moda_transportasi_pulang').on('change', updateReturnLocationLabels);
+        initTransportLocationSelect('#kode_asal_select');
+        initTransportLocationSelect('#kode_tujuan_select');
+        $('#kode_asal_select, #kode_tujuan_select').on('select2:select', function(event) {
+            var cityInput = this.id === 'kode_asal_select' ? '#kota_asal' : '#kota_tujuan';
+            if (event.params.data.city) {
+                $(cityInput).val(event.params.data.city);
+            }
+        });
+        $('#moda_transportasi').on('change', function() {
+            $('#kode_asal_select, #kode_tujuan_select').val(null).trigger('change');
+            updateKelasBerangkat(false);
+            updateLocationLabels();
+        });
+        $('#moda_transportasi_pulang').on('change', function() {
+            updateKelasPulang(false);
+            updateReturnLocationLabels();
+        });
+        updateKelasBerangkat(true);
+        updateKelasPulang(true);
         updateLocationLabels();
         updateReturnLocationLabels();
-        syncRoute();
-        syncReturnRoute();
 
         function setApplicantType(clearFields) {
             var isInternal = $('input[name="jenis_pemohon"]:checked').val() === 'internal';
@@ -1267,6 +1510,17 @@
             $('#hotelDetails').hide();
         }
 
+        function updateTimeValue(fieldName) {
+            var hour = $('#' + fieldName + '_jam').val();
+            var minute = $('#' + fieldName + '_menit').val();
+            $('#' + fieldName).val(hour && minute ? hour + ':' + minute : '');
+        }
+
+        $('[data-time-part]').on('change', function() {
+            var fieldName = this.id.replace(/_(jam|menit)$/, '');
+            updateTimeValue(fieldName);
+        });
+
         // Validasi sederhana sebelum submit (opsional)
         $('#papdForm').on('submit', function(e) {
             // Cek jika hotel_reservasi = Ya tapi field hotel kosong
@@ -1279,6 +1533,9 @@
                     return false;
                 }
             }
+
+            updateTimeValue('jam_keberangkatan');
+            updateTimeValue('jam_kepulangan');
         });
 
         function updateTripTypeFields() {
@@ -1363,15 +1620,16 @@
 
         function updateTicketTypeFields() {
             var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
-            $('#tanggal_kepulangan').prop('required', isRoundTrip);
+            $('#tanggal_kepulangan_display').prop('required', isRoundTrip);
             $('#return-date-required-marker').toggle(isRoundTrip);
             $('#return-transport-group').toggle(isRoundTrip);
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');
+                updateKelasPulang(false);
                 $('#kota_asal_pulang').val('');
                 $('#kota_tujuan_pulang').val('');
-                $('#rute_pulang').val('');
+                $('textarea[name="catatan_pulang"]').val('');
                 updateReturnLocationLabels();
             }
             hitungDurasi();

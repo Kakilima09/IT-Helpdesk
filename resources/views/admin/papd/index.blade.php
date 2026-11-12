@@ -261,7 +261,7 @@
                 <tbody>
                     @forelse($papdRequests as $papd)
                     <tr>
-                        <td>{{ $papd->id }}</td>
+                        <td>{{ $papd->ticket_number }}</td>
                         <td>
                             {{ $papd->nama_lengkap }}
                             <br><small class="text-muted">{{ ucfirst($papd->jenis_pemohon ?? 'internal') }} · {{ ucfirst($papd->jenis_perjalanan ?? '-') }}</small>
@@ -343,7 +343,7 @@
                                 <form method="POST" action="{{ route('admin.papd.close', $papd->id) }}">
                                     @csrf
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="closeModalLabel{{ $papd->id }}">Update Closing - PAPD #{{ $papd->id }}</h5>
+                                        <h5 class="modal-title" id="closeModalLabel{{ $papd->id }}">Update Closing - {{ $papd->ticket_number }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">

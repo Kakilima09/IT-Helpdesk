@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>PAPD - {{ $papdRequest->id }}</title>
+    <title>{{ $papdRequest->ticket_number }}</title>
     <style>
         @page {
             size: A4;
@@ -224,7 +224,7 @@
         <tr><td class="label-col">Moda Pulang</td><td class="value-col">{{ ucfirst($papdRequest->moda_transportasi_pulang) }}</td></tr>
         @endif
         @if($papdRequest->kelas)<tr><td class="label-col">Kelas</td><td class="value-col">{{ $papdRequest->kelas }}</td></tr>@endif
-        @if($papdRequest->rute)<tr><td class="label-col">Rute</td><td class="value-col">{{ $papdRequest->rute }}</td></tr>@endif
+        @if($papdRequest->catatan_berangkat)<tr><td class="label-col">Catatan Berangkat</td><td class="value-col">{{ $papdRequest->catatan_berangkat }}</td></tr>@endif
         @if($papdRequest->detail_maskapai)<tr><td class="label-col">Nama Operator</td><td class="value-col">{{ $papdRequest->detail_maskapai }}</td></tr>@endif
         @if($papdRequest->no_penerbangan)<tr><td class="label-col">Nomor Perjalanan</td><td class="value-col">{{ $papdRequest->no_penerbangan }}</td></tr>@endif
         <tr><td class="label-col">Bagasi Tambahan</td><td class="value-col">{{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</td></tr>
@@ -239,7 +239,7 @@
         @endif
         @if($papdRequest->moda_transportasi_pulang)
         @if($papdRequest->kelas_pulang)<tr><td class="label-col">Kelas Pulang</td><td class="value-col">{{ $papdRequest->kelas_pulang }}</td></tr>@endif
-        @if($papdRequest->rute_pulang)<tr><td class="label-col">Rute Pulang</td><td class="value-col">{{ $papdRequest->rute_pulang }}</td></tr>@endif
+        @if($papdRequest->catatan_pulang)<tr><td class="label-col">Catatan Pulang</td><td class="value-col">{{ $papdRequest->catatan_pulang }}</td></tr>@endif
         @if($papdRequest->detail_maskapai_pulang)<tr><td class="label-col">Nama Operator Pulang</td><td class="value-col">{{ $papdRequest->detail_maskapai_pulang }}</td></tr>@endif
         @if($papdRequest->no_penerbangan_pulang)<tr><td class="label-col">Nomor Perjalanan Pulang</td><td class="value-col">{{ $papdRequest->no_penerbangan_pulang }}</td></tr>@endif
         <tr><td class="label-col">Bagasi Tambahan Pulang</td><td class="value-col">{{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</td></tr>

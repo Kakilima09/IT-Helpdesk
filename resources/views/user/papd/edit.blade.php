@@ -443,12 +443,11 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Kelas</label></div>
                                         <div class="col-md-9">
-                                            <select class="form-control @error('kelas') is-invalid @enderror" name="kelas">
+                                            <select class="form-control @error('kelas') is-invalid @enderror" name="kelas" id="kelas_transportasi">
                                                 <option value="">Pilih Kelas</option>
-                                                <option value="Ekonomi" {{ old('kelas', $papdRequest->kelas) == 'Ekonomi' ? 'selected' : '' }}>Ekonomi</option>
-                                                <option value="Bisnis" {{ old('kelas', $papdRequest->kelas) == 'Bisnis' ? 'selected' : '' }}>Bisnis</option>
-                                                <option value="Eksekutif" {{ old('kelas', $papdRequest->kelas) == 'Eksekutif' ? 'selected' : '' }}>Eksekutif</option>
-                                                <option value="VIP" {{ old('kelas', $papdRequest->kelas) == 'VIP' ? 'selected' : '' }}>VIP</option>
+                                                @if(old('kelas', $papdRequest->kelas))
+                                                    <option value="{{ old('kelas', $papdRequest->kelas) }}" selected>{{ old('kelas', $papdRequest->kelas) }}</option>
+                                                @endif
                                             </select>
                                             @error('kelas')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
@@ -479,12 +478,11 @@
 
                                 <div class="form-group">
                                     <div class="row">
-                                        <div class="col-md-3"><label class="form-label">Rute</label></div>
+                                        <div class="col-md-3"><label class="form-label">Catatan Berangkat</label></div>
                                         <div class="col-md-9">
-                                            <input type="text" class="form-control @error('rute') is-invalid @enderror"
-                                                   name="rute" id="rute" value="{{ old('rute', $papdRequest->rute) }}" readonly>
-                                            @error('rute')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                            <small class="text-muted">Terisi otomatis dari kode asal & tujuan.</small>
+                                            <textarea class="form-control @error('catatan_berangkat') is-invalid @enderror"
+                                                      name="catatan_berangkat" rows="2" placeholder="Catatan untuk perjalanan berangkat">{{ old('catatan_berangkat', $papdRequest->catatan_berangkat) }}</textarea>
+                                            @error('catatan_berangkat')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
                                 </div>
@@ -598,12 +596,11 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Kelas Pulang</label></div>
                                             <div class="col-md-9">
-                                                <select class="form-control @error('kelas_pulang') is-invalid @enderror" name="kelas_pulang">
+                                                <select class="form-control @error('kelas_pulang') is-invalid @enderror" name="kelas_pulang" id="kelas_transportasi_pulang">
                                                     <option value="">Pilih Kelas</option>
-                                                    <option value="Ekonomi" {{ old('kelas_pulang', $papdRequest->kelas_pulang) == 'Ekonomi' ? 'selected' : '' }}>Ekonomi</option>
-                                                    <option value="Bisnis" {{ old('kelas_pulang', $papdRequest->kelas_pulang) == 'Bisnis' ? 'selected' : '' }}>Bisnis</option>
-                                                    <option value="Eksekutif" {{ old('kelas_pulang', $papdRequest->kelas_pulang) == 'Eksekutif' ? 'selected' : '' }}>Eksekutif</option>
-                                                    <option value="VIP" {{ old('kelas_pulang', $papdRequest->kelas_pulang) == 'VIP' ? 'selected' : '' }}>VIP</option>
+                                                    @if(old('kelas_pulang', $papdRequest->kelas_pulang))
+                                                        <option value="{{ old('kelas_pulang', $papdRequest->kelas_pulang) }}" selected>{{ old('kelas_pulang', $papdRequest->kelas_pulang) }}</option>
+                                                    @endif
                                                 </select>
                                                 @error('kelas_pulang')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
@@ -634,12 +631,11 @@
 
                                     <div class="form-group">
                                         <div class="row">
-                                            <div class="col-md-3"><label class="form-label">Rute Pulang</label></div>
+                                            <div class="col-md-3"><label class="form-label">Catatan Pulang</label></div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('rute_pulang') is-invalid @enderror"
-                                                       name="rute_pulang" id="rute_pulang" value="{{ old('rute_pulang', $papdRequest->rute_pulang) }}" readonly>
-                                                @error('rute_pulang')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                                <small class="text-muted">Terisi otomatis dari kode asal & tujuan pulang.</small>
+                                                <textarea class="form-control @error('catatan_pulang') is-invalid @enderror"
+                                                          name="catatan_pulang" rows="2" placeholder="Catatan untuk perjalanan pulang">{{ old('catatan_pulang', $papdRequest->catatan_pulang) }}</textarea>
+                                                @error('catatan_pulang')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
                                         </div>
                                     </div>
@@ -934,6 +930,43 @@
             return { asal: 'Lokasi Asal', tujuan: 'Lokasi Tujuan', search: 'Cari lokasi...' };
         }
 
+        function kelasOptionsForModa(moda) {
+            if (moda === 'pesawat') return ['Ekonomi', 'Bisnis'];
+            if (moda === 'bus') return ['Ekonomi', 'Bisnis', 'VIP', 'Eksekutif'];
+            if (moda === 'kapal') return ['Ekonomi', 'Bisnis', 'VIP', 'Sub-Kelas Kabin'];
+            if (moda === 'whoosh') return ['Ekonomi', 'Bisnis'];
+            if (moda === 'kereta') return ['Ekonomi', 'Bisnis', 'Eksekutif'];
+            return [];
+        }
+
+        function updateKelasOptions(selectSelector, moda, preserveLegacyValue) {
+            var select = $(selectSelector);
+            var currentValue = select.val();
+            var allowedOptions = kelasOptionsForModa(moda);
+
+            select.empty().append(new Option('Pilih Kelas', ''));
+            allowedOptions.forEach(function(option) {
+                select.append(new Option(option, option));
+            });
+
+            if (allowedOptions.indexOf(currentValue) !== -1) {
+                select.val(currentValue);
+            } else if (preserveLegacyValue && currentValue) {
+                select.append(new Option(currentValue + ' (tersimpan)', currentValue));
+                select.val(currentValue);
+            } else {
+                select.val('');
+            }
+        }
+
+        function updateKelasBerangkat(preserveLegacyValue) {
+            updateKelasOptions('#kelas_transportasi', $('#moda_transportasi').val(), preserveLegacyValue);
+        }
+
+        function updateKelasPulang(preserveLegacyValue) {
+            updateKelasOptions('#kelas_transportasi_pulang', $('#moda_transportasi_pulang').val(), preserveLegacyValue);
+        }
+
         function updateLocationLabels() {
             var label = locationLabels();
             $('#label_asal').text(label.asal);
@@ -976,34 +1009,27 @@
             return m ? m[1].trim() : '';
         }
 
-        function syncRoute() {
+        function syncOriginCity() {
             var originText = $('#kode_asal_select option:selected').text();
-            var destText = $('#kode_tujuan_select option:selected').text();
-            var originCode = $('#kode_asal_select').val() || '';
-            var destCode = $('#kode_tujuan_select').val() || '';
             var originCity = locationCity(originText);
-            var destCity = locationCity(destText);
 
             if (originCity) {
                 $('#kota_asal').val(originCity);
-            }
-
-            if (originCode && destCode) {
-                $('#rute').val(originCity + ' (' + originCode + ') - ' + destCity + ' (' + destCode + ')');
             }
         }
 
         initLocationSelect('#kode_asal_select');
         initLocationSelect('#kode_tujuan_select');
+        updateKelasBerangkat(true);
         updateLocationLabels();
 
-        $('#kode_asal_select').on('select2:select select2:clear', syncRoute);
-        $('#kode_tujuan_select').on('select2:select select2:clear', syncRoute);
+        $('#kode_asal_select').on('select2:select select2:clear', syncOriginCity);
+        $('#kode_tujuan_select').on('select2:select select2:clear', syncOriginCity);
         $('#moda_transportasi').on('change', function() {
             $('#kode_asal_select').val(null).trigger('change');
             $('#kode_tujuan_select').val(null).trigger('change');
             $('#kota_asal').val('');
-            $('#rute').val('');
+            updateKelasBerangkat(false);
             updateLocationLabels();
         });
 
@@ -1072,34 +1098,27 @@
             });
         }
 
-        function syncReturnRoute() {
+        function syncReturnOriginCity() {
             var originText = $('#kode_asal_pulang_select option:selected').text();
-            var destText = $('#kode_tujuan_pulang_select option:selected').text();
-            var originCode = $('#kode_asal_pulang_select').val() || '';
-            var destCode = $('#kode_tujuan_pulang_select').val() || '';
             var originCity = locationCity(originText);
-            var destCity = locationCity(destText);
 
             if (originCity) {
                 $('#kota_asal_pulang').val(originCity);
-            }
-
-            if (originCode && destCode) {
-                $('#rute_pulang').val(originCity + ' (' + originCode + ') - ' + destCity + ' (' + destCode + ')');
             }
         }
 
         initReturnLocationSelect('#kode_asal_pulang_select');
         initReturnLocationSelect('#kode_tujuan_pulang_select');
+        updateKelasPulang(true);
         updateReturnLocationLabels();
 
-        $('#kode_asal_pulang_select').on('select2:select select2:clear', syncReturnRoute);
-        $('#kode_tujuan_pulang_select').on('select2:select select2:clear', syncReturnRoute);
+        $('#kode_asal_pulang_select').on('select2:select select2:clear', syncReturnOriginCity);
+        $('#kode_tujuan_pulang_select').on('select2:select select2:clear', syncReturnOriginCity);
         $('#moda_transportasi_pulang').on('change', function() {
             $('#kode_asal_pulang_select').val(null).trigger('change');
             $('#kode_tujuan_pulang_select').val(null).trigger('change');
             $('#kota_asal_pulang').val('');
-            $('#rute_pulang').val('');
+            updateKelasPulang(false);
             updateReturnLocationLabels();
         });
 
@@ -1245,10 +1264,11 @@
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');
+                updateKelasPulang(false);
                 $('#kode_asal_pulang_select').val(null).trigger('change');
                 $('#kode_tujuan_pulang_select').val(null).trigger('change');
                 $('#kota_asal_pulang').val('');
-                $('#rute_pulang').val('');
+                $('textarea[name="catatan_pulang"]').val('');
                 updateReturnLocationLabels();
             }
             hitungDurasi();

@@ -204,8 +204,8 @@ class PapdController extends Controller
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
             'kota_asal' => 'nullable|string|max:255|required_if:moda_transportasi,pesawat',
-            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code',
-            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_asal' => 'nullable|string|max:32|exists:transport_locations,code',
+            'kode_tujuan' => 'nullable|string|max:32|exists:transport_locations,code',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
             'nama_anggota_team' => 'required_if:role_perjalanan,team|array|min:1',
@@ -222,6 +222,7 @@ class PapdController extends Controller
             'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
+            'catatan_berangkat' => 'nullable|string',
             'detail_maskapai' => 'nullable|string|max:255',
             'no_penerbangan' => 'nullable|string|max:50',
             'bagasi_tambahan' => 'boolean',
@@ -231,9 +232,10 @@ class PapdController extends Controller
             'kelas_pulang' => 'nullable|string|max:50',
             'kota_asal_pulang' => 'nullable|string|max:255|required_if:moda_transportasi_pulang,pesawat',
             'kota_tujuan_pulang' => 'nullable|string|max:255|required_if:moda_transportasi_pulang,pesawat',
-            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
-            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_asal_pulang' => 'nullable|string|max:32|exists:transport_locations,code',
+            'kode_tujuan_pulang' => 'nullable|string|max:32|exists:transport_locations,code',
             'rute_pulang' => 'nullable|string|max:255',
+            'catatan_pulang' => 'nullable|string',
             'detail_maskapai_pulang' => 'nullable|string|max:255',
             'no_penerbangan_pulang' => 'nullable|string|max:50',
             'bagasi_tambahan_pulang' => 'boolean',
@@ -260,7 +262,7 @@ class PapdController extends Controller
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
                 'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',
-                'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
+                'kode_tujuan_pulang', 'rute_pulang', 'catatan_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
                 'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
             ] as $returnField) {
                 $validated[$returnField] = null;
@@ -613,8 +615,8 @@ class PapdController extends Controller
             'nama_paspor' => 'nullable|string|max:255',
             'kota_tujuan' => 'required|string|max:255',
             'kota_asal' => 'nullable|string|max:255',
-            'kode_asal' => 'nullable|string|max:10|exists:transport_locations,code',
-            'kode_tujuan' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_asal' => 'nullable|string|max:32|exists:transport_locations,code',
+            'kode_tujuan' => 'nullable|string|max:32|exists:transport_locations,code',
             'agenda' => 'required|string',
             'role_perjalanan' => 'required|in:team,sendiri',
             'nama_anggota_team' => 'nullable|string|max:5000|required_if:role_perjalanan,team',
@@ -630,6 +632,7 @@ class PapdController extends Controller
             'jenis_tiket' => 'required|in:sekali_jalan,pulang_pergi',
             'kelas' => 'nullable|string|max:50',
             'rute' => 'nullable|string|max:255',
+            'catatan_berangkat' => 'nullable|string',
             'detail_maskapai' => 'nullable|string|max:255',
             'no_penerbangan' => 'nullable|string|max:50',
             'bagasi_tambahan' => 'boolean',
@@ -639,9 +642,10 @@ class PapdController extends Controller
             'kelas_pulang' => 'nullable|string|max:50',
             'kota_asal_pulang' => 'nullable|string|max:255',
             'kota_tujuan_pulang' => 'nullable|string|max:255',
-            'kode_asal_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
-            'kode_tujuan_pulang' => 'nullable|string|max:10|exists:transport_locations,code',
+            'kode_asal_pulang' => 'nullable|string|max:32|exists:transport_locations,code',
+            'kode_tujuan_pulang' => 'nullable|string|max:32|exists:transport_locations,code',
             'rute_pulang' => 'nullable|string|max:255',
+            'catatan_pulang' => 'nullable|string',
             'detail_maskapai_pulang' => 'nullable|string|max:255',
             'no_penerbangan_pulang' => 'nullable|string|max:50',
             'bagasi_tambahan_pulang' => 'boolean',
@@ -667,7 +671,7 @@ class PapdController extends Controller
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
                 'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',
-                'kode_tujuan_pulang', 'rute_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
+                'kode_tujuan_pulang', 'rute_pulang', 'catatan_pulang', 'detail_maskapai_pulang', 'no_penerbangan_pulang',
                 'bagasi_tambahan_pulang', 'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
             ] as $returnField) {
                 $validated[$returnField] = null;
@@ -709,6 +713,10 @@ class PapdController extends Controller
         $validated = $this->prepareTransportCodes($validated);
 
         $papdRequest->update($validated);
+
+        Mail::to($papdRequest->atasan_email)->send(
+            new AtasanApprovalNotification($papdRequest, true)
+        );
 
         return redirect()->route('papd.show', $papdRequest->id)
                         ->with('success', 'Permintaan PAPD berhasil diperbarui.');
@@ -831,15 +839,17 @@ class PapdController extends Controller
     }
     public function getLocations(Request $request)
     {
+        $type = $request->input('type');
+        if (!in_array($type, ['airport', 'train', 'bus', 'port'], true)) {
+            return response()->json([]);
+        }
+
         try {
             $term = $request->input('q', '');
-            $type = $request->input('type');
 
-            $query = TransportLocation::query()->where('is_active', true);
-
-            if ($type) {
-                $query->where('type', $type);
-            }
+            $query = TransportLocation::query()
+                ->where('is_active', true)
+                ->where('type', $type);
 
             if (strlen($term) >= 1) {
                 $query->search($term);

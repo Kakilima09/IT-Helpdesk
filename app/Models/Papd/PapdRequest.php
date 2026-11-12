@@ -31,10 +31,10 @@ class PapdRequest extends Model
         'jenis_perjalanan', 'nama_sesuai_ktp', 'nama_paspor', 'kota_tujuan', 'kota_asal', 'kode_asal', 'kode_tujuan', 'agenda',
         'role_perjalanan', 'nama_anggota_team', 'jumlah_anggota_team', 'no_sppd',
         'tanggal_keberangkatan', 'jam_keberangkatan', 'tanggal_kepulangan', 'jam_kepulangan', 'durasi_hari', 'pembebanan_biaya',
-        'moda_transportasi', 'moda_transportasi_pulang', 'jenis_tiket', 'kelas', 'rute', 'detail_maskapai',
+        'moda_transportasi', 'moda_transportasi_pulang', 'jenis_tiket', 'kelas', 'rute', 'catatan_berangkat', 'detail_maskapai',
         'no_penerbangan', 'bagasi_tambahan', 'transportasi_lokal',
         'opsi_transportasi',
-        'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang', 'kode_tujuan_pulang', 'rute_pulang',
+        'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang', 'kode_tujuan_pulang', 'rute_pulang', 'catatan_pulang',
         'detail_maskapai_pulang', 'no_penerbangan_pulang', 'bagasi_tambahan_pulang',
         'transportasi_lokal_pulang', 'opsi_transportasi_pulang',
         'hotel_reservasi', 'nama_hotel', 'lokasi_hotel', 'alamat_hotel',
@@ -63,6 +63,11 @@ class PapdRequest extends Model
         'rejected_at' => 'datetime',
         'corporate_approved_at' => 'datetime',
     ];
+
+    public function getTicketNumberAttribute(): string
+    {
+        return sprintf('PAPD-%04d-%s', $this->id, $this->created_at->format('Y'));
+    }
 
     // Relasi ke user
     public function user()

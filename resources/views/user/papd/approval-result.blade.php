@@ -52,14 +52,14 @@
 
                         <!-- ===== TOMBOL AKSI ===== -->
                         <div class="mt-4">
-                            @if($status == 'approved')
+                            {{-- @if($status == 'approved')
                                 <a href="{{ URL::temporarySignedRoute('papd.downloadPdfSigned', now()->addDays(7), ['id' => $papdRequest->id]) }}" class="btn btn-success">
                                     <i class="fe fe-download"></i> Download PDF
                                 </a>
                                 {{-- <a href="{{ route('papd.print', $papdRequest->id) }}" target="_blank" class="btn btn-primary">
                                     <i class="fe fe-printer"></i> Print
                                 </a> --}}
-                            @endif
+                            {{-- @endif  --}}
                             <a href="{{ route('papd.index') }}" class="btn btn-secondary">Kembali ke Dashboard</a>
                         </div>
                     </div>

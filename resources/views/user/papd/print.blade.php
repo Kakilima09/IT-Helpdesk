@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>PAPD - {{ $papdRequest->id }}</title>
+    <title>{{ $papdRequest->ticket_number }}</title>
     <style>
         @page {
             size: A4;
@@ -185,7 +185,7 @@
     <div class="row"><div class="label">Moda Pulang</div><div class="value">{{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div></div>
     @endif
     <div class="row"><div class="label">Kelas</div><div class="value">{{ $papdRequest->kelas ?? '-' }}</div></div>
-    <div class="row"><div class="label">Rute</div><div class="value">{{ $papdRequest->rute ?? '-' }}</div></div>
+    <div class="row"><div class="label">Catatan Berangkat</div><div class="value">{{ $papdRequest->catatan_berangkat ?? '-' }}</div></div>
     <div class="row"><div class="label">Nama Operator</div><div class="value">{{ $papdRequest->detail_maskapai ?? '-' }}</div></div>
     <div class="row"><div class="label">Nomor Perjalanan</div><div class="value">{{ $papdRequest->no_penerbangan ?? '-' }}</div></div>
     <div class="row"><div class="label">Bagasi Tambahan</div><div class="value">{{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div></div>
@@ -193,7 +193,7 @@
     <div class="row"><div class="label">Opsi</div><div class="value">{{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div></div>
     @if($papdRequest->moda_transportasi_pulang)
     <div class="row"><div class="label">Kelas Pulang</div><div class="value">{{ $papdRequest->kelas_pulang ?? '-' }}</div></div>
-    <div class="row"><div class="label">Rute Pulang</div><div class="value">{{ $papdRequest->rute_pulang ?? '-' }}</div></div>
+    <div class="row"><div class="label">Catatan Pulang</div><div class="value">{{ $papdRequest->catatan_pulang ?? '-' }}</div></div>
     <div class="row"><div class="label">Nama Operator Pulang</div><div class="value">{{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div></div>
     <div class="row"><div class="label">Nomor Perjalanan Pulang</div><div class="value">{{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div></div>
     <div class="row"><div class="label">Bagasi Tambahan Pulang</div><div class="value">{{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div></div>

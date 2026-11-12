@@ -1,9 +1,13 @@
 @component('mail::message')
-# Persetujuan Permintaan Akomodasi Perjalanan Dinas
+# {{ !empty($isUpdate) ? 'Pembaruan Permintaan Akomodasi Perjalanan Dinas' : 'Persetujuan Permintaan Akomodasi Perjalanan Dinas' }}
 
 Yth. Bapak/Ibu **{{ $request->atasan_nama }}**,
 
+@if(!empty($isUpdate))
+Pemohon telah memperbarui permintaan perjalanan dinas yang masih menunggu persetujuan. Berikut detail terbaru untuk ditinjau:
+@else
 Berikut adalah ringkasan permintaan perjalanan dinas dari:
+@endif
 
 - **Nama Pemohon:** {{ $request->nama_lengkap }}
 - **Departemen:** {{ $request->departemen }}

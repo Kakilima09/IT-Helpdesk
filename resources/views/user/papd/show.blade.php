@@ -48,7 +48,7 @@
                 <div class="col-xl-9">
                     <div class="card">
                         <div class="card-header border-0 d-flex justify-content-between align-items-center">
-                            <h4 class="card-title">Pengajuan #{{ $papdRequest->id }}</h4>
+                            <h4 class="card-title">Pengajuan {{ $papdRequest->ticket_number }}</h4>
                             <span class="badge status-badge
                                 @if($papdRequest->status == 'pending') badge-warning
                                 @elseif($papdRequest->status == 'approved') badge-success
@@ -117,7 +117,7 @@
                                         <div class="col-md-6"><span class="detail-label">Moda Pulang:</span> {{ ucfirst($papdRequest->moda_transportasi_pulang) }}</div>
                                     @endif
                                     <div class="col-md-6"><span class="detail-label">Kelas:</span> {{ $papdRequest->kelas ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Rute:</span> {{ $papdRequest->rute ?? '-' }}</div>
+                                    <div class="col-md-12"><span class="detail-label">Catatan Berangkat:</span><br>{{ $papdRequest->catatan_berangkat ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Nama Operator:</span> {{ $papdRequest->detail_maskapai ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Nomor Perjalanan:</span> {{ $papdRequest->no_penerbangan ?? '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Bagasi Tambahan:</span> {{ $papdRequest->bagasi_tambahan ? 'Ya' : 'Tidak' }}</div>
@@ -125,7 +125,7 @@
                                     <div class="col-md-12"><span class="detail-label">Opsi:</span> {{ collect($papdRequest->opsi_transportasi ?? [])->map(function ($option) { return ['insurance' => 'Insurance', 'refundable' => 'Refundable', 'special_baggage' => 'Special Baggage', 'special_charge' => 'Special Charge'][$option] ?? ucfirst($option); })->implode(', ') ?: '-' }}</div>
                                     @if($papdRequest->moda_transportasi_pulang)
                                         <div class="col-md-6"><span class="detail-label">Kelas Pulang:</span> {{ $papdRequest->kelas_pulang ?? '-' }}</div>
-                                        <div class="col-md-6"><span class="detail-label">Rute Pulang:</span> {{ $papdRequest->rute_pulang ?? '-' }}</div>
+                                        <div class="col-md-12"><span class="detail-label">Catatan Pulang:</span><br>{{ $papdRequest->catatan_pulang ?? '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Nama Operator Pulang:</span> {{ $papdRequest->detail_maskapai_pulang ?? '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Nomor Perjalanan Pulang:</span> {{ $papdRequest->no_penerbangan_pulang ?? '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Bagasi Tambahan Pulang:</span> {{ $papdRequest->bagasi_tambahan_pulang ? 'Ya' : 'Tidak' }}</div>

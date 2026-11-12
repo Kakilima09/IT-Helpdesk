@@ -204,10 +204,10 @@
                                                             <input type="checkbox" class="checkall" value="{{ $papd->id }}">
                                                         @endif
                                                     </td>
-                                                    <td>{{ $papd->id }}</td>
+                                                    <td>{{ $papd->ticket_number }}</td>
                                                     <td>{{ $papd->kota_tujuan }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papd->jam_keberangkatan }}</td>
-                                                    <td>{{ $papd->tanggal_kepulangan ? \Carbon\Carbon::parse($papd->tanggal_kepulangan)->format('d-m-Y') : '-' }}
+                                                    <td>{{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->locale('id')->translatedFormat('d F Y') }} {{ $papd->jam_keberangkatan }}</td>
+                                                    <td>{{ $papd->tanggal_kepulangan ? \Carbon\Carbon::parse($papd->tanggal_kepulangan)->locale('id')->translatedFormat('d F Y') : '-' }}
                                                         {{ $papd->jam_kepulangan ?? '' }}</td>
                                                     <td>
                                                         @if($papd->status == 'pending')
