@@ -141,8 +141,7 @@
                                     <div class="col-md-6"><span class="detail-label">Reservasi:</span> {{ $papdRequest->hotel_reservasi ? 'Ya' : 'Tidak' }}</div>
                                     @if($papdRequest->hotel_reservasi)
                                         <div class="col-md-6"><span class="detail-label">Nama Hotel:</span> {{ $papdRequest->nama_hotel ?? '-' }}</div>
-                                        <div class="col-md-6"><span class="detail-label">Lokasi:</span> {{ $papdRequest->lokasi_hotel ?? '-' }}</div>
-                                        <div class="col-md-12"><span class="detail-label">Alamat:</span> {{ $papdRequest->alamat_hotel ?? '-' }}</div>
+                                        <div class="col-md-12"><span class="detail-label">Lokasi / Alamat:</span> {{ $papdRequest->hotel_location_address ?: '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Check-in:</span> {{ $papdRequest->check_in ? $papdRequest->check_in->format('d-m-Y') : '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Check-out:</span> {{ $papdRequest->check_out ? $papdRequest->check_out->format('d-m-Y') : '-' }}</div>
                                         <div class="col-md-6"><span class="detail-label">Jumlah Kamar:</span> {{ $papdRequest->jumlah_kamar ?? '-' }}</div>

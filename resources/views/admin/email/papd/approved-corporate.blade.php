@@ -61,8 +61,7 @@ Berikut adalah data lengkap permintaan perjalanan dinas yang **telah disetujui**
 - **Reservasi:** {{ $request->hotel_reservasi ? 'Ya' : 'Tidak' }}
 @if($request->hotel_reservasi)
 - **Nama Hotel:** {{ $request->nama_hotel ?? '-' }}
-- **Lokasi:** {{ $request->lokasi_hotel ?? '-' }}
-- **Alamat:** {{ $request->alamat_hotel ?? '-' }}
+- **Lokasi / Alamat:** {{ $request->hotel_location_address ?: '-' }}
 - **Check-in:** {{ $request->check_in ? $request->check_in->format('d-m-Y') : '-' }}
 - **Check-out:** {{ $request->check_out ? $request->check_out->format('d-m-Y') : '-' }}
 - **Jumlah Kamar:** {{ $request->jumlah_kamar ?? '-' }}

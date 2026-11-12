@@ -208,8 +208,7 @@
     <div class="row"><div class="label">Reservasi</div><div class="value">{{ $papdRequest->hotel_reservasi ? 'Ya' : 'Tidak' }}</div></div>
     @if($papdRequest->hotel_reservasi)
     <div class="row"><div class="label">Nama Hotel</div><div class="value">{{ $papdRequest->nama_hotel ?? '-' }}</div></div>
-    <div class="row"><div class="label">Lokasi</div><div class="value">{{ $papdRequest->lokasi_hotel ?? '-' }}</div></div>
-    <div class="row"><div class="label">Alamat</div><div class="value">{{ $papdRequest->alamat_hotel ?? '-' }}</div></div>
+    <div class="row"><div class="label">Lokasi / Alamat</div><div class="value">{{ $papdRequest->hotel_location_address ?: '-' }}</div></div>
     <div class="row"><div class="label">Check-in</div><div class="value">{{ $papdRequest->check_in ? \Carbon\Carbon::parse($papdRequest->check_in)->format('d-m-Y') : '-' }}</div></div>
     <div class="row"><div class="label">Check-out</div><div class="value">{{ $papdRequest->check_out ? \Carbon\Carbon::parse($papdRequest->check_out)->format('d-m-Y') : '-' }}</div></div>
     <div class="row"><div class="label">Jumlah Kamar</div><div class="value">{{ $papdRequest->jumlah_kamar ?? '-' }}</div></div>

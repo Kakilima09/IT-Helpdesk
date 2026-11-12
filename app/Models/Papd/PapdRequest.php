@@ -69,6 +69,16 @@ class PapdRequest extends Model
         return sprintf('PAPD-%04d-%s', $this->id, $this->created_at->format('Y'));
     }
 
+    public function getHotelLocationAddressAttribute(): string
+    {
+        return implode(' - ', array_filter([
+            trim((string) $this->lokasi_hotel),
+            trim((string) $this->alamat_hotel),
+        ], function ($value) {
+            return $value !== '';
+        }));
+    }
+
     // Relasi ke user
     public function user()
     {

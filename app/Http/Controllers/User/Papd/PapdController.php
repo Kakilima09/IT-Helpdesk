@@ -246,6 +246,7 @@ class PapdController extends Controller
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
             'alamat_hotel' => 'nullable|string',
+            'hotel_lokasi_alamat' => 'nullable|string|max:2000',
             'check_in' => 'nullable|date|after_or_equal:tanggal_keberangkatan',
             'check_out' => 'nullable|date|after:check_in',
             'jumlah_kamar' => 'nullable|integer|min:1',
@@ -259,6 +260,13 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        $validated['alamat_hotel'] = $validated['hotel_lokasi_alamat']
+            ?? trim(implode(' - ', array_filter([
+                $validated['lokasi_hotel'] ?? null,
+                $validated['alamat_hotel'] ?? null,
+            ])));
+        $validated['lokasi_hotel'] = null;
+        unset($validated['hotel_lokasi_alamat']);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
                 'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',
@@ -656,6 +664,7 @@ class PapdController extends Controller
             'nama_hotel' => 'nullable|string|max:255',
             'lokasi_hotel' => 'nullable|string|max:255',
             'alamat_hotel' => 'nullable|string',
+            'hotel_lokasi_alamat' => 'nullable|string|max:2000',
             'check_in' => 'nullable|date|after_or_equal:tanggal_keberangkatan',
             'check_out' => 'nullable|date|after:check_in',
             'jumlah_kamar' => 'nullable|integer|min:1',
@@ -668,6 +677,13 @@ class PapdController extends Controller
         }
 
         $validated = $request->validate($rules);
+        $validated['alamat_hotel'] = $validated['hotel_lokasi_alamat']
+            ?? trim(implode(' - ', array_filter([
+                $validated['lokasi_hotel'] ?? null,
+                $validated['alamat_hotel'] ?? null,
+            ])));
+        $validated['lokasi_hotel'] = null;
+        unset($validated['hotel_lokasi_alamat']);
         if ($validated['jenis_tiket'] !== 'pulang_pergi') {
             foreach ([
                 'moda_transportasi_pulang', 'kelas_pulang', 'kota_asal_pulang', 'kota_tujuan_pulang', 'kode_asal_pulang',

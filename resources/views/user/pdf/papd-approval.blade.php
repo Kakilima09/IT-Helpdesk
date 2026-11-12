@@ -258,8 +258,7 @@
         <tr><td class="label-col">Reservasi</td><td class="value-col">{{ $papdRequest->hotel_reservasi ? 'Ya' : 'Tidak' }}</td></tr>
         @if($papdRequest->hotel_reservasi)
         @if($papdRequest->nama_hotel)<tr><td class="label-col">Nama Hotel</td><td class="value-col">{{ $papdRequest->nama_hotel }}</td></tr>@endif
-        @if($papdRequest->lokasi_hotel)<tr><td class="label-col">Lokasi</td><td class="value-col">{{ $papdRequest->lokasi_hotel }}</td></tr>@endif
-        @if($papdRequest->alamat_hotel)<tr><td class="label-col">Alamat</td><td class="value-col">{{ $papdRequest->alamat_hotel }}</td></tr>@endif
+        @if($papdRequest->hotel_location_address)<tr><td class="label-col">Lokasi / Alamat</td><td class="value-col">{{ $papdRequest->hotel_location_address }}</td></tr>@endif
         @if($papdRequest->check_in)<tr><td class="label-col">Check-in</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->check_in)->format('d-m-Y') }}</td></tr>@endif
         @if($papdRequest->check_out)<tr><td class="label-col">Check-out</td><td class="value-col">{{ \Carbon\Carbon::parse($papdRequest->check_out)->format('d-m-Y') }}</td></tr>@endif
         @if($papdRequest->jumlah_kamar)<tr><td class="label-col">Jumlah Kamar</td><td class="value-col">{{ $papdRequest->jumlah_kamar }}</td></tr>@endif
