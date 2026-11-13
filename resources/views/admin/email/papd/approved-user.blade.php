@@ -11,6 +11,5 @@ PePengajuan perjalanan dinas Anda dengan rincian berikut telah **disetujui** ole
 - **Agenda:** {{ $request->agenda }}
 
 
-
 Terima kasih.
 @endcomponent

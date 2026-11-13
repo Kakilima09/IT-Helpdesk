@@ -3,7 +3,7 @@
 
 Dear Corporate,
 
-Pengajuan Akomodasi Perjalanan Dinas berikut **telah disetujui oleh atasan** dan menunggu **persetujuan corporate**. Mohon buka panel admin untuk menyetujui, kemudian sistem akan menampilkan rekomendasi tiket termurah.
+Pengajuan Akomodasi Perjalanan Dinas berikut **telah disetujui oleh atasan** dan menunggu **persetujuan corporate**. Gunakan tombol di bawah untuk menyetujui langsung.
 
 ---
 
@@ -22,8 +22,6 @@ Pengajuan Akomodasi Perjalanan Dinas berikut **telah disetujui oleh atasan** dan
 @component('mail::button', ['url' => $approveUrl, 'color' => 'success'])
 Approve Corporate
 @endcomponent
-
-Atau [buka detail PAPD di panel admin]({{ route('admin.papd.show', $request->id) }}).
 
 Terima kasih.
 

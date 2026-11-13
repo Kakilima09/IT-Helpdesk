@@ -223,10 +223,18 @@ class PapdAdminController extends Controller
 
         $error = $this->processCorporateApproval($papd, $approverId);
         if ($error) {
-            return redirect()->route('admin.papd.index')->with('error', $error);
+            return response()->view('admin.papd.email-approval-result', [
+                'papdRequest' => $papd,
+                'success' => false,
+                'message' => $error,
+            ], 409);
         }
 
-        return redirect()->route('admin.papd.index')->with('success', 'PAPD berhasil disetujui corporate melalui email.');
+        return response()->view('admin.papd.email-approval-result', [
+            'papdRequest' => $papd,
+            'success' => true,
+            'message' => 'PAPD berhasil disetujui corporate.',
+        ]);
     }
 
     private function processCorporateApproval(PapdRequest $papd, $approverId)
