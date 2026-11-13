@@ -710,6 +710,22 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Kota Tujuan <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
+                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
+                                                   placeholder="Masukkan kota tujuan" required>
+                                            @error('kota_tujuan')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2" id="label_tujuan">Bandara Tujuan</label>
                                         </div>
                                         <div class="col-md-9">
@@ -890,14 +906,49 @@
                                     </div>
 
                                     <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Kota Asal Pulang</label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('kota_asal_pulang') is-invalid @enderror"
+                                                   name="kota_asal_pulang" id="kota_asal_pulang" value="{{ old('kota_asal_pulang') }}" maxlength="255"
+                                                   placeholder="Masukkan kota asal pulang">
+                                            @error('kota_asal_pulang')
+                                            <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="form-label mb-0 mt-2" id="label_tujuan_pulang">Lokasi Tujuan Pulang</label>
+                                                <label class="form-label mb-0 mt-2" id="label_asal_pulang">Bandara Asal Pulang</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <select class="form-control @error('kode_asal_pulang') is-invalid @enderror"
+                                                        name="kode_asal_pulang" id="kode_asal_pulang_select">
+                                                    @if(old('kode_asal_pulang'))
+                                                        <option value="{{ old('kode_asal_pulang') }}" selected>{{ old('kode_asal_pulang') }}</option>
+                                                    @endif
+                                                </select>
+                                                @error('kode_asal_pulang')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="form-label mb-0 mt-2">Kota Tujuan Pulang<span class="text-red">*</span></label>
                                             </div>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control @error('kota_tujuan_pulang') is-invalid @enderror"
-                                                       name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang') }}" maxlength="255"
-                                                       placeholder="Masukkan lokasi tujuan pulang">
+                                                    name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang') }}" maxlength="255"
+                                                    placeholder="Masukkan kota tujuan pulang" required>
                                                 @error('kota_tujuan_pulang')
                                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                                 @enderror
@@ -908,18 +959,22 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="form-label mb-0 mt-2" id="label_asal_pulang">Lokasi Asal Pulang</label>
+                                                <label class="form-label mb-0 mt-2" id="label_tujuan_pulang">Bandara Tujuan Pulang</label>
                                             </div>
                                             <div class="col-md-9">
-                                                    <input type="text" class="form-control @error('kota_asal_pulang') is-invalid @enderror"
-                                                           name="kota_asal_pulang" id="kota_asal_pulang" value="{{ old('kota_asal_pulang') }}" maxlength="255"
-                                                           placeholder="Masukkan lokasi asal pulang">
-                                                    @error('kota_asal_pulang')
-                                                        <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                                    @enderror
+                                                <select class="form-control @error('kode_tujuan_pulang') is-invalid @enderror"
+                                                        name="kode_tujuan_pulang" id="kode_tujuan_pulang_select">
+                                                    @if(old('kode_tujuan_pulang'))
+                                                        <option value="{{ old('kode_tujuan_pulang') }}" selected>{{ old('kode_tujuan_pulang') }}</option>
+                                                    @endif
+                                                </select>
+                                                @error('kode_tujuan_pulang')
+                                                    <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                                @enderror
                                             </div>
                                         </div>
                                     </div>
+
 
 
                                     <div class="form-group">
@@ -1159,7 +1214,7 @@
                                 <hr>
 
                                 <!-- ==================== NOTES ==================== -->
-                                <div class="section-title">E.Catatan Tambahan</div>
+                                <div class="section-title">E. Catatan Tambahan</div>
 
                                 <div class="form-group">
                                     <div class="row">
@@ -1348,10 +1403,6 @@
             return { type: '', label: 'Lokasi', search: 'Cari lokasi...' };
         }
 
-        function transportLocationLabel(moda) {
-            return transportLocationConfig(moda).label;
-        }
-
         function kelasOptionsForModa(moda) {
             if (moda === 'pesawat') return ['Ekonomi', 'Bisnis'];
             if (moda === 'bus') return ['Ekonomi', 'Bisnis', 'VIP', 'Eksekutif'];
@@ -1402,7 +1453,8 @@
             });
         }
 
-        function initTransportLocationSelect(selector, manualFieldSelector) {
+        function initTransportLocationSelect(selector, manualFieldSelector, modaSelector) {
+            modaSelector = modaSelector || '#moda_transportasi';
             $(selector).select2({
                 minimumInputLength: 1,
                 placeholder: 'Cari lokasi...',
@@ -1414,7 +1466,7 @@
                     data: function(params) {
                         return {
                             q: params.term,
-                            type: transportLocationConfig($('#moda_transportasi').val()).type
+                            type: transportLocationConfig($(modaSelector).val()).type
                         };
                     },
                     processResults: function(data) {
@@ -1436,17 +1488,33 @@
         }
 
         function updateReturnLocationLabels() {
-            var label = transportLocationLabel($('#moda_transportasi_pulang').val());
+            var location = transportLocationConfig($('#moda_transportasi_pulang').val());
+            var label = location.label;
             $('#label_asal_pulang').text(label + ' Asal Pulang');
             $('#label_tujuan_pulang').text(label + ' Tujuan Pulang');
             $('#kota_asal_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' asal pulang');
             $('#kota_tujuan_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' tujuan pulang');
+            $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').each(function() {
+                var instance = $(this).data('select2');
+                if (instance) {
+                    instance.$container.find('.select2-search__field').attr('placeholder', location.search);
+                    instance.$container.find('.select2-selection__placeholder').text(location.search);
+                }
+            });
         }
 
         initTransportLocationSelect('#kode_asal_select', '#kota_asal');
         initTransportLocationSelect('#kode_tujuan_select', '#kota_tujuan');
+        initTransportLocationSelect('#kode_asal_pulang_select', '#kota_asal_pulang', '#moda_transportasi_pulang');
+        initTransportLocationSelect('#kode_tujuan_pulang_select', '#kota_tujuan_pulang', '#moda_transportasi_pulang');
         $('#kode_asal_select, #kode_tujuan_select').on('select2:select', function(event) {
             var cityInput = this.id === 'kode_asal_select' ? '#kota_asal' : '#kota_tujuan';
+            if (event.params.data.city) {
+                $(cityInput).val(event.params.data.city);
+            }
+        });
+        $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').on('select2:select', function(event) {
+            var cityInput = this.id === 'kode_asal_pulang_select' ? '#kota_asal_pulang' : '#kota_tujuan_pulang';
             if (event.params.data.city) {
                 $(cityInput).val(event.params.data.city);
             }
@@ -1457,6 +1525,7 @@
             updateLocationLabels();
         });
         $('#moda_transportasi_pulang').on('change', function() {
+            $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').val(null).trigger('change');
             updateKelasPulang(false);
             updateReturnLocationLabels();
         });
@@ -1656,8 +1725,10 @@
             $('#return-transport-group').toggle(isRoundTrip);
             $('#catatan-pulang-group').toggle(isRoundTrip);
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
+            $('#kota_tujuan_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');
+                $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').val(null).trigger('change');
                 updateKelasPulang(false);
                 $('#kota_asal_pulang').val('');
                 $('#kota_tujuan_pulang').val('');
