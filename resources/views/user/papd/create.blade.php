@@ -233,8 +233,11 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Lahir <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="date" class="form-control @error('ttl') is-invalid @enderror"
-                                                   name="ttl" value="{{ old('ttl') }}" required>
+                                            <input type="text" class="form-control @error('ttl') is-invalid @enderror"
+                                                   id="ttl_display" placeholder="12 November 1990"
+                                                   value="{{ old('ttl') ? \Carbon\Carbon::parse(old('ttl'))->locale('id')->translatedFormat('d F Y') : '' }}"
+                                                   autocomplete="off" readonly required>
+                                            <input type="hidden" name="ttl" id="ttl" value="{{ old('ttl') }}">
                                             @error('ttl')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -1215,6 +1218,7 @@
             }
         }
 
+        setupTanggalPicker('#ttl_display', '#ttl');
         setupTanggalPicker('#tanggal_keberangkatan_display', '#tanggal_keberangkatan');
         setupTanggalPicker('#tanggal_kepulangan_display', '#tanggal_kepulangan');
         setupTanggalPicker('#hotel_check_in_display', '#hotel_check_in');
