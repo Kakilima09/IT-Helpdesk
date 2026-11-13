@@ -29,6 +29,7 @@ use App\Services\PapdRecommendationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Http\UploadedFile;
 
 class PapdController extends Controller
@@ -431,7 +432,12 @@ class PapdController extends Controller
                     \Log::error($e->getTraceAsString());
                     // Fallback plain text
                     try {
-                        Mail::raw("Permintaan PAPD menunggu approval corporate.\nBuka panel: " . route('admin.papd.show', $papdRequest->id), function ($message) use ($corporateEmail) {
+                        $approveUrl = URL::temporarySignedRoute(
+                            'admin.papd.corporateApproveFromEmail',
+                            now()->addDays(7),
+                            ['id' => $papdRequest->id]
+                        );
+                        Mail::raw("Permintaan PAPD menunggu approval corporate.\nApprove langsung: " . $approveUrl, function ($message) use ($corporateEmail) {
                             $message->to($corporateEmail)
                                     ->subject('Persetujuan Corporate PAPD');
                         });

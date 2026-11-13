@@ -19,9 +19,11 @@ Permintaan perjalanan dinas berikut **telah disetujui oleh atasan** dan menunggu
 
 ---
 
-@component('mail::button', ['url' => route('admin.papd.show', $request->id), 'color' => 'primary'])
-Buka & Approve di Panel
+@component('mail::button', ['url' => $approveUrl, 'color' => 'success'])
+Approve Corporate
 @endcomponent
+
+Atau [buka detail PAPD di panel admin]({{ route('admin.papd.show', $request->id) }}).
 
 Terima kasih.
 

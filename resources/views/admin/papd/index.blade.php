@@ -249,12 +249,11 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Requester</th>
                         <th>Pemohon</th>
-                        <th>Pembebanan Biaya</th>
-                        <th>Tgl Pengajuan</th>
-                        <th>Transportasi / Akomodasi</th>
-                        <th>Keberangkatan</th>
-                        <th>Status Corporate</th>
+                        <th>Tanggal Approve Corporate</th>
+                        <th>Beban Biaya</th>
+                        <th>Status</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -263,25 +262,11 @@
                     <tr>
                         <td>{{ $papd->ticket_number }}</td>
                         <td>
-                            {{ $papd->nama_lengkap }}
-                            <br><small class="text-muted">{{ ucfirst($papd->jenis_pemohon ?? 'internal') }} · {{ ucfirst($papd->jenis_perjalanan ?? '-') }}</small>
+                            {{ $papd->user ? ($papd->user->name ?: (trim(($papd->user->firstname ?? '') . ' ' . ($papd->user->lastname ?? '')) ?: '-')) : '-' }}
                         </td>
+                        <td>{{ $papd->nama_lengkap }}</td>
+                        <td>{{ $papd->corporate_approved_at ? $papd->corporate_approved_at->format('d-m-Y H:i') : '-' }}</td>
                         <td>{{ $papd->pembebanan_biaya ?? '-' }}</td>
-                        <td>{{ $papd->created_at->format('d-m-Y H:i') }}</td>
-                        <td>
-                            <small class="text-muted">{{ ($papd->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi' ? 'Pulang Pergi' : 'Sekali Jalan' }}</small><br>
-                            <strong>Berangkat: {{ ucfirst($papd->moda_transportasi) }}</strong>
-                            @if($papd->moda_transportasi_pulang)
-                                <br><strong>Pulang: {{ ucfirst($papd->moda_transportasi_pulang) }}</strong>
-                            @endif
-                            @if($papd->hotel_reservasi && $papd->nama_hotel)
-                                <br><span class="text-muted">Hotel: {{ $papd->nama_hotel }}</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="d-block">Berangkat: {{ \Carbon\Carbon::parse($papd->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papd->jam_keberangkatan }}</span>
-                            <span class="d-block text-muted">Kembali: {{ $papd->tanggal_kepulangan ? \Carbon\Carbon::parse($papd->tanggal_kepulangan)->format('d-m-Y') . ' ' . ($papd->jam_kepulangan ?? '') : '-' }}</span>
-                        </td>
                         <td>
                             @if($papd->closing_status == 'pending')
                                 <span class="badge badge-warning">Pending</span>
@@ -316,9 +301,9 @@
                             
                                 @if($isCorporate || $isSuperadmin)
                                     @if($papd->status == 'approved' && $papd->corporate_status === 'pending')
-                                        <a href="{{ route('admin.papd.show', $papd->id) }}" class="btn btn-warning btn-sm" title="Menunggu Approval Corporate">
+                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#corporateApprovalModal{{ $papd->id }}" title="Approval Corporate">
                                             <i class="fe fe-user-check"></i>
-                                        </a>
+                                        </button>
                                     @elseif($papd->status == 'approved' && $papd->corporate_status === 'approved' && $papd->closing_status == 'pending')
                                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#closeModal{{ $papd->id }}" title="Update Closing">
                                             <i class="fe fe-check-circle"></i>
@@ -336,6 +321,37 @@
                             </div>
                         </td>
                     </tr>
+                    @if(($isCorporate || $isSuperadmin) && $papd->status == 'approved' && $papd->corporate_status === 'pending')
+                    <div class="modal fade" id="corporateApprovalModal{{ $papd->id }}" tabindex="-1" aria-labelledby="corporateApprovalModalLabel{{ $papd->id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="corporateApprovalModalLabel{{ $papd->id }}">Approval Corporate - {{ $papd->ticket_number }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>Proses permintaan PAPD untuk pemohon <strong>{{ $papd->nama_lengkap }}</strong>.</p>
+                                    <form method="POST" action="{{ route('admin.papd.corporateApprove', $papd->id) }}" class="mb-3">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fe fe-check"></i> Approve Corporate
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.papd.corporateReject', $papd->id) }}">
+                                        @csrf
+                                        <div class="mb-2">
+                                            <label for="corporateNote{{ $papd->id }}" class="form-label">Alasan Penolakan</label>
+                                            <textarea id="corporateNote{{ $papd->id }}" name="corporate_note" class="form-control" rows="2" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fe fe-x"></i> Reject
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <!-- Modal Update Closing -->
                     <div class="modal fade" id="closeModal{{ $papd->id }}" tabindex="-1" aria-labelledby="closeModalLabel{{ $papd->id }}" aria-hidden="true">
                         <div class="modal-dialog">
@@ -369,14 +385,7 @@
                     </div>
                     @empty
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="text-center">Belum ada data PAPD.</td>
+                        <td colspan="7" class="text-center">Belum ada data PAPD.</td>
                     </tr>
                     @endforelse
                 </tbody>

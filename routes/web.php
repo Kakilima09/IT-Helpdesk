@@ -462,6 +462,9 @@ Route::middleware(ProtectAgainstSpam::class)->group(function() {
 		});
 		Route::group(['namespace' => 'Admin', 'prefix'	 => 'admin'], function () {
 
+			Route::get('/papd/{id}/corporate-approve-email', [PapdAdminController::class, 'corporateApproveFromEmail'])
+				->name('admin.papd.corporateApproveFromEmail')
+				->middleware('signed');
 			Route::get('/assigned/{id}', 'AdminAssignedticketsController@show')->name('assigning.ticket');
 			Route::get('/ticket-view/ticketassigneds/{id}', 'AdminAssignedticketsController@show');
 			Route::get('dashboardtabledata','AdminDashboardController@dashboardtabledata')->name('admin.dashboardtabledata');

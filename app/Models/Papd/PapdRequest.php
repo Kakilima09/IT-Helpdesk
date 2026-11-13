@@ -85,6 +85,11 @@ class PapdRequest extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function corporateApprover()
+    {
+        return $this->belongsTo(User::class, 'corporate_approved_by');
+    }
+
     // Relasi ke master lokasi berdasarkan kode
     public function originLocation()
     {

@@ -47,7 +47,7 @@ class PapdAdminController extends Controller
         $userDepartment = $user->departments ?? null; // sesuai kolom di users
 
         // ===== QUERY UTAMA =====
-        $query = PapdRequest::query();
+        $query = PapdRequest::with(['user', 'corporateApprover']);
 
         // Filter otomatis untuk admin biasa (dibatasi departemen)
         if ($isAdmin) {
@@ -147,7 +147,7 @@ class PapdAdminController extends Controller
             'start_date' => $request->start_date,
             'end_date'   => $request->end_date,
         ];
-        return Excel::download(new PapdExport($filters), 'papd-approved-report.xlsx');
+        return Excel::download(new PapdExport($filters), 'papd-report.xlsx');
     }
 
     public function updateClosing(Request $request, $id)
@@ -204,23 +204,49 @@ class PapdAdminController extends Controller
         }
 
         $papd = PapdRequest::findOrFail($id);
+        $error = $this->processCorporateApproval($papd, $user->id);
 
+        if ($error) {
+            return redirect()->back()->with('error', $error);
+        }
+
+        return redirect()->back()->with('success', 'PAPD berhasil disetujui corporate.');
+    }
+
+    public function corporateApproveFromEmail($id)
+    {
+        $papd = PapdRequest::findOrFail($id);
+        $approverId = auth()->id();
+        if (!$approverId) {
+            $approverId = User::where('email', config('app.corporate_email'))->value('id');
+        }
+
+        $error = $this->processCorporateApproval($papd, $approverId);
+        if ($error) {
+            return redirect()->route('admin.papd.index')->with('error', $error);
+        }
+
+        return redirect()->route('admin.papd.index')->with('success', 'PAPD berhasil disetujui corporate melalui email.');
+    }
+
+    private function processCorporateApproval(PapdRequest $papd, $approverId)
+    {
         if ($papd->status !== 'approved') {
-            return redirect()->back()->with('error', 'PAPD belum disetujui atasan.');
+            return 'PAPD belum disetujui atasan.';
         }
 
         if (!in_array($papd->corporate_status, [null, 'pending'], true)) {
-            return redirect()->back()->with('error', 'PAPD ini sudah diproses oleh corporate.');
+            return 'PAPD ini sudah diproses oleh corporate.';
         }
 
         if ($papd->closing_status !== 'pending') {
-            return redirect()->back()->with('error', 'PAPD sudah di-closing.');
+            return 'PAPD sudah di-closing.';
         }
 
         $papd->update([
             'corporate_status'      => 'approved',
             'corporate_approved_at' => now(),
-            'corporate_approved_by' => $user->id,
+            'corporate_approved_by' => $approverId,
             'corporate_note'        => null,
         ]);
 
@@ -232,7 +258,7 @@ class PapdAdminController extends Controller
             new ApprovedUserNotification($papd)
         );
 
-        return redirect()->back()->with('success', 'PAPD berhasil disetujui corporate.');
+        return null;
     }
 
     /**

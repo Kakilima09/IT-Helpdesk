@@ -21,7 +21,11 @@ class PapdExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
 
     public function collection()
     {
-        $query = PapdRequest::where('status', 'approved');
+        $query = PapdRequest::with(['user', 'corporateApprover'])
+            ->where(function ($query) {
+                $query->where('status', 'approved')
+                    ->orWhere('corporate_status', 'rejected');
+            });
 
         if (!empty($this->filters['department'])) {
             $query->where('departemen', $this->filters['department']);
@@ -40,13 +44,14 @@ class PapdExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
     {
         return [
             'No',
+            'ID PAPD',
+            'Note Status Corporate',
+            'Requester',
             'Pemohon',
-            'ID Karyawan',
-            'Tujuan',
-            'Pembebanan Biaya',
-            'Transportasi / Akomodasi',
-            'Tanggal Pengajuan',
-            'Status Approve Atasan',
+            'Tanggal Approve Corporate',
+            'Detail Transaksi',
+            'Beban Biaya',
+            'Approved Corporate',
         ];
     }
 
@@ -55,42 +60,108 @@ class PapdExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
         static $no = 0;
         $no++;
 
-        // Transportasi & Akomodasi
-        $transportasi = ucfirst($row->moda_transportasi);
-        if ($row->moda_transportasi_pulang) {
-            $transportasi .= ' / Pulang: ' . ucfirst($row->moda_transportasi_pulang);
-        }
-        if ($row->kelas) {
-            $transportasi .= ' (' . $row->kelas . ')';
-        }
-        
-        $akomodasi = 'Tidak';
-        if ($row->hotel_reservasi && $row->nama_hotel) {
-            $akomodasi = $row->nama_hotel;
-            if ($row->hotel_location_address) {
-                $akomodasi .= ' (' . $row->hotel_location_address . ')';
-            }
-        }
-
-        $transportasiAkomodasi = $transportasi;
-        if ($row->hotel_reservasi) {
-            $transportasiAkomodasi .= ' | Hotel: ' . $akomodasi;
-        }
-
-        // Format tanggal dengan timezone yang benar
         $timezone = config('app.timezone', 'Asia/Jakarta');
-        $createdAt = $row->created_at ? $row->created_at->setTimezone($timezone)->format('d-m-Y H:i') : '-';
+        $corporateApprovedAt = $row->corporate_approved_at
+            ? $row->corporate_approved_at->setTimezone($timezone)->format('d-m-Y H:i')
+            : '-';
+        $requester = $this->userDisplayName($row->user);
+        $corporateApprover = $this->userDisplayName($row->corporateApprover);
 
         return [
             $no,
+            $row->ticket_number,
+            $row->corporate_note ?: '-',
+            $requester,
             $row->nama_lengkap,
-            $row->id_karyawan,
-            $row->kota_tujuan,
+            $corporateApprovedAt,
+            $this->transportDetails($row),
             $row->pembebanan_biaya ?? '-',
-            $transportasiAkomodasi,
-            $createdAt,
-            ucfirst($row->status), // Status Approve Atasan (selalu 'Approved' karena query filter)
+            $row->corporate_status === 'approved' ? $corporateApprover : '-',
         ];
+    }
+
+    private function userDisplayName($user): string
+    {
+        if (!$user) {
+            return '-';
+        }
+
+        $fullName = trim(($user->firstname ?? '') . ' ' . ($user->lastname ?? ''));
+
+        return $user->name ?: ($fullName ?: '-');
+    }
+
+    private function transportDetails($row): string
+    {
+        $ticketType = ($row->jenis_tiket ?? 'sekali_jalan') === 'pulang_pergi'
+            ? 'Pulang Pergi'
+            : 'Sekali Jalan';
+        $details = [
+            'Jenis tiket: ' . $ticketType,
+            $this->transportLegDetails(
+                'Berangkat',
+                $row->moda_transportasi,
+                $row->kota_asal ?: $row->kode_asal,
+                $row->kota_tujuan ?: $row->kode_tujuan,
+                $row->kelas,
+                $row->detail_maskapai,
+                $row->no_penerbangan,
+                $row->catatan_berangkat,
+                $row->bagasi_tambahan,
+                $row->transportasi_lokal,
+                $row->opsi_transportasi
+            ),
+        ];
+
+        if ($ticketType === 'Pulang Pergi') {
+            $details[] = $this->transportLegDetails(
+                'Pulang',
+                $row->moda_transportasi_pulang,
+                $row->kota_asal_pulang ?: $row->kode_asal_pulang,
+                $row->kota_tujuan_pulang ?: $row->kode_tujuan_pulang,
+                $row->kelas_pulang,
+                $row->detail_maskapai_pulang,
+                $row->no_penerbangan_pulang,
+                $row->catatan_pulang,
+                $row->bagasi_tambahan_pulang,
+                $row->transportasi_lokal_pulang,
+                $row->opsi_transportasi_pulang
+            );
+        }
+
+        return implode(' | ', array_filter($details));
+    }
+
+    private function transportLegDetails($label, $mode, $origin, $destination, $class, $operator, $number, $note, $extraBaggage, $localTransport, $options): string
+    {
+        $details = [$label . ': ' . ucfirst($mode ?? '-')];
+
+        if ($origin || $destination) {
+            $details[] = 'Rute: ' . ($origin ?: '-') . ' - ' . ($destination ?: '-');
+        }
+        if ($class) {
+            $details[] = 'Kelas: ' . $class;
+        }
+        if ($operator) {
+            $details[] = 'Operator: ' . $operator;
+        }
+        if ($number) {
+            $details[] = 'Nomor perjalanan: ' . $number;
+        }
+        if ($extraBaggage !== null) {
+            $details[] = 'Bagasi tambahan: ' . ($extraBaggage ? 'Ya' : 'Tidak');
+        }
+        if ($localTransport !== null) {
+            $details[] = 'Transportasi lokal: ' . ($localTransport ? 'Ya' : 'Tidak');
+        }
+        if (is_array($options) && $options) {
+            $details[] = 'Opsi: ' . implode(', ', $options);
+        }
+        if ($note) {
+            $details[] = 'Catatan: ' . $note;
+        }
+
+        return implode(', ', $details);
     }
 
     public function styles(Worksheet $sheet)

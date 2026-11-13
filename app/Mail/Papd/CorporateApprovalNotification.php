@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Papd\PapdRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class CorporateApprovalNotification extends Mailable
 {
@@ -22,6 +23,12 @@ class CorporateApprovalNotification extends Mailable
 
     public function build()
     {
+        $approveUrl = URL::temporarySignedRoute(
+            'admin.papd.corporateApproveFromEmail',
+            now()->addDays(7),
+            ['id' => $this->papdRequest->id]
+        );
+
         $pdfContent = null;
         try {
             $pdf = Pdf::loadView('user.pdf.papd-approval', [
@@ -35,7 +42,10 @@ class CorporateApprovalNotification extends Mailable
 
         $mail = $this->subject('Persetujuan Corporate PAPD - ' . $this->papdRequest->nama_lengkap)
                     ->markdown('admin.email.papd.corporate-approval')
-                    ->with('request', $this->papdRequest);
+                    ->with([
+                        'request' => $this->papdRequest,
+                        'approveUrl' => $approveUrl,
+                    ]);
 
         if ($pdfContent) {
             $cleanName = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->papdRequest->nama_lengkap);
