@@ -172,7 +172,7 @@
     <div class="row"><div class="label">No SPPD</div><div class="value">{{ $papdRequest->no_sppd ?? '-' }}</div></div>
     <div class="row"><div class="label">Berangkat</div><div class="value">{{ \Carbon\Carbon::parse($papdRequest->tanggal_keberangkatan)->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</div></div>
     <div class="row"><div class="label">Kembali</div><div class="value">{{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') . ' ' . ($papdRequest->jam_kepulangan ?? '') : '-' }}</div></div>
-    <div class="row"><div class="label">Lama Perjalanan</div><div class="value">{{ $papdRequest->durasi_hari }} hari</div></div>
+    <div class="row"><div class="label">Lama Perjalanan</div><div class="value">{{ $papdRequest->durasi_hari }} hari {{ $papdRequest->durasi_malam }} malam</div></div>
     <div class="row"><div class="label">Pembebanan Biaya</div><div class="value">{{ $papdRequest->pembebanan_biaya ?? '-' }}</div></div>
 </div>
 

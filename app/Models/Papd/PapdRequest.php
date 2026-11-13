@@ -30,7 +30,7 @@ class PapdRequest extends Model
         'ttl', 'no_paspor', 'exp_date_paspor',
         'jenis_perjalanan', 'nama_sesuai_ktp', 'nama_paspor', 'kota_tujuan', 'kota_asal', 'kode_asal', 'kode_tujuan', 'agenda',
         'role_perjalanan', 'nama_anggota_team', 'jumlah_anggota_team', 'no_sppd',
-        'tanggal_keberangkatan', 'jam_keberangkatan', 'tanggal_kepulangan', 'jam_kepulangan', 'durasi_hari', 'pembebanan_biaya',
+        'tanggal_keberangkatan', 'jam_keberangkatan', 'tanggal_kepulangan', 'jam_kepulangan', 'durasi_hari', 'durasi_malam', 'pembebanan_biaya',
         'moda_transportasi', 'moda_transportasi_pulang', 'jenis_tiket', 'kelas', 'rute', 'catatan_berangkat', 'detail_maskapai',
         'no_penerbangan', 'bagasi_tambahan', 'transportasi_lokal',
         'opsi_transportasi',

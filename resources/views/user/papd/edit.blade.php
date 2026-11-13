@@ -378,16 +378,29 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Lama Perjalanan (hari)</label>
+                                            <label class="form-label mb-0 mt-2">Lama Perjalanan</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror"
-                                                   name="durasi_hari" id="durasi_hari"
-                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}"
-                                                   readonly >
-                                            @error('durasi_hari')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="durasi_hari" class="form-label">Hari</label>
+                                                    <input type="number" min="0" class="form-control @error('durasi_hari') is-invalid @enderror"
+                                                           name="durasi_hari" id="durasi_hari"
+                                                           value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}" readonly>
+                                                    @error('durasi_hari')
+                                                        <span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="durasi_malam" class="form-label">Malam</label>
+                                                    <input type="number" min="0" class="form-control @error('durasi_malam') is-invalid @enderror"
+                                                           name="durasi_malam" id="durasi_malam"
+                                                           value="{{ old('durasi_malam', $papdRequest->durasi_malam ?? '') }}" readonly>
+                                                    @error('durasi_malam')
+                                                        <span class="invalid-feedback d-block"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -629,7 +642,9 @@
                                             <div class="col-md-3"><label class="form-label" id="label_tujuan_pulang">Lokasi Tujuan Pulang</label></div>
                                             <div class="col-md-9">
                                                 <select class="form-control @error('kode_tujuan_pulang') is-invalid @enderror" id="kode_tujuan_pulang_select" name="kode_tujuan_pulang"></select>
+                                                <input type="hidden" name="kota_tujuan_pulang" id="kota_tujuan_pulang" value="{{ old('kota_tujuan_pulang', $papdRequest->kota_tujuan_pulang) }}">
                                                 @error('kode_tujuan_pulang')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                                <small class="text-muted">Cari berdasarkan nama kota atau kode lokasi (contoh: Jakarta / CGK).</small>
                                             </div>
                                         </div>
                                     </div>
@@ -1148,12 +1163,15 @@
             });
         }
 
-        function syncReturnOriginCity() {
-            var originText = $('#kode_asal_pulang_select option:selected').text();
-            var originCity = locationCity(originText);
+        function syncReturnLocationCity(event) {
+            var cityField = event.target.id === 'kode_asal_pulang_select'
+                ? '#kota_asal_pulang'
+                : '#kota_tujuan_pulang';
+            var data = event.params && event.params.data;
+            var city = data ? data.city : '';
 
-            if (originCity) {
-                $('#kota_asal_pulang').val(originCity);
+            if (city) {
+                $(cityField).val(city);
             }
         }
 
@@ -1162,12 +1180,12 @@
         updateKelasPulang(true);
         updateReturnLocationLabels();
 
-        $('#kode_asal_pulang_select').on('select2:select select2:clear', syncReturnOriginCity);
-        $('#kode_tujuan_pulang_select').on('select2:select select2:clear', syncReturnOriginCity);
+        $('#kode_asal_pulang_select, #kode_tujuan_pulang_select').on('select2:select', syncReturnLocationCity);
         $('#moda_transportasi_pulang').on('change', function() {
             $('#kode_asal_pulang_select').val(null).trigger('change');
             $('#kode_tujuan_pulang_select').val(null).trigger('change');
             $('#kota_asal_pulang').val('');
+            $('#kota_tujuan_pulang').val('');
             updateKelasPulang(false);
             updateReturnLocationLabels();
         });
@@ -1177,7 +1195,7 @@
             $('#kode_asal_pulang_select').append(editReturnOrigin).trigger('change');
         @endif
         @if(old('kode_tujuan_pulang', $papdRequest->kode_tujuan_pulang))
-            var editReturnDest = new Option('{{ old('kode_tujuan_pulang', $papdRequest->kode_tujuan_pulang) }}', '{{ old('kode_tujuan_pulang', $papdRequest->kode_tujuan_pulang) }}', true, true);
+            var editReturnDest = new Option('{{ old('kota_tujuan_pulang', $papdRequest->kota_tujuan_pulang) }} ({{ old('kode_tujuan_pulang', $papdRequest->kode_tujuan_pulang) }})', '{{ old('kode_tujuan_pulang', $papdRequest->kode_tujuan_pulang) }}', true, true);
             $('#kode_tujuan_pulang_select').append(editReturnDest).trigger('change');
         @endif
 
@@ -1319,6 +1337,7 @@
                 $('#kode_asal_pulang_select').val(null).trigger('change');
                 $('#kode_tujuan_pulang_select').val(null).trigger('change');
                 $('#kota_asal_pulang').val('');
+                $('#kota_tujuan_pulang').val('');
                 $('textarea[name="catatan_pulang"]').val('');
                 updateReturnLocationLabels();
             }
@@ -1362,23 +1381,24 @@
             var tglBerangkat = $('#tanggal_keberangkatan').val();
             var tglKembali = $('#tanggal_kepulangan').val();
 
-            if (tglBerangkat && tglKembali) {
+            var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
+            if (isRoundTrip && tglBerangkat && tglKembali) {
                 var start = new Date(tglBerangkat);
                 var end = new Date(tglKembali);
 
                 if (end < start) {
                     $('#durasi_hari').val('');
+                    $('#durasi_malam').val('');
                     toastr.warning('Tanggal kepulangan tidak boleh lebih awal dari tanggal keberangkatan.');
                     return;
                 }
 
-                var diffTime = Math.abs(end - start);
-                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                // diffDays = diffDays + 1; // inklusif
-
-                $('#durasi_hari').val(diffDays);
+                var nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+                $('#durasi_hari').val(nights + 1);
+                $('#durasi_malam').val(nights);
             } else {
                 $('#durasi_hari').val('');
+                $('#durasi_malam').val('');
             }
         }
 

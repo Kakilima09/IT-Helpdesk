@@ -108,7 +108,7 @@
             </div>
             <div class="detail-row">
                 <span class="detail-label">Lama Perjalanan</span>
-                {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}
+                {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari ' . $papdRequest->durasi_malam . ' malam' : '-' }}
             </div>
             <div class="detail-row"><span class="detail-label">Pembebanan Biaya</span> {{ $papdRequest->pembebanan_biaya ?? '-' }}</div>
         </div>

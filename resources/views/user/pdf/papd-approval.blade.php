@@ -194,7 +194,7 @@
             {{ $papdRequest->jam_kepulangan ?? '' }}
         </td></tr>
         @endif
-        @if($papdRequest->durasi_hari)<tr><td class="label-col">Lama Perjalanan</td><td class="value-col">{{ $papdRequest->durasi_hari }} hari</td></tr>@endif
+        @if($papdRequest->durasi_hari)<tr><td class="label-col">Lama Perjalanan</td><td class="value-col">{{ $papdRequest->durasi_hari }} hari {{ $papdRequest->durasi_malam }} malam</td></tr>@endif
         @if($papdRequest->pembebanan_biaya)<tr><td class="label-col">Pembebanan Biaya</td><td class="value-col">{{ $papdRequest->pembebanan_biaya }}</td></tr>@endif
     </table>
 </div>

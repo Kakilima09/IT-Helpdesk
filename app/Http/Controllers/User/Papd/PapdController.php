@@ -141,6 +141,25 @@ class PapdController extends Controller
         return $validated;
     }
 
+    private function calculateTripDuration(array $validated): array
+    {
+        if (($validated['jenis_tiket'] ?? null) !== 'pulang_pergi' || empty($validated['tanggal_kepulangan'])) {
+            $validated['durasi_hari'] = 0;
+            $validated['durasi_malam'] = 0;
+
+            return $validated;
+        }
+
+        $start = \Carbon\Carbon::parse($validated['tanggal_keberangkatan'])->startOfDay();
+        $end = \Carbon\Carbon::parse($validated['tanggal_kepulangan'])->startOfDay();
+        $nights = $start->diffInDays($end);
+
+        $validated['durasi_hari'] = $nights + 1;
+        $validated['durasi_malam'] = $nights;
+
+        return $validated;
+    }
+
     /**
      * Lengkapi lokasi lama yang tersimpan sebagai kode dan susun rute.
      */
@@ -217,6 +236,7 @@ class PapdController extends Controller
             'tanggal_kepulangan' => 'nullable|required_if:jenis_tiket,pulang_pergi|date|after:tanggal_keberangkatan',
             'jam_kepulangan' => 'nullable',
             'durasi_hari' => 'nullable|integer|min:0',
+            'durasi_malam' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
             'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
             'moda_transportasi_pulang' => 'nullable|required_if:jenis_tiket,pulang_pergi|in:pesawat,kereta,bus,kapal,whoosh',
@@ -300,19 +320,7 @@ class PapdController extends Controller
             $validated['exp_date_paspor'] = null;
         }
 
-        // Jika durasi_hari tidak diisi dan kedua tanggal ada, hitung otomatis
-        if (empty($validated['durasi_hari']) && !empty($validated['tanggal_kepulangan'])) {
-            $start = \Carbon\Carbon::parse($validated['tanggal_keberangkatan']);
-            $end   = \Carbon\Carbon::parse($validated['tanggal_kepulangan']);
-            if ($end >= $start) {
-                $validated['durasi_hari'] = $end->diffInDays($start) + 1; // inklusif
-            }
-        }
-
-        // Jika durasi masih kosong, set default 0 atau 1 sesuai kebijakan
-        if (empty($validated['durasi_hari'])) {
-            $validated['durasi_hari'] = 0; // atau 1 jika ingin minimal 1
-        }
+        $validated = $this->calculateTripDuration($validated);
 
         $validated['user_id'] = auth()->id();
         $validated['status'] = 'pending';
@@ -640,6 +648,7 @@ class PapdController extends Controller
             'tanggal_kepulangan' => 'nullable|required_if:jenis_tiket,pulang_pergi|date|after:tanggal_keberangkatan',
             'jam_kepulangan' => 'nullable',
             'durasi_hari' => 'nullable|integer|min:0',
+            'durasi_malam' => 'nullable|integer|min:0',
             'pembebanan_biaya' => 'required|string|max:255',
             'moda_transportasi' => 'required|in:pesawat,kereta,bus,kapal,whoosh',
             'moda_transportasi_pulang' => 'nullable|required_if:jenis_tiket,pulang_pergi|in:pesawat,kereta,bus,kapal,whoosh',
@@ -719,18 +728,7 @@ class PapdController extends Controller
             $validated['exp_date_paspor'] = null;
         }
 
-        // Hitung ulang durasi jika tanggal diisi
-        if (empty($validated['durasi_hari']) && !empty($validated['tanggal_kepulangan'])) {
-            $start = \Carbon\Carbon::parse($validated['tanggal_keberangkatan']);
-            $end   = \Carbon\Carbon::parse($validated['tanggal_kepulangan']);
-            if ($end >= $start) {
-                $validated['durasi_hari'] = $end->diffInDays($start) + 1;
-            }
-        }
-
-        if (empty($validated['durasi_hari'])) {
-            $validated['durasi_hari'] = 0;
-        }
+        $validated = $this->calculateTripDuration($validated);
 
         $validated = $this->prepareTransportCodes($validated);
 

@@ -98,7 +98,7 @@
                                         <div class="col-md-12"><span class="detail-label">Nama Anggota Team:</span><br>{!! nl2br(e($papdRequest->nama_anggota_team)) !!}</div>
                                     @endif
                                     <div class="col-md-6"><span class="detail-label">No SPPD:</span> {{ $papdRequest->no_sppd ?? '-' }}</div>
-                                    <div class="col-md-6"><span class="detail-label">Lama Perjalanan:</span> {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari' : '-' }}</div>
+                                    <div class="col-md-6"><span class="detail-label">Lama Perjalanan:</span> {{ $papdRequest->durasi_hari ? $papdRequest->durasi_hari . ' hari ' . $papdRequest->durasi_malam . ' malam' : '-' }}</div>
                                     <div class="col-md-6"><span class="detail-label">Berangkat:</span> {{ $papdRequest->tanggal_keberangkatan->format('d-m-Y') }} {{ $papdRequest->jam_keberangkatan }}</div>
                                     <div class="col-md-6"><span class="detail-label">Kembali:</span>
                                         {{ $papdRequest->tanggal_kepulangan ? \Carbon\Carbon::parse($papdRequest->tanggal_kepulangan)->format('d-m-Y') : '-' }}

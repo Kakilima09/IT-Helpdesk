@@ -562,16 +562,29 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Lama Perjalanan (hari)</label>
+                                            <label class="form-label mb-0 mt-2">Lama Perjalanan</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="number" min="1" class="form-control @error('durasi_hari') is-invalid @enderror"
-                                                   name="durasi_hari" id="durasi_hari"
-                                                   value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}"
-                                                   readonly >
-                                            @error('durasi_hari')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <label for="durasi_hari" class="form-label">Hari</label>
+                                                    <input type="number" min="0" class="form-control @error('durasi_hari') is-invalid @enderror"
+                                                           name="durasi_hari" id="durasi_hari"
+                                                           value="{{ old('durasi_hari', $papdRequest->durasi_hari ?? '') }}" readonly>
+                                                    @error('durasi_hari')
+                                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="durasi_malam" class="form-label">Malam</label>
+                                                    <input type="number" min="0" class="form-control @error('durasi_malam') is-invalid @enderror"
+                                                           name="durasi_malam" id="durasi_malam"
+                                                           value="{{ old('durasi_malam', $papdRequest->durasi_malam ?? '') }}" readonly>
+                                                    @error('durasi_malam')
+                                                        <span class="invalid-feedback d-block" role="alert"><strong>{{ $message }}</strong></span>
+                                                    @enderror
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -709,7 +722,6 @@
                                             @error('kode_tujuan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
-                                            <small class="text-muted">Data bandara global bersumber dari OurAirports; data stasiun, terminal, dan pelabuhan Indonesia dari OpenStreetMap. Cakupan OpenStreetMap mengikuti kontribusi komunitas.</small>
                                         </div>
                                     </div>
                                 </div>
@@ -1072,7 +1084,7 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="form-label mb-0 mt-2">Lokasi / Alamat</label>
+                                                <label class="form-label mb-0 mt-2">Alamat Lengkap</label>
                                             </div>
                                             <div class="col-md-9">
                                                 <input type="text" class="form-control @error('hotel_lokasi_alamat') is-invalid @enderror"
@@ -1152,7 +1164,7 @@
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Notes</label>
+                                            <label class="form-label mb-0 mt-2">Catatan</label>
                                         </div>
                                         <div class="col-md-9">
                                             <textarea class="form-control @error('notes') is-invalid @enderror"
@@ -1692,27 +1704,25 @@
             var tglBerangkat = $('#tanggal_keberangkatan').val();
             var tglKembali = $('#tanggal_kepulangan').val();
 
-            if (tglBerangkat && tglKembali) {
+            var isRoundTrip = $('input[name="jenis_tiket"]:checked').val() === 'pulang_pergi';
+            if (isRoundTrip && tglBerangkat && tglKembali) {
                 var start = new Date(tglBerangkat);
                 var end = new Date(tglKembali);
 
                 // Validasi: jika tanggal kembali lebih kecil dari tanggal berangkat
                 if (end < start) {
                     $('#durasi_hari').val('');
+                    $('#durasi_malam').val('');
                     toastr.warning('Tanggal kepulangan tidak boleh lebih awal dari tanggal keberangkatan.');
                     return;
                 }
 
-                // Hitung selisih hari (1 hari = 86400000 ms)
-                var diffTime = Math.abs(end - start);
-                var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                // Jika berangkat dan pulang hari yang sama, maka 1 hari (sesuai kebutuhan)
-                // diffDays = diffDays + 1; // uncomment jika inklusif
-
-                $('#durasi_hari').val(diffDays);
+                var nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+                $('#durasi_hari').val(nights + 1);
+                $('#durasi_malam').val(nights);
             } else {
                 $('#durasi_hari').val('');
+                $('#durasi_malam').val('');
             }
         }
 

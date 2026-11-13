@@ -36,7 +36,7 @@ Berikut adalah data lengkap Pengajuan Akomodasi Perjalanan Dinas yang **telah di
 - **No SPPD:** {{ $request->no_sppd ?? '-' }}
 - **Berangkat:** {{ $request->tanggal_keberangkatan->format('d-m-Y') }} {{ $request->jam_keberangkatan }}
 - **Kembali:** {{ $request->tanggal_kepulangan ? \Carbon\Carbon::parse($request->tanggal_kepulangan)->format('d-m-Y') . ' ' . ($request->jam_kepulangan ?? '') : '-' }}
-- **Lama Perjalanan:** {{ $request->durasi_hari ? $request->durasi_hari . ' hari' : '-' }}
+- **Lama Perjalanan:** {{ $request->durasi_hari ? $request->durasi_hari . ' hari ' . $request->durasi_malam . ' malam' : '-' }}
 - **Pembebanan Biaya:** {{ $request->pembebanan_biaya ?? '-' }}
 
 ---
