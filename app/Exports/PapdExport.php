@@ -67,8 +67,8 @@ class PapdExport implements FromCollection, WithHeadings, WithMapping, ShouldAut
         $akomodasi = 'Tidak';
         if ($row->hotel_reservasi && $row->nama_hotel) {
             $akomodasi = $row->nama_hotel;
-            if ($row->lokasi_hotel) {
-                $akomodasi .= ' (' . $row->lokasi_hotel . ')';
+            if ($row->hotel_location_address) {
+                $akomodasi .= ' (' . $row->hotel_location_address . ')';
             }
         }
 

@@ -60,11 +60,8 @@ Berikut adalah ringkasan permintaan perjalanan dinas dari:
 @if($request->nama_hotel)
 - **Nama Hotel:** {{ $request->nama_hotel }}
 @endif
-@if($request->lokasi_hotel)
-- **Lokasi:** {{ $request->lokasi_hotel }}
-@endif
-@if($request->alamat_hotel)
-- **Alamat:** {{ $request->alamat_hotel }}
+@if($request->hotel_location_address)
+- **Lokasi / Alamat:** {{ $request->hotel_location_address }}
 @endif
 @if($request->check_in)
 - **Check-in:** {{ \Carbon\Carbon::parse($request->check_in)->format('d-m-Y') }}

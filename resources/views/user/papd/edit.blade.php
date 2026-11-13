@@ -760,12 +760,10 @@
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Lokasi / Alamat</label></div>
                                             <div class="col-md-9">
-                                                <input type="text" class="form-control @error('lokasi_hotel') is-invalid @enderror"
-                                                       name="lokasi_hotel" placeholder="Kota / Wilayah" value="{{ old('lokasi_hotel', $papdRequest->lokasi_hotel) }}">
-                                                @error('lokasi_hotel')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
-                                                <textarea class="form-control mt-2 @error('alamat_hotel') is-invalid @enderror"
-                                                          name="alamat_hotel" rows="2" placeholder="Alamat lengkap">{{ old('alamat_hotel', $papdRequest->alamat_hotel) }}</textarea>
-                                                @error('alamat_hotel')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
+                                                <input type="text" class="form-control @error('hotel_lokasi_alamat') is-invalid @enderror"
+                                                       name="hotel_lokasi_alamat" placeholder="Masukkan kota, wilayah, atau alamat hotel"
+                                                       value="{{ old('hotel_lokasi_alamat', $papdRequest->hotel_location_address) }}">
+                                                @error('hotel_lokasi_alamat')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                             </div>
                                         </div>
                                     </div>
