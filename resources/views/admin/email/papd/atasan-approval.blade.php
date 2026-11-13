@@ -4,9 +4,9 @@
 Yth. Bapak/Ibu **{{ $request->atasan_nama }}**,
 
 @if(!empty($isUpdate))
-Pemohon telah memperbarui permintaan perjalanan dinas yang masih menunggu persetujuan. Berikut detail terbaru untuk ditinjau:
+Pemohon telah memperbarui Pengajuan Akomodasi Perjalanan Dinas yang masih menunggu persetujuan. Berikut detail terbaru untuk ditinjau:
 @else
-Berikut adalah ringkasan permintaan perjalanan dinas dari:
+Berikut adalah ringkasan Pengajuan Akomodasi Perjalanan Dinas dari:
 @endif
 
 - **Nama Pemohon:** {{ $request->nama_lengkap }}

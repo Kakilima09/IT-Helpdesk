@@ -3,7 +3,7 @@
 
 Dear Corporate,
 
-Permintaan perjalanan dinas berikut **telah disetujui oleh atasan** dan menunggu **persetujuan corporate**. Mohon buka panel admin untuk menyetujui, kemudian sistem akan menampilkan rekomendasi tiket termurah.
+Pengajuan Akomodasi Perjalanan Dinas berikut **telah disetujui oleh atasan** dan menunggu **persetujuan corporate**. Mohon buka panel admin untuk menyetujui, kemudian sistem akan menampilkan rekomendasi tiket termurah.
 
 ---
 

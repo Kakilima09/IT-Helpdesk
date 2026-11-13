@@ -3,7 +3,7 @@
 
 Yth. **{{ $request->nama_lengkap }}**,
 
-Dengan ini kami informasikan bahwa permintaan perjalanan dinas Anda dengan rincian berikut **tidak disetujui** oleh atasan:
+Dengan ini kami informasikan bahwa Pengajuan Perjalanan Dinas Anda dengan rincian berikut **tidak disetujui** oleh atasan:
 
 - **{{ $request->jenis_perjalanan === 'domestik' ? 'Kota Tujuan' : 'Negara Tujuan' }}:** {{ $request->kota_tujuan }}
 - **Tanggal Berangkat:** {{ \Carbon\Carbon::parse($request->tanggal_keberangkatan)->format('d-m-Y') }}

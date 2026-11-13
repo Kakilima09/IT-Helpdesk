@@ -4,7 +4,7 @@
 Dear,
 Corporate
 
-Berikut adalah data lengkap permintaan perjalanan dinas yang **telah disetujui** oleh atasan. Mohon segera lakukan pemesanan tiket dan akomodasi sesuai data di bawah ini:
+Berikut adalah data lengkap Pengajuan Akomodasi Perjalanan Dinas yang **telah disetujui** oleh atasan. Mohon segera lakukan pemesanan tiket dan akomodasi sesuai data di bawah ini:
 
 ---
 
@@ -74,10 +74,6 @@ Berikut adalah data lengkap permintaan perjalanan dinas yang **telah disetujui**
 {!! $request->notes ?? '-' !!}
 
 ---
-
-@component('mail::button', ['url' => URL::temporarySignedRoute('papd.downloadPdfSigned', now()->addDays(7), ['id' => $request->id])])
-Download PDF Lengkap
-@endcomponent
 
 Terima kasih.
 
