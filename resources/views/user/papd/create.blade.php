@@ -321,8 +321,11 @@
                                             <label class="form-label mb-0 mt-2">Exp Date Paspor</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror"
-                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor') }}">
+                                            <input type="text" class="form-control @error('exp_date_paspor') is-invalid @enderror"
+                                                   id="exp_date_paspor_display" placeholder="12 November 2030"
+                                                   autocomplete="off" readonly>
+                                            <input type="hidden" name="exp_date_paspor" id="exp_date_paspor"
+                                                   value="{{ old('exp_date_paspor') }}">
                                             @error('exp_date_paspor')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -356,6 +359,22 @@
                                             <input type="text" class="form-control @error('nama_sesuai_ktp') is-invalid @enderror"
                                                    name="nama_sesuai_ktp" value="{{ old('nama_sesuai_ktp') }}" maxlength="255">
                                             @error('nama_sesuai_ktp')
+                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label class="form-label mb-0 mt-2">Kota Tujuan <span class="text-red">*</span></label>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
+                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
+                                                   placeholder="Masukkan kota tujuan" required>
+                                            @error('kota_tujuan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -669,22 +688,6 @@
                                                 @endif
                                             </select>
                                             @error('kode_asal')
-                                                <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Kota Tujuan <span class="text-red">*</span></label>
-                                        </div>
-                                        <div class="col-md-9">
-                                            <input type="text" class="form-control @error('kota_tujuan') is-invalid @enderror"
-                                                   name="kota_tujuan" id="kota_tujuan" value="{{ old('kota_tujuan') }}" maxlength="255"
-                                                   placeholder="Masukkan kota tujuan" required>
-                                            @error('kota_tujuan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
                                         </div>
@@ -1219,6 +1222,7 @@
         }
 
         setupTanggalPicker('#ttl_display', '#ttl');
+        setupTanggalPicker('#exp_date_paspor_display', '#exp_date_paspor');
         setupTanggalPicker('#tanggal_keberangkatan_display', '#tanggal_keberangkatan');
         setupTanggalPicker('#tanggal_kepulangan_display', '#tanggal_kepulangan');
         setupTanggalPicker('#hotel_check_in_display', '#hotel_check_in');

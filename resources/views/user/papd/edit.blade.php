@@ -222,8 +222,11 @@
                                     <div class="row">
                                         <div class="col-md-3"><label class="form-label">Exp Date Paspor</label></div>
                                         <div class="col-md-9">
-                                            <input type="date" class="form-control @error('exp_date_paspor') is-invalid @enderror"
-                                                   name="exp_date_paspor" value="{{ old('exp_date_paspor', optional($papdRequest->exp_date_paspor)->format('Y-m-d')) }}">
+                                            <input type="text" class="form-control @error('exp_date_paspor') is-invalid @enderror"
+                                                   id="exp_date_paspor_display" placeholder="12 November 2030"
+                                                   autocomplete="off" readonly>
+                                            <input type="hidden" name="exp_date_paspor" id="exp_date_paspor"
+                                                   value="{{ old('exp_date_paspor', optional($papdRequest->exp_date_paspor)->format('Y-m-d')) }}">
                                             @error('exp_date_paspor')<span class="invalid-feedback"><strong>{{ $message }}</strong></span>@enderror
                                         </div>
                                     </div>
@@ -328,9 +331,11 @@
                                             <label class="form-label mb-0 mt-2">Tanggal Keberangkatan <span class="text-red">*</span></label>
                                         </div>
                                         <div class="col-md-5">
-                                            <input type="date" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
-                                                   name="tanggal_keberangkatan" id="tanggal_keberangkatan"
-                                                   value="{{ old('tanggal_keberangkatan', $papdRequest->tanggal_keberangkatan->format('Y-m-d')) }}" required>
+                                            <input type="text" class="form-control @error('tanggal_keberangkatan') is-invalid @enderror"
+                                                   id="tanggal_keberangkatan_display" placeholder="12 November 2026"
+                                                   autocomplete="off" readonly required>
+                                            <input type="hidden" name="tanggal_keberangkatan" id="tanggal_keberangkatan"
+                                                   value="{{ old('tanggal_keberangkatan', $papdRequest->tanggal_keberangkatan->format('Y-m-d')) }}">
                                             @error('tanggal_keberangkatan')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
@@ -851,11 +856,46 @@
 @section('scripts')
 <!-- INTERNAL Summernote js -->
 <script src="{{asset('assets/plugins/summernote/summernote.js')}}?v=<?php echo time(); ?>"></script>
+<script src="{{asset('assets/plugins/jquery/jquery-ui.js')}}?v=<?php echo time(); ?>"></script>
 <!-- Select2 -->
 <script src="{{asset('assets/plugins/select2/js/select2.full.min.js')}}?v=<?php echo time(); ?>"></script>
 
 <script>
     $(document).ready(function() {
+        var bulanIndonesia = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        function setupTanggalPicker(displaySelector, valueSelector) {
+            var valueInput = $(valueSelector);
+            var dateInput = $(displaySelector).datepicker({
+                dateFormat: 'd MM yy',
+                monthNames: bulanIndonesia,
+                dayNamesMin: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                altField: valueSelector,
+                altFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function() {
+                    valueInput.trigger('change');
+                }
+            });
+            var value = valueInput.val();
+
+            if (value) {
+                var parts = value.split('-');
+                dateInput.datepicker('setDate', new Date(
+                    parseInt(parts[0], 10),
+                    parseInt(parts[1], 10) - 1,
+                    parseInt(parts[2], 10)
+                ));
+            }
+        }
+
+        setupTanggalPicker('#exp_date_paspor_display', '#exp_date_paspor');
+        setupTanggalPicker('#tanggal_keberangkatan_display', '#tanggal_keberangkatan');
+
         // Inisialisasi Select2 dengan AJAX
         $('#nama_lengkap').select2({
             minimumInputLength: 2,
