@@ -63,7 +63,8 @@ class SyncPapdTransportLocations extends Command
         }
 
         try {
-            $response = Http::timeout(300)
+            $response = Http::withoutVerifying()
+                ->timeout(300)
                 ->withOptions(['sink' => $path])
                 ->withHeaders(['User-Agent' => 'IT-Helpdesk-PAPD-Location-Sync'])
                 ->get('https://davidmegginson.github.io/ourairports-data/airports.csv');
@@ -177,13 +178,39 @@ class SyncPapdTransportLocations extends Command
             . $selector
             . ');out center tags;';
 
-        $response = Http::timeout(300)
-            ->asForm()
-            ->withHeaders(['User-Agent' => 'IT-Helpdesk-PAPD-Location-Sync'])
-            ->post('https://overpass-api.de/api/interpreter', ['data' => $query]);
+        $endpoints = [
+            'https://overpass-api.de/api/interpreter',
+            'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+            'https://overpass.kumi.systems/api/interpreter',
+        ];
 
-        if (!$response->successful()) {
-            throw new \RuntimeException("OpenStreetMap Overpass request for {$type} locations failed with HTTP " . $response->status() . '.');
+        $response = null;
+        $lastError = null;
+
+        foreach ($endpoints as $endpoint) {
+            try {
+                $res = Http::withoutVerifying()
+                    ->timeout(300)
+                    ->asForm()
+                    ->withHeaders(['User-Agent' => 'IT-Helpdesk-PAPD-Location-Sync'])
+                    ->post($endpoint, ['data' => $query]);
+
+                if ($res->successful()) {
+                    $payload = $res->json();
+                    if (is_array($payload) && isset($payload['elements']) && is_array($payload['elements'])) {
+                        $response = $res;
+                        break;
+                    }
+                }
+
+                $lastError = 'HTTP ' . $res->status() . ' from ' . $endpoint;
+            } catch (\Throwable $e) {
+                $lastError = $e->getMessage() . ' (' . $endpoint . ')';
+            }
+        }
+
+        if (!$response) {
+            throw new \RuntimeException("OpenStreetMap Overpass request for {$type} locations failed: " . $lastError);
         }
 
         $payload = $response->json();
