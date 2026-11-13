@@ -1013,7 +1013,7 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" id="catatan-pulang-group" style="{{ old('jenis_tiket') === 'pulang_pergi' ? '' : 'display:none;' }}">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <label class="form-label mb-0 mt-2">Catatan Pulang</label>
@@ -1642,6 +1642,7 @@
             $('#tanggal_kepulangan_display').prop('required', isRoundTrip);
             $('#return-date-required-marker').toggle(isRoundTrip);
             $('#return-transport-group').toggle(isRoundTrip);
+            $('#catatan-pulang-group').toggle(isRoundTrip);
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');

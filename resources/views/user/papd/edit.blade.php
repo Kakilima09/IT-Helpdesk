@@ -634,7 +634,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group" id="catatan-pulang-group" style="{{ old('jenis_tiket', $papdRequest->jenis_tiket ?? ($papdRequest->tanggal_kepulangan ? 'pulang_pergi' : 'sekali_jalan')) === 'pulang_pergi' ? '' : 'display:none;' }}">
                                         <div class="row">
                                             <div class="col-md-3"><label class="form-label">Catatan Pulang</label></div>
                                             <div class="col-md-9">
@@ -1311,6 +1311,7 @@
             $('#tanggal_kepulangan').prop('required', isRoundTrip);
             $('#return-date-required-marker').toggle(isRoundTrip);
             $('#return-transport-group').toggle(isRoundTrip);
+            $('#catatan-pulang-group').toggle(isRoundTrip);
             $('#moda_transportasi_pulang').prop('required', isRoundTrip);
             if (!isRoundTrip) {
                 $('#moda_transportasi_pulang').val('');
