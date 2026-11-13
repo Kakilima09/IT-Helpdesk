@@ -606,8 +606,8 @@
 
                                 <hr>
 
-                                <!-- ==================== BAGIAN C1 ==================== -->
-                                <div class="section-title">C1. Transportasi</div>
+                                <!-- ==================== BAGIAN C ==================== -->
+                                <div class="section-title">C. Transportasi</div>
 
                                 <div class="form-group">
                                     <div class="row">
@@ -1041,8 +1041,8 @@
                                 </div>
                                 <hr>
 
-                                <!-- ==================== BAGIAN C2 ==================== -->
-                                <div class="section-title">C2. Akomodasi Hotel</div>
+                                <!-- ==================== BAGIAN D ==================== -->
+                                <div class="section-title">D. Akomodasi Hotel</div>
 
                                 <div class="form-group">
                                     <div class="row">
@@ -1159,12 +1159,12 @@
                                 <hr>
 
                                 <!-- ==================== NOTES ==================== -->
-                                <div class="section-title">Catatan Tambahan</div>
+                                <div class="section-title">E.Catatan Tambahan</div>
 
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-3">
-                                            <label class="form-label mb-0 mt-2">Catatan</label>
+                                            <label class="form-label mb-0 mt-2"> Catatan</label>
                                         </div>
                                         <div class="col-md-9">
                                             <textarea class="form-control @error('notes') is-invalid @enderror"
