@@ -1390,7 +1390,7 @@
             });
         }
 
-        function initTransportLocationSelect(selector) {
+        function initTransportLocationSelect(selector, manualFieldSelector) {
             $(selector).select2({
                 minimumInputLength: 1,
                 placeholder: 'Cari lokasi...',
@@ -1411,7 +1411,13 @@
                     cache: true
                 },
                 language: {
-                    noResults: function() { return 'Lokasi tidak ditemukan'; },
+                    noResults: function() {
+                        var searchTerm = $('.select2-container--open .select2-search__field').val();
+                        if (searchTerm) {
+                            $(manualFieldSelector).val(searchTerm);
+                        }
+                        return 'Lokasi tidak ditemukan. Nama lokasi diisi manual.';
+                    },
                     searching: function() { return 'Mencari...'; }
                 }
             });
@@ -1425,8 +1431,8 @@
             $('#kota_tujuan_pulang').attr('placeholder', 'Masukkan ' + label.toLowerCase() + ' tujuan pulang');
         }
 
-        initTransportLocationSelect('#kode_asal_select');
-        initTransportLocationSelect('#kode_tujuan_select');
+        initTransportLocationSelect('#kode_asal_select', '#kota_asal');
+        initTransportLocationSelect('#kode_tujuan_select', '#kota_tujuan');
         $('#kode_asal_select, #kode_tujuan_select').on('select2:select', function(event) {
             var cityInput = this.id === 'kode_asal_select' ? '#kota_asal' : '#kota_tujuan';
             if (event.params.data.city) {

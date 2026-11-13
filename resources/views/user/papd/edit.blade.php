@@ -1018,7 +1018,7 @@
             });
         }
 
-        function initLocationSelect(selector) {
+        function initLocationSelect(selector, manualFieldSelector) {
             $(selector).select2({
                 minimumInputLength: 1,
                 placeholder: 'Cari lokasi...',
@@ -1036,7 +1036,13 @@
                     cache: true
                 },
                 language: {
-                    noResults: function() { return 'Lokasi tidak ditemukan'; },
+                    noResults: function() {
+                        var searchTerm = $('.select2-container--open .select2-search__field').val();
+                        if (searchTerm) {
+                            $(manualFieldSelector).val(searchTerm);
+                        }
+                        return 'Lokasi tidak ditemukan. Nama lokasi diisi manual.';
+                    },
                     searching: function() { return 'Mencari...'; }
                 }
             });
@@ -1056,8 +1062,8 @@
             }
         }
 
-        initLocationSelect('#kode_asal_select');
-        initLocationSelect('#kode_tujuan_select');
+        initLocationSelect('#kode_asal_select', '#kota_asal');
+        initLocationSelect('#kode_tujuan_select', '#kota_tujuan');
         updateKelasBerangkat(true);
         updateLocationLabels();
 
@@ -1112,7 +1118,7 @@
             });
         }
 
-        function initReturnLocationSelect(selector) {
+        function initReturnLocationSelect(selector, manualFieldSelector) {
             $(selector).select2({
                 minimumInputLength: 1,
                 placeholder: 'Cari lokasi...',
@@ -1130,7 +1136,13 @@
                     cache: true
                 },
                 language: {
-                    noResults: function() { return 'Lokasi tidak ditemukan'; },
+                    noResults: function() {
+                        var searchTerm = $('.select2-container--open .select2-search__field').val();
+                        if (searchTerm) {
+                            $(manualFieldSelector).val(searchTerm);
+                        }
+                        return 'Lokasi tidak ditemukan. Nama lokasi diisi manual.';
+                    },
                     searching: function() { return 'Mencari...'; }
                 }
             });
@@ -1145,8 +1157,8 @@
             }
         }
 
-        initReturnLocationSelect('#kode_asal_pulang_select');
-        initReturnLocationSelect('#kode_tujuan_pulang_select');
+        initReturnLocationSelect('#kode_asal_pulang_select', '#kota_asal_pulang');
+        initReturnLocationSelect('#kode_tujuan_pulang_select', '#kota_tujuan_pulang');
         updateKelasPulang(true);
         updateReturnLocationLabels();
 
