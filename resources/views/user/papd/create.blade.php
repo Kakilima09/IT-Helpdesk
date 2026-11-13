@@ -1155,8 +1155,8 @@
                                             <label class="form-label mb-0 mt-2">Notes</label>
                                         </div>
                                         <div class="col-md-9">
-                                            <textarea class="summernote form-control @error('notes') is-invalid @enderror"
-                                                      name="notes" rows="4">{{ old('notes') }}</textarea>
+                                            <textarea class="form-control @error('notes') is-invalid @enderror"
+                                                      name="notes" rows="2" placeholder="Catatan Tambahan">{{ old('notes') }}</textarea>
                                             @error('notes')
                                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                             @enderror
